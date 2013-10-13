@@ -1,0 +1,27 @@
+<%
+include('/jagg/constants.jag');
+jagg.block("deployment/list", {
+    initialize: function (data) {
+
+    },
+    getInputs: function () {
+        return {
+            "applicationKey": null
+        }
+    },
+
+    getOutputs: function (inputs) {
+        var permissionModule = jagg.module("permission");
+        var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        var hasDeployToStagePermission = {};
+        for (var i = 0; i < deploymentStages.length; i++) {
+            hasDeployToStagePermission[i] = permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_DEPLOY_TO + deploymentStages[i]);
+        }
+        return {
+            "hasDeployPermission": hasDeployToStagePermission
+        };
+    }
+
+
+});
+%>

@@ -1,0 +1,9 @@
+<%
+jagg.block("resources/get", {
+    initialize:function (data) {
+
+    }
+
+
+});
+%>

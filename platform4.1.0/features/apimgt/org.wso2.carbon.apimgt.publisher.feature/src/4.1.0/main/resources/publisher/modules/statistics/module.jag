@@ -1,0 +1,23 @@
+<%
+jagg.module("statistics", {
+
+    getProviderAPIVersionUsage:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIVersionUsage.apply(this, arguments);
+    },getSubscriberCountByAPIVersions:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getSubscriberCountByAPIVersions.apply(this, arguments);
+    },getProviderAPIUsage:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIUsage.apply(this, arguments);
+    },getProviderAPIUserUsage:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIUserUsage.apply(this, arguments);
+    },getProviderAPIVersionUserLastAccess:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIVersionUserLastAccess.apply(this, arguments);
+    },getProviderAPIServiceTime:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIServiceTime.apply(this, arguments);
+    },getSubscriberCountByAPIs:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getSubscriberCountByAPIs.apply(this, arguments);
+    },getProviderAPIVersionUserUsage:function () {
+        return jagg.require(jagg.getModulesDir() + "statistics/usage.jag").getProviderAPIVersionUserUsage.apply(this, arguments);
+    }
+
+});
+%>

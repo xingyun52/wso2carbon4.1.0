@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-patch-releases</artifactId>
+        <version>4.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>platform-patch-releases-service-stubs</artifactId>
+    <packaging>pom</packaging>
+    <version>4.1.1</version>
+    <name>WSO2 Carbon - Patch releases - service-stubs - Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+    <modules>
+	
+
+	<!--Appfactory-->
+	<module>../../../service-stubs/org.wso2.carbon.appfactory.application.deployer.stub/1.0.2</module>
+	<module>../../../service-stubs/org.wso2.carbon.appfactory.events.notification.stub/1.0.2</module>
+        <module>../../../service-stubs/org.wso2.carbon.appfactory.artifact.storage.stub/1.0.2</module>
+        <module>../../../service-stubs/org.wso2.carbon.appfactory.jenkins.build.stub/1.0.2</module>
+	<!--Appfactory-->
+      <!--  bpel-->
+        <module>../../../service-stubs/org.wso2.carbon.attachment.mgt.skeleton/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.attachment.mgt.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.bpel.bam.publisher.skeleton/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.bpel.bam.publisher.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.bpel.skeleton/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.bpel.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.humantask.skeleton/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.humantask.stub/4.1.1</module>
+      <!--  /bpel-->
+      <!--Stratos2-->
+        <module>../../../service-stubs/org.wso2.carbon.cartridge.agent.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.adc.mgt.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.adc.instanceinfo.mgt.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.adc.reponotification.service.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.adc.repositoryinformation.service.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.adc.topologymgt.service.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.load.balance.cartridge.autoscaler.service.stub/4.1.1</module>
+	<!--Stratos2-->
+      <!-- APIM -->	
+	<module>../../../service-stubs/org.wso2.carbon.apimgt.keymgt.stub/4.1.1</module>
+        <module>../../../service-stubs/org.wso2.carbon.apimgt.handlers.security.stub/4.1.1</module>
+      <!-- APIM -->
+    </modules>
+</project>

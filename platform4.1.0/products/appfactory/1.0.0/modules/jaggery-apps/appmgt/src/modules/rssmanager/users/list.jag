@@ -1,0 +1,200 @@
+
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+// used for logging
+var log = new Log();
+var modManager = jagg.module("manager");
+var wso2_rss_instanceName = 'WSO2_RSS';
+
+var getStorageServerUrl= function(databaseServerInstanceName){
+    var stage = getStageFromRssInstanceName(databaseServerInstanceName);
+   return getProperty(DEPLOYMENT_STAGES+'.'+stage+'.'+STORAGE_SERVER_URL);
+};
+var getRssInstanceName = function(databaseServerInstanceName){
+    return wso2_rss_instanceName;
+};
+var getStageFromRssInstanceName=function(rssInstanceName){
+    var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        for(var i=0;i<deploymentStages.length;i++){
+               var rssName= getProperty(DEPLOYMENT_STAGES+'.'+deploymentStages[i]+'.'+RSS_NAME);
+                if(rssInstanceName==rssName){
+                    return deploymentStages[i];
+                }
+            }
+
+};
+
+var createDatabaseUser = function (applicationKey, password, rssInstance, username){
+
+    var ws = require('ws');
+
+    var createDatabaseUsersService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:createDatabaseUser";
+    options.mep = "in-only";
+    options["HTTPHeaders"] = [
+       { name : "Cookie", value :modManager.getAdminCookie() }
+     ];
+    var tenantId="-1234";
+   
+    var payload ='<ser:createDatabaseUser  xmlns:ser="http://service.core.rssmanager.carbon.wso2.org" xmlns:xsd="http://entity.core.rssmanager.carbon.wso2.org/xsd">'+
+                 '<ser:user><xsd:password>'+password+'</xsd:password>'+
+                 '<xsd:rssInstanceName>'+getRssInstanceName(rssInstance)+'</xsd:rssInstanceName>'+
+                 '<xsd:tenantId>'+tenantId+'</xsd:tenantId>'+
+                 '<xsd:type></xsd:type>'+
+                 '<xsd:username>'+username+'</xsd:username></ser:user></ser:createDatabaseUser>';
+
+    var result;
+
+    try {
+        var storageUrl =   getStorageServerUrl(rssInstance);
+        log.info('storage url in create datbase user '+storageUrl);
+        createDatabaseUsersService.open(options, storageUrl+'RSSAdmin', false,getProperty(ADMIN_USERNAME)+'@'+applicationKey , getProperty(ADMIN_PASSWORD) );
+        createDatabaseUsersService.send(payload);
+
+       } catch (e) {
+        log.error(e.toString());
+        }
+
+
+
+};
+
+var getAvailableUsersToAttachToDatabase = function (applicationKey, dbname, rssInstance){
+    var ws = require('ws');
+    var getAvailableUsersToAttachToDatabaseService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:getAvailableUsersToAttachToDatabase";
+    options["HTTPHeaders"] = [
+       { name : "Cookie", value :modManager.getAdminCookie() }
+     ];
+    var payload ='<ser:getAvailableUsersToAttachToDatabase  xmlns:ser="http://service.core.rssmanager.carbon.wso2.org">'+
+                 '<ser:rssInstanceName>'+getRssInstanceName(rssInstance)+'</ser:rssInstanceName>'+
+                 '<ser:databaseName>'+dbname+'</ser:databaseName>'+
+                 '</ser:getAvailableUsersToAttachToDatabase>';
+    var result;
+
+    try {
+
+        getAvailableUsersToAttachToDatabaseService.open(options, getStorageServerUrl(rssInstance)+'RSSAdmin', false,getProperty(ADMIN_USERNAME)+'@'+applicationKey , getProperty(ADMIN_PASSWORD) );
+        getAvailableUsersToAttachToDatabaseService.send(payload);
+       result = getAvailableUsersToAttachToDatabaseService.responseE4X;
+
+       } catch (e) {
+        log.error(e.toString());
+        }
+ return buildResponseAsStringArray(result);
+};
+
+
+var deleteUser = function (applicationKey, name, rssInstanceName){
+
+    var ws = require('ws');
+
+    var deleteDatabaseUsersService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:dropDatabaseUser";
+    options.mep = "in-only";
+    options["HTTPHeaders"] = [
+       { name : "Cookie", value :modManager.getAdminCookie() }
+     ];
+    var payload ='<ser:dropDatabaseUser  xmlns:ser="http://service.core.rssmanager.carbon.wso2.org">'+
+                 '<ser:rssInstanceName>'+getRssInstanceName(rssInstanceName)+'</ser:rssInstanceName><ser:username>'+
+                 name +'</ser:username></ser:dropDatabaseUser>';
+
+    var result;
+
+    try {
+
+        deleteDatabaseUsersService.open(options, getStorageServerUrl(rssInstanceName)+'RSSAdmin', false,getProperty(ADMIN_USERNAME)+'@'+applicationKey , getProperty(ADMIN_PASSWORD) );
+        deleteDatabaseUsersService.send(payload);
+    
+       } catch (e) {
+        log.error(e.toString());
+        }
+
+
+
+};
+
+var getDatabaseUsers = function (applicationKey){
+    var ws = require('ws');
+
+    var getDatabaseUsersService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:getDatabaseUsers";
+    options["HTTPHeaders"] = [
+       { name : "Cookie", value :modManager.getAdminCookie() }
+     ];
+    var payload ='<ser:getDatabaseUsers  xmlns:ser="http://service.core.rssmanager.carbon.wso2.org"/>';
+
+    var result;
+
+    var databasesUsersArray=[];
+        var permissionModule = jagg.module("permission");
+        var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        var rssInstancesArray=[];
+        for(var i=0;i<deploymentStages.length;i++){
+            //if user has access to stage
+            var hasDBConfigurePermissionToStage = permissionModule.isUserAccessGranted(applicationKey,PERMISSION_CONFIGURATION_DB_FOR_STAGE +deploymentStages[i]);
+            if(hasDBConfigurePermissionToStage){
+                var storageServerURL = getProperty(DEPLOYMENT_STAGES+'.'+deploymentStages[i]+'.'+STORAGE_SERVER_URL);
+                getDatabaseUsersService.open(options, storageServerURL+'RSSAdmin', false,getProperty(ADMIN_USERNAME)+'@'+applicationKey , getProperty(ADMIN_PASSWORD) );
+                getDatabaseUsersService.send(payload);
+                result = getDatabaseUsersService.responseE4X;
+                var databaseUsers = buildResponse(result, deploymentStages[i]);
+                for(var index in  databaseUsers){
+                    var databaseUser = databaseUsers[index];
+                    databasesUsersArray.push(databaseUser);
+
+                }
+            }
+        }
+           return  databasesUsersArray;
+};
+
+function buildResponse(result,stage){
+   var databaseObject=[];
+
+   if(result != undefined){
+   var response=result.*::["return"]
+
+   for(var index=0; index < response.length();index++){
+
+       var task={};
+       var entry=response[index];
+
+
+       var name=entry.*::username.text();
+       var rssInstanceName=entry.*::rssInstanceName.text();
+
+       task.name=name;
+       task.rssInstanceName=getProperty(DEPLOYMENT_STAGES+'.'+stage+'.'+RSS_NAME);
+
+       databaseObject.push(task);
+        }
+   }
+
+    return databaseObject;
+}
+
+function buildResponseAsStringArray(result){
+var databaseObject=[];
+	if(result!=undefined){	
+		var response=result.*::["return"].text();
+		for(var index=0; index < response.length();index++){
+		       	var entry=response[index];
+		       	databaseObject.push(entry);
+		}
+	}
+return databaseObject;
+}
+%>
+

@@ -1,0 +1,86 @@
+<!--
+  ~ Copyright 2008 WSO2, Inc. (http://wso2.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+    <title>Broker Management - User Guide</title>
+    <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all"/>
+</head>
+
+<body style="font-family: Times New Roman,Times,serif; font-size: 12pt;">
+<h1>Broker Management</h1>
+
+<h2>Create New Broker</h2>
+
+<P>There are four broker types available to create such as Local, WS-Event, Agent and JMS.</P>
+<ul>
+    <li>
+        <h2>Create Local Broker</h2>
+
+        <p><img alt="" src="../images/localBroker.png"/></p>
+
+        <p>Figure 1: Create Local Broker</p>
+
+        <p>To create a local broker, only the broker name is required.When Local Broker is used CEP
+            will use Local Transport when receiving events from the broker and sending events to the broker.</p>
+    </li>
+    <li>
+        <h2>Create WS-Event Broker</h2>
+
+        <p><img alt="" src="../images/wsEventBroker.png"/></p>
+
+        <p>Figure 2: Create WS-Event Broker</p>
+
+        <p>WS-Event Broker can be used to send and receive XML/SOAP messages as WS-Events.</p>
+    </li>
+    <li>
+        <h2>Create JMS Broker</h2>
+
+        <p><img alt="" src="../images/jmsBroker.png"/></p>
+
+        <p>Figure 3: Create JMS Broker</p>
+
+        <p>Using JMS Broker any type of XML and Map events can be sent as JMS events using JMS transport.</p>
+    </li>
+    <li>
+        <h2>Create Agent Broker</h2>
+
+        <p><img alt="" src="../images/agentBroker.png"/></p>
+
+        <p>Figure 4: Create Agent Broker</p>
+
+        <p>Agent Broker is a broker that handles WSO2 Common Events. This can receive events over
+            Thrift using TCP, SSL, HTTP, and HTTPS, and it can also receive JSON events via HTTP and
+            HTTPS.CEP is shipped with an Agent Broker which will be used
+            to receive fired events and handover them to CEP using Local Transport.
+            From CEP we can send output events to any Agent Broker using Thrift over TCP, SSL, HTTP,
+            or HTTPS.</p>
+    </li>
+</ul>
+
+<h2>List Brokers</h2>
+
+<p><img alt="" src="../images/listBrokers.png"/></p>
+
+<p>Figure 5: List Brokers</p>
+
+<p>All the created brokers are listed and can be deleted.</p>
+
+
+</body>
+</html>

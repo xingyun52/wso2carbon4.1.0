@@ -1,0 +1,27 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+ 	var log = new Log();
+	var applicationKey = request.getParameter("applicationKey");
+	var stage = request.getParameter("stage");
+ 
+    if (action == "downloadFile") {
+        var fileName=stage+'-as.log';
+    	mod = jagg.module("logdownload");
+    	response.contentType = 'application/txt'
+        response.addHeader('Content-Disposition', 'attachment;filename='+fileName.toString());
+
+        print(mod.downloadLogFile(applicationKey, stage));
+
+    } else {
+		log.info("No action specified");
+	}
+}());
+
+%>

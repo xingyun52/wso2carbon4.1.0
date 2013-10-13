@@ -1,0 +1,99 @@
+Prerequisites
+
+Running Storage Server or local cassandra server along with maven build tool
+Application Server to host the web application
+
+Introduction
+
+Electronic Medical Records(EMR) sample application is a prototype version of electronic medical report application.
+This sample application uses cassandra database back end for storing and retrieving data which allow to handle
+large amount of data while providing quality service for the user.Application is trying to demonstrate the main
+features of a electronic medical system along with the functions provide by the Cassandra database API.
+
+
+Application setup
+
+This application can be deploy in WSO2 Application Server. Application uses "j_security_check" tomcat user authentication
+ mechanism to grant access into system. Currently application only have two roles name as "admin" and "everyone" which
+ are default roles in Application Server. For further development application can be have many roles with granting
+ access to according to user roles.
+
+
+
+Setting up the application for deployment
+
+
+Application need to have a database for data storage. User can simple take the binary distribution of cassandra database
+from Apache website configure it as follow. If user plan to use external database,user can be simply edit the constant
+values in Constant.java which is located in the "css/webapps/emr-sample/modules/core/src/main/java/org/wso2/rnd/nosql" folder
+to fit with external cassandra database.
+
+Application default configurations
+
+CLUSTER_HOST = "127.0.0.1:9160"
+CLUSTER_NAME = "ClusterOne"
+USER_NAME="admin"
+PASSWORD="admin"
+KEYSPACE="emr"
+
+User can change the values of this class in order to connect to different clusters.After editing the configuration in the Constant.java file.User need to build the
+project.
+
+Build the project with Maven build too using following command
+
+	mvn clean install
+
+Then host the web application in Application Server using the "war" file located in the emr-samples/modules/war/target folder.
+
+User can authenticate to the web application using the  cardinals of application server users from logging interface provide in the web application.
+
+
+
+Configuration cassandra database server
+
+1).Install cassandra  or use storage server to provide backend cassandra database service
+
+2).User need to create keyspaces,column families and columns.For creating the them,user need to create the specified keyspaces,column families and columns by using cassandra-cql interface or from the interface provide in the Storage Server under properties specified in following queries.
+   Below describe the creating required database by connecting through cassandra-cli.Cassandra-cli is a interface provide for execute queries like mysql.
+   For cassandra-cli executable file can be find in the bin directory of cassandra distribution.Example below describe the way to connect to the remote cassandra server.
+
+   Go to the directory which cassandra-cli located.And execute
+
+   ./cassandra-cli -h host -p port -u username -pw password
+
+   Eg.
+
+   ./cassandra-cli -h localhost -p 9160 -u admin -pw admin
+
+3).Create  keyspace name as
+
+ create keyspace emr;
+
+4).Authenticate to the created keyspace by executing this command
+
+ use emr;
+
+5).Create column families as follows by executing following queries in CLI.
+
+create column family User  with comparator = UTF8Type;
+create column family UserRecord  with comparator = UTF8Type;
+create column family Blob  with comparator = UTF8Type;
+create column family RecordBlob  with comparator = UTF8Type;
+create column family Record  with comparator = UTF8Type;
+
+6).Set Index Type: KEYS in UserRecord and RecordBlob as follows by executing following queries in CLI.
+
+update column family UserRecord   with
+    	column_metadata =
+    	[
+    	{column_name: UserID, validation_class: UTF8Type, index_type: KEYS},
+    	];
+
+update column family RecordBlob with
+    	column_metadata =
+    	[
+    	{column_name: RecordId, validation_class: UTF8Type, index_type: KEYS},
+    	];
+Done!
+
+Then access the web application and try it the functions in the sample.

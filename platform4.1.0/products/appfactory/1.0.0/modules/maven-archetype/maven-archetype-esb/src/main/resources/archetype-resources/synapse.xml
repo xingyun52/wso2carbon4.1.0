@@ -1,0 +1,12 @@
+<definitions xmlns="http://ws.apache.org/ns/synapse">
+    <proxy name="${artifactId}">
+        <target>
+            <endpoint>
+                <address uri="http://endpoint"/>
+            </endpoint>
+            <outSequence>
+                <send/>
+            </outSequence>
+        </target>
+    </proxy>
+</definitions>

@@ -1,0 +1,105 @@
+<% jagg.template("datasource/add", function(inputs, outputs, jagg) { %>
+
+<script type="text/javascript">
+    function createDatasource()
+    {
+
+		var stages = $("[name='stage']");
+		
+		for (var i = 0; i < stages.length; i++) {
+		    var varStage = stages[i].value;
+            var varUrl = $("#url" + varStage).attr('value');
+            var varDriverName = $("#driverClass" + varStage).attr('value');
+            var varDbUsername = $("#username" + varStage).attr('value');
+            var varDbPassword = $("#password" + varStage).attr('value');
+
+	        jagg.post("../blocks/datasource/add/ajax/add.jag", { 
+		    		action:"createDatasource",
+		    		applicationKey:$("#applicationKey").attr('value'),
+		    		datasourceName:$("#datasourceName").attr('value'),
+		    		datasourceDescription:$("#datasourceDescription").attr('value'),
+		    		stage:varStage,
+		    		url:varUrl,
+		    		driverName:varDriverName,
+		    		dbUsername:varDbUsername,
+		    		dbPassword:varDbPassword
+		      },
+		       function (result) {
+		      	  if(result != undefined){
+			     if(result != "true") {
+                                 jagg.message({content:'Datasource has been created',type:'info' });
+                             } else {
+                                jagg.message({content:'Error occurred while creating datasource: Datasource already exsist',type:'error' });
+                            }
+                       
+	              }
+		      },
+		      function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while creating datasource',type:'error' });
+		    });
+		}
+    }
+</script>
+
+<form method='post' class='well'>
+	<table class="table table-bordered table-striped"  id="datasourceInputTbl">
+		<thead>
+		    <tr>
+		        <th colspan="2">Please enter the following information.</th>
+		    </tr>
+	    </thead>
+	    <tr>
+	        <td>Datasource  Name:</td>
+	        <td class="formRow"><input type='text' id='datasourceName' size='50'/></td>
+	    </tr>
+	    <tr>
+	        <td>DataSource Description:</td>
+			<td><textarea id='datasourceDescription' rows=5 cols=50></textarea></td>
+	    </tr>
+	    <input type="hidden" id='applicationKey' value='<%=request.getParameter("applicationKey")%>' />
+		<%
+ 			var stages = getProperties('ApplicationDeployment.DeploymentStage');
+ 	 	    for(var i=0; i<stages.length;i++){
+     			var stage = stages[i];
+	    %>
+	            <table class="table table-bordered table-stripe">
+	            	<thead>
+	                	<tr>
+	                    	<th colspan="2">Create datasource for <%=stage%>.</th>
+	                    </tr>
+	                </thead>
+	                <tr>
+	                	<td>Database URL:</td>
+	                    <td class="formRow"><input type='text' id='<%="url" + stage%>' size='50'/></td>
+	                </tr>
+	 				<tr>
+	                	<td>Database Driver:</td>
+	                    <td class="formRow"><input type='text' id='<%="driverClass"+stage%>' size='50'/></td>
+	                </tr>
+	 				<tr>
+	                	<td>Username:</td>
+	                    <td class="formRow"><input type='text' id='<%="username"+stage%>' size='50'/></td>
+	                </tr>
+	  				<tr>
+	                	<td>Password:</td>
+	                	<td class="formRow"><input type='password' id='<%="password"+stage%>' size='50'/></td>
+	                </tr>
+	                <input type="hidden" name='stage' value='<%=stage%>'/>
+	            </table>
+         <%
+             }
+         %>
+	
+	
+	</table>
+	<table class="styledLeft">
+	    <tr>
+	    	<td class="buttonRow">
+	            <input type='button' name='Submit' value='Submit' onclick="createDatasource();" class='btn btn-primary'/>
+	            <input type="button" onclick="location.href='index.jag?'" value='Cancel' class='btn btn-primary'/>
+	        </td>
+	    </tr>
+	</table>
+</form>
+        
+<% }); %>

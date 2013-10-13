@@ -1,0 +1,5 @@
+<% jagg.template("user/list", function(inputs, outputs, jagg) { %>
+ 
+
+        
+<% }); %>

@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-patch-releases</artifactId>
+        <version>4.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>platform-patch-releases-components</artifactId>
+    <packaging>pom</packaging>
+    <version>4.1.1</version>
+    <name>WSO2 Carbon - Patch releases - components - Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+    <modules>
+        <!--App Factory -->
+	<module>../../../components/hostobjects/org.wso2.carbon.hostobjects.sso/1.0.1</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.core/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.hostobjects/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.user.registration/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.userstore/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.application.mgt/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.common/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.login.ui/1.0.2</module>
+        <!-- module>../../../components/appfac/org.wso2.carbon.appfactory.tenant.roles/1.0.2</module -->
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.events.notification/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.repository/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.build/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.utilities/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.apimanager.integration/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.issuetracking/1.0.2</module>
+        <module>../../../components/appfac/org.wso2.carbon.appfactory.registry.handler/1.0.2</module>
+        <module>../../../components/registry/org.wso2.carbon.registry.commentstream/1.0.0</module>
+        <!--/App Factory-->
+        <!--bpel-->
+        <module>../../../components/business-processes/attachment-mgt/org.wso2.carbon.attachment.mgt/4.1.1</module>
+        <module>../../../components/business-processes/attachment-mgt/org.wso2.carbon.attachment.mgt.ui/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel.b4p/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel.bam.publisher/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel.cluster.notifier/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel.deployer/4.1.1</module>
+        <module>../../../components/business-processes/bpel/org.wso2.carbon.bpel.ui/4.1.1</module>
+        <module>../../../components/business-processes/common/4.1.1</module>
+        <module>../../../components/business-processes/humantask/org.wso2.carbon.humantask/4.1.1</module>
+        <module>../../../components/business-processes/humantask/org.wso2.carbon.humantask.cleanup.scheduler/4.1.1</module>
+        <module>../../../components/business-processes/humantask/org.wso2.carbon.humantask.deployer/4.1.1</module>
+        <module>../../../components/business-processes/humantask/org.wso2.carbon.humantask.ui/4.1.1</module>
+        <!--/bpel-->
+                
+        <!--Stratos 2-->
+        <module>../../../components/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer/4.1.1</module>
+        <module>../../../components/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer.git/4.1.1</module>
+
+        <module>../../../components/stratos/cartridge-agent/org.wso2.carbon.cartridge.messages/2.1.1</module>
+        <module>../../../components/stratos/cartridge-agent/org.wso2.carbon.cartridge.agent/2.1.1</module>
+
+	<module>../../../components/stratos/org.wso2.carbon.stratos.cloud.controller/2.1.1</module>
+
+        <module>../../../components/stratos/artifact-deployment-coordinator/org.wso2.carbon.adc.mgt/2.1.1</module>
+        <module>../../../components/stratos/artifact-deployment-coordinator/org.wso2.carbon.adc.topology.mgt/2.1.1</module>
+
+        <module>../../../components/stratos/org.wso2.carbon.cartridge.mgt.ui/2.1.1</module>
+        <!--Stratos 2-->
+     
+        <!--ELB -->
+         <module>../../../components/load-balancer/autoscaler/org.wso2.carbon.mediator.autoscale/4.1.1</module>
+         <module>../../../components/load-balancer/lb-endpoint/org.wso2.carbon.lb.endpoint/4.1.1</module>
+        <!--ELB -->
+
+	<!-- API Manager Components - Start -->
+	<module>../../../components/apimgt/org.wso2.carbon.apimgt.api/1.1.1</module>
+	<module>../../../components/apimgt/org.wso2.carbon.apimgt.impl/1.1.1</module>
+        <module>../../../components/apimgt/org.wso2.carbon.apimgt.gateway/1.1.1</module>
+        <module>../../../components/apimgt/org.wso2.carbon.apimgt.keymgt/1.1.1</module>
+        <module>../../../components/apimgt/org.wso2.carbon.apimgt.keymgt.client/1.1.1</module>
+        <module>../../../components/apimgt/org.wso2.carbon.apimgt.hostobjects/1.1.1</module>
+        <module>../../../components/apimgt/org.wso2.carbon.apimgt.usage/org.wso2.carbon.apimgt.usage.publisher/1.1.1</module>	
+	<module>../../../components/apimgt/org.wso2.carbon.apimgt.usage/org.wso2.carbon.apimgt.usage.client/1.1.1</module>
+	<!-- API Manager Components - End -->
+    </modules>
+</project>

@@ -1,0 +1,62 @@
+
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+
+var log= new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "getDatabaseUsers") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+          try {
+           result =  mod.getDatabaseUsers(applicationKey);
+           print(result);
+        } catch(e) {
+            throw "Error while reading the database users";
+        }
+    }else if (action == "getAvailableUsersToAttachToDatabase") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+            var databaseName = request.getParameter("databaseName");
+            var databaseServerInstanceName = request.getParameter("dbServerInstanceName");
+          try {
+           result =mod.getAvailableUsersToAttachToDatabase(applicationKey,databaseName,databaseServerInstanceName);
+           print(result);
+        } catch(e) {
+            throw "Error while deleting the database";
+        }
+    }else if (action == "deleteUser") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+            var name = request.getParameter("name");
+            var rssInstanceName = request.getParameter("rssInstanceName");
+          try {
+           mod.deleteUser(applicationKey, name, rssInstanceName); 
+           
+        } catch(e) {
+            throw "Error while deleting the database";
+        }
+    }else if (action == "createDatabaseUser") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+            var password = request.getParameter("password");
+            var rssInstance = request.getParameter("rssInstance");
+            var username = request.getParameter("username");
+          try {
+           mod.createDatabaseUser(applicationKey, password, rssInstance, username);
+
+        } catch(e) {
+            throw "Error while creating the database";
+        }
+    }  else {
+        throw new Error("No action specified");
+    }
+}());
+%>
+

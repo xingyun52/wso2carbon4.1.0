@@ -1,0 +1,8 @@
+<%
+jagg.initializer("administration/user/list", {
+
+    preInitialize:function () {
+
+    }
+});
+%>

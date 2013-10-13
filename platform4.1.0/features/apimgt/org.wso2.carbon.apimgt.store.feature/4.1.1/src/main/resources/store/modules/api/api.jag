@@ -1,0 +1,45 @@
+<%
+var getAPIDescription = function (api, username) {
+    var log = new Log(),
+            store = jagg.module("manager").getAPIStoreObj();
+
+    try {
+        api = store.getAPI(api.provider, api.name, api.version, username);
+        if (log.isDebugEnabled()) {
+            log.debug("getAPI : " + stringify(api));
+        }
+        api = api[0];
+        return {
+            error:false,
+            api:{
+                name:api.name,
+                provider:api.provider,
+                version:api.version,
+                updatedTime:api.updatedDate,
+                description:api.description,
+                rating:api.rates,
+                subscribed:api.subscribed,
+                thumbURL:api.thumbnailurl,
+                tierName:api.tierName,
+                tierDescription:api.tierDescription,
+                context:api.context,
+                serverURL:api.serverURL,
+                status:api.status,
+                bizOwner:api.bizOwner,
+                bizOwnerMail:api.bizOwnerMail,
+                techOwner:api.techOwner,
+                techOwnerMail:api.techOwnerMail,
+                wsdl:api.wsdl,
+                wadl:api.wadl,
+                userRate:api.userRate
+            }
+        };
+    } catch (e) {
+        log.error(e.message);
+        return {
+            error:e,
+            api:null
+        };
+    }
+};
+%>

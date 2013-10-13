@@ -1,0 +1,169 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+ 	var log = new Log();
+ 
+    if (action == "deployToStage") {
+    	mod = jagg.module("lifecycle");
+    	
+    	var applicationKey = request.getParameter("applicationKey");
+    	var revision = request.getParameter("revision");
+    	var version = request.getParameter("version");
+    	var stageName = request.getParameter("stageName");
+    	var build = request.getParameter("build");
+    	
+        return mod.invokeDeployToStage(applicationKey,revision,version,stageName,build);
+    } else if(action == "directdeploy") {
+    	mod = jagg.module("lifecycle");
+    	
+    	var applicationKey = request.getParameter("applicationKey");
+        var stageName = request.getParameter("stageName");
+        var version = request.getParameter("version");
+        var build = request.getParameter("build");
+        var revision = "HEAD";
+        var isDirectlyDeploy = getProperty('ApplicationDeployment.DeploymentStage.' + stageName + '.AllowDirectDeploy');
+
+	    if (isDirectlyDeploy == "true"){
+	        try{
+	            mod.invokeDeployToStage(applicationKey,revision,version,stageName,build);
+			} catch(e) {
+		    	throw new Error(e.message);
+			}
+	    } else {
+			log.info("Artifact is not configured for direct deploy");
+	    }
+	    
+    } else if(action == "Promote" || action == "Demote" || action == "Retire") {
+		mod = jagg.module("lifecycle");
+		
+    	var applicationKey = request.getParameter("applicationKey");
+    	var stageName = request.getParameter("stageName");
+    	var version = request.getParameter("version");
+		var tagName = request.getParameter("tagName");
+		var comment = request.getParameter("comment");
+
+	    var revision = '0';
+	    var build = 'true';
+	    var path = '/_system/governance' + '/repository/applications/' + applicationKey + '/' + stageName + '/' + version + APP_VERSION;
+	    var aspect = LIFE_CYCLE_NAME;
+		var promoteDepPolicy = getProperty('ApplicationDeployment.DeploymentStage.'+stageName+'.Promote.DeploymentPolicy');
+        var deployAction;
+        if(promoteDepPolicy == "Tagged" || promoteDepPolicy == "Latest") {
+            deployAction = "promote";
+        } else if (promoteDepPolicy == "Promoted") {
+            deployAction = "rePromote";
+        }
+        
+        permissionMod = jagg.module("permission");
+        var user = permissionMod.checkUserAuthenticated();
+        
+        var parameters = new Array();
+        parameters[0] = 'version';
+        parameters[1] = version;
+        parameters[2] = 'applicationId';
+        parameters[3] = applicationKey;
+        parameters[4] = 'revision';
+        parameters[5] = 'HEAD';
+        parameters[6] = 'stage';
+        parameters[7] = stageName;
+        parameters[8] = 'build';
+        parameters[9] = 'true';
+        parameters[10] = 'autodeployment';
+        parameters[11] = 'false';
+        parameters[12] = 'action';
+        parameters[13] = action;
+        parameters[14] = 'user';
+        parameters[15] = user;
+        if(comment){
+        	parameters[16] = 'comment';
+        	parameters[17] = comment;
+        }
+	    
+	    try {
+	        var lifeCycleCheckListItems = parse(request.getParameter("checkItems"));
+	        var deployedArtifact = mod.invokeGovernanceProcess(action, stageName, applicationKey, revision, version,
+	        build, path, aspect, deployAction, lifeCycleCheckListItems, parameters, tagName);
+
+	        log.debug(applicationKey + " was successfully invoked " + action + " action");
+	    } catch (e) {
+	    	throw new Error(e.message);
+	    }
+	} else if(action == "invokeDoVersion") {
+    	mod = jagg.module("lifecycle");
+    	
+    	var applicationKey = request.getParameter("applicationKey");
+        var srcVersion = request.getParameter("srcVersion");
+        var targetVersion = request.getParameter("targetVersion");
+        srcVersion = srcVersion.substring(srcVersion.indexOf("/") + 1);
+	    
+	    try {
+	        return mod.invokeDoVersion(applicationKey, srcVersion, targetVersion);
+	    } catch (e) {
+	    	log.info(e.message);
+		    throw e.message;
+	    }
+    } else if (action == "createArtifact") {
+        mod = jagg.module("lifecycle");
+        var applicationKey = request.getParameter("applicationKey");
+        var version = request.getParameter("version");
+        var revision = request.getParameter("revision");
+        var stage = request.getParameter("stage");
+        var doDeploy = request.getParameter("doDeploy");
+        var tagName = request.getParameter("tagName");
+        try {
+            return mod.invokeCreateArtifact(applicationKey, version, revision, stage, doDeploy, tagName);
+        } catch (e) {
+            log.error(e.message);
+        }
+    } else if ( action == "invokeUpdateLifeCycleCheckList"){
+        mod = jagg.module("lifecycle");
+        var applicationKey = request.getParameter("applicationKey");
+        var stageName = request.getParameter("stageName");
+        var version = request.getParameter("version");
+        var path = '/_system/governance' + '/repository/applications/' + applicationKey + '/' + stageName + '/' + version + APP_VERSION;
+        var aspect = LIFE_CYCLE_NAME;
+        
+        try {
+            var checkListItemsValues = parse(request.getParameter("checkItems"));
+            var parameters = new Array();
+            var deployedArtifact = mod.invokeAspectWithParameter(path, aspect, "itemClick", checkListItemsValues, parameters,stageName);
+        } catch (e) {
+            throw new Error(e.message);
+        }
+        
+    } else if (action == "getAppVersionsInStagesWithLifeCycleInfo"){
+       mod = jagg.module("lifecycle");
+       var applicationKey = request.getParameter("applicationKey");
+       var userName = request.getParameter("userName");
+       try{
+          print(mod.getAppVersionsInStagesWithLifeCycleInfo(applicationKey,userName));
+       }catch(e){
+          log.error(e.message);
+       }
+
+    }else if ( action == "getLifecycleAction"){
+        mod = jagg.module("lifecycle");
+        var applicationKey = request.getParameter("applicationKey");
+        var stageName = request.getParameter("stageName");
+        var version = request.getParameter("version");
+        var path = '/_system/governance' + '/repository/applications/' + applicationKey + '/' + stageName + '/' + version + APP_VERSION;
+
+        try {
+            var deployedArtifact = mod.getLifecycleAction(path);
+            print(deployedArtifact);
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+    }else {
+		log.info("No action specified");
+	}
+}());
+
+%>

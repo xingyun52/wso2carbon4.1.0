@@ -1,0 +1,23 @@
+Prerequisites
+
+Running Storage Server or local cassandra server along with maven build tool
+
+Cassandra Thrift Client
+========================
+Cassandra Thirft client connects with Storage Server using thrift. This client create column family in a Keyspace with
+given names and access records.
+
+How to build the sample.
+
+ mvn clean assembly:assembly
+
+How to execute the sample.
+
+java -jar -Dhost=localhost -Dport=9160 -Dkeyspace=ksone -Dcf=cfone -Dusername=admin -Dpassword=admin target/ThriftClient-1.0-jar-with-dependencies.jar
+
+
+Output:
+
+ColumnOrSuperColumn(column:Column(name:80 01 00 02 00 00 00 03 67 65 74 00 00 00 06 0C 00 00 0C 00 01 0B 00 01 00 00 00 04 6E 61 6D 65, value:80 01 00 02 00 00 00 03 67 65 74 00 00 00 06 0C 00 00 0C 00 01 0B 00 01 00 00 00 04 6E 61 6D 65 0B 00 02 00 00 00 0E 43 68 72 69 73 20 47 6F 66 66 69 6E 65 74, timestamp:1357301457040))
+age -> 24
+name -> Chris Goffinet

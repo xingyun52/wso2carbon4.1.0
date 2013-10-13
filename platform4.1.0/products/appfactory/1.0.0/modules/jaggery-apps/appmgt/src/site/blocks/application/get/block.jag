@@ -1,0 +1,21 @@
+<%
+jagg.block("application/get", {
+    initialize:function (data) {
+
+    },
+    getInputs:function () {
+        return {
+            "applicationKey":null
+        }
+    },
+
+    getOutputs:function (inputs) {        
+       var hasRepoReadWritePermission = jagg.module("permission").isUserAccessGranted(inputs.applicationKey, PERMISSION_REPOSITORY_READ_WRITE);
+       return {
+            "hasRepoReadWritePermission":hasRepoReadWritePermission
+       };
+    }
+
+
+});
+%>

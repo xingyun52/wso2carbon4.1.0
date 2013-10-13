@@ -1,0 +1,386 @@
+<% jagg.template("administration/datasource/list", function(inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+  //  jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION_CONFIGURATION_DB_ADMINISTRATION);
+%>
+
+     <div class="container">
+           <div class="title-section">
+               <div class="row">
+                   <div class="span12">
+                       <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Create DataSources","pos":"titlebar" }); %>
+                   </div>
+
+               </div>
+           </div>
+     </div>
+
+    <!--START  content section-->
+    <div class="container content-container wrapper">
+        <div class="row">
+        
+            <div class="span12 content-section shadow-up tab-content">
+                <div class="content-data">
+                    <div class="container-fluid">
+
+
+
+
+                        <!--Second Data Source-->
+
+                        <div class="row-fluid">
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#useSameDataSource').removeAttr('checked');
+	
+		jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+			action:"getDatabases",
+			applicationKey:$("#applicationKey").attr('value')
+		}, 
+		function (result) {
+	
+			if(result){
+	
+				var parsedArray = jQuery.parseJSON(result);
+	
+				for(var i = 0; i < parsedArray.length; i++) {
+					var url = parsedArray[i].url;
+					var name = parsedArray[i].name;
+					var rssInstanceName = parsedArray[i].rssInstanceName;
+	
+					var row = '<option databasename="' + name + '"rssinstancename="' + rssInstanceName + '" value="' + url + '">'+url+'</option>';
+					$("#urlselect").append(row);
+					if(i == 0){
+						dbUrlSelected(name, rssInstanceName, url);
+					}
+				}
+				var customrow='<option value="Custom">Custom Database</option>';
+				$("#urlselect").append(customrow);
+			}
+		},
+		function (jqXHR, textStatus, errorThrown) {
+			dbCustomUrlSelected();
+			jagg.message({content:'Error loading Databases',type:'error' });
+		});
+	});
+	
+    function setPageStatus(){
+        if($('#useSameDataSource').attr('checked') == "checked"){
+            $('.dataSource-section').hide();
+            $($('.dataSource-section')[0]).show();
+        }else{
+            $('.dataSource-section').hide();
+            $($('.dataSource-section')[0]).show();
+        }
+    }
+    function createDatasource()
+    {
+		var stagesValue =  $("[name='stages']").val();
+		var stages = jQuery.parseJSON(stagesValue);
+		for (var i=0;i<stages.length;i++) {
+		    var varStage = stages[i];
+            var varUrl = $("#url").attr('value');
+            var varDriverName = $("#driverClass").attr('value');
+            var varDbUsername = $("#username").attr('value');
+            var varDbPassword = $("#password").attr('value');
+
+	        jagg.syncPost("../blocks/datasource/add/ajax/add.jag", {
+		    		action:"createDatasource",
+		    		applicationKey:$("#applicationKey").attr('value'),
+		    		datasourceName:$("#datasourceName").attr('value'),
+		    		datasourceDescription:$("#datasourceDescription").attr('value'),
+		    		stage:varStage,
+		    		url:varUrl,
+		    		driverName:varDriverName,
+		    		dbUsername:varDbUsername,
+		    		dbPassword:varDbPassword
+		      },
+		      function (result) {
+		    	  if(result) {
+		    		  location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>';
+		    	  } else {
+		    		  jagg.message({content:'Error occurred while creating datasource: Datasource already exsist',type:'error' });
+		    	  }
+                       
+
+		      },
+		      function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while creating datasource',type:'error' });
+		    });
+		}
+    }
+    
+    function dbCustomUrlSelected() {
+    	$("#url").show();
+    	$("#username").show();
+    	$("#usernameselect").hide();
+    	$("#no_users_error").hide();
+    	$("#url").val("");
+    	$("#username").val("");
+    }
+    
+    function dbUrlSelected(databasename, rssinstancename, url) {
+    	$("#url").hide();
+    	$("#username").hide();
+    	$("#usernameselect").show();
+    	$("#url").val(url);
+
+    	jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+    		action:"getAttachedUsers",
+    		applicationKey:$("#applicationKey").attr('value'),
+    		dbname:databasename,
+    		rssInstance:rssinstancename
+    	}, 
+    	function (result) {            	
+    		if(result != undefined){        	
+    			var parsedArray = jQuery.parseJSON(result);
+    			$("#usernameselect").empty();
+    			$("#username").val("");
+    			var i = 0;        
+    			for(i = 0; i < parsedArray.length; i++) {
+    				var name = parsedArray[i].name;
+
+    				var row='<option value="' + name + '">'+name+'</option>';
+    				$("#usernameselect").append(row);
+    				if(i == 0){
+    					userSelected(name);
+    				}
+    			}
+    			if(i == 0) {
+    				$("#no_users_error").show();
+    			} else {
+    				$("#no_users_error").hide();
+    			}
+    		}
+    	},
+    	function (jqXHR, textStatus, errorThrown) {
+    		jagg.message({content:'Error loading Users',type:'error' });
+    	});
+
+    }
+    
+    function userSelected(value) {
+    	$("#username").val(value);
+    }
+    
+    function validateForm(){
+    	var validation = false;
+    	
+    	var username = $("#datasourceName").val();
+    	if(username == ""){
+    		$("#datasourcename_empty_warning").show();
+    	} else{
+    		validation = true;
+    		$("#datasourcename_empty_warning").hide();
+    	}
+    	
+    	var username = $("#url").val();
+    	if(username == ""){
+    		validation = false;
+    		$("#databaseurl_empty_warning").show();
+    	} else{
+    		$("#databaseurl_empty_warning").hide();
+    	}
+    	
+    	var username = $("#username").val();
+    	if(username == ""){
+    		validation = false;
+    		$("#username_empty_warning").show();
+    	} else{
+    		$("#username_empty_warning").hide();
+    	}
+    	
+    	var password = $("#password").val();
+    	if(password == ""){
+    		validation = false;
+    		$("#password_empty_warning").show();
+    	} else{
+    		$("#password_empty_warning").hide();
+    	}
+    	
+    	return validation;
+    }
+    
+</script>
+
+<form method='post' class="form-horizontal">
+
+    <div class="row-fluid">
+        <div class="span3">
+            <h4>Basic Info</h4>
+            <div class=""></div>
+        </div>
+        <div class="span9">
+            <div class="control-group">
+                <label class="control-label" for="datasourceName">Datasource Name<span class="requiredAstrix">*</span></label>
+
+                <div class="controls">
+                    <input type="text" id='datasourceName' onKeyUp="validateForm();" />
+                    <div class="help-block">
+                    	Use the name given here to connect databases to your applications.<br />
+                    </div>
+                    <div>
+                    	<label id="datasourcename_empty_warning" style="display: none;"><font color='red'>Data Source name cannot be empty</font></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="datasourceDescription">DataSource Description</label>
+
+                <div class="controls">
+                    <textarea id='datasourceDescription' rows=5 cols=50></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="dataSource-section">
+        <div class="row-fluid"><hr /></div>
+
+        <div class="row-fluid">
+            <div class="span3">
+                <h4>Data Source</h4>
+                <div class=""></div>
+            </div>
+            <div class="span9">
+	            <div class="control-group">
+		            <label class="control-label">Database URL<span class="requiredAstrix">*</span></label>
+		
+		            <div class="controls">
+			            <div>
+				            <select id="urlselect" onchange="if(this.value == 'Custom'){dbCustomUrlSelected();}else{dbUrlSelected((this.options.item(this.selectedIndex).getAttribute('databasename')),(this.options.item(this.selectedIndex).getAttribute('rssinstancename')),this.value);}">
+				            </select>
+				            </div>
+			            <div style="margin-top:10px;"><input type="text" id='url' class="span12" style="display:none;" onKeyUp="validateForm();"/></div>
+			            <div>
+			            	<label id="databaseurl_empty_warning" style="display: none;"><font color='red'>Database url cannot be empty</font></label>
+			            </div>
+		            </div>
+	            </div>
+
+
+                <div class="control-group">
+                    <label class="control-label">Database Driver<span class="requiredAstrix">*</span></label>
+
+                    <div class="controls">
+                        <select id="driverClass">
+                              <option value="com.mysql.jdbc.Driver">mySql</option>
+                              <option value="org.h2.Driver">H2</option>
+                          </select>
+                    </div>
+                </div>
+
+
+                <div class="control-group">
+	                <label class="control-label">Username<span class="requiredAstrix">*</span></label>
+	
+	                <div class="controls">
+		                <div>
+			                <select id="usernameselect" onchange="userSelected(this.value)">
+			                </select>
+			                <div><label id="no_users_error" generated="true" class="error" style="display:none;">There are no attached users for the selected Database. Please attach users to the Database.</label></div>
+		                </div>			            
+		                <div><input type="text" id="username" style="display:none;" onKeyUp="validateForm();"/></div>
+		                <div>
+		                	<label id="username_empty_warning" style="display: none;"><font color='red'>Username cannot be empty</font></label>
+		                </div>
+	                </div>
+                </div>
+
+
+                <div class="control-group">
+                    <label class="control-label" >Password<span class="requiredAstrix">*</span></label>
+
+                    <div class="controls">
+                        <input type="password" id="password" onKeyUp="validateForm();"/>
+                    </div>
+                    <div  class="controls">
+                    	<label id="password_empty_warning" style="display: none;"><font color='red'>Password cannot be empty</font></label>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id='applicationKey' value='<%=request.getParameter("applicationKey")%>' />
+    <input type="hidden" name="stages" id='stages' value='<%=outputs.deploymentStages%>' />
+
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class=""></div>
+        </div>
+        <div class="span9">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type='button' name='Submit' value='Save' onclick="if(validateForm()){createDatasource();}"
+                           class='btn btn-primary'/>
+                    <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+    %>'" value='Cancel' class='btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="push"></div>
+    </div>
+    <div class="clearfix"></div>
+        
+<% }); %>

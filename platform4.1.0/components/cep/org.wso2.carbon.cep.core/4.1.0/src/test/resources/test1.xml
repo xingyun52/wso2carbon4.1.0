@@ -1,0 +1,45 @@
+<cep:bucket xmlns:cep="http://wso2.org/carbon/cep" name="TwitterAndStockQuoteAnalyzer">
+    <cep:description>This bucket analyzes stock quotes and Twitter feeds on the word count and
+        trigger an event if the last traded amount vary by 2 percent with regards to the average
+        traded price within past 2 minutes and the word count with related to that symbol is greater
+        than 10.
+    </cep:description>
+    <cep:engineProviderConfiguration engineProvider="SiddhiCEPRuntime">
+        <cep:property name="siddhi.persistence.snapshot.time.interval.minutes">0</cep:property>
+        <cep:property name="siddhi.enable.distributed.processing">false</cep:property>
+    </cep:engineProviderConfiguration>
+    <cep:input topic="AllStockQuotes" brokerName="activemqJmsBroker">
+        <cep:mapMapping stream="allStockQuotes" queryEventType="Tuple">
+            <cep:property name="symbol" inputName="symbol" type="java.lang.String"/>
+            <cep:property name="price" inputName="price" type="java.lang.Double"/>
+        </cep:mapMapping>
+    </cep:input>
+    <cep:input topic="TwitterFeed" brokerName="activemqJmsBroker">
+        <cep:mapMapping stream="twitterFeed" queryEventType="Tuple">
+            <cep:property name="company" inputName="company" type="java.lang.String"/>
+            <cep:property name="wordCount" inputName="wordCount" type="java.lang.Integer"/>
+        </cep:mapMapping>
+    </cep:input>
+    <cep:query name="FastStockQuery">
+        <cep:expression>
+            <![CDATA[            from allStockQuotes#window.time(60000)            insert into fastMovingStockQuotes            symbol,price, avg(price) as averagePrice            group by symbol            having ((price > averagePrice*1.02) or (averagePrice*0.98 > price ))        ]]></cep:expression>
+    </cep:query>
+    <cep:query name="StocksPredictor">
+        <cep:expression>
+            <![CDATA[            from fastMovingStockQuotes#window.time(60000) as fastMovingStockQuotes join            highFrequentTweets#window.time(60000) as highFrequentTweets            on fastMovingStockQuotes.symbol == highFrequentTweets.company            insert into predictedStockQuotes            fastMovingStockQuotes.symbol as company, fastMovingStockQuotes.averagePrice as amount,            highFrequentTweets.words as words        ]]></cep:expression>
+        <cep:output topic="PredictedStockQuotes" brokerName="localBroker">
+            <cep:xmlMapping>
+                <![CDATA[
+                     <quotedata:StockQuoteDataEvent xmlns:quotedata="http://ws.cdyne.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <quotedata:StockSymbol>{company}</quotedata:StockSymbol>
+                        <quotedata:Amount>{amount}</quotedata:Amount>
+                        <quotedata:WordCount>{words}</quotedata:WordCount>
+                     </quotedata:StockQuoteDataEvent>            ]]>
+            </cep:xmlMapping>
+        </cep:output>
+    </cep:query>
+    <cep:query name="HighFrequentTweetQuery">
+        <cep:expression>
+            <![CDATA[            from twitterFeed#window.time(60000)            insert into highFrequentTweets            company as company, sum(wordCount) as words            group by company            having (words > 10)        ]]></cep:expression>
+    </cep:query>
+</cep:bucket>

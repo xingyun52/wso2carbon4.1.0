@@ -1,0 +1,48 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "createResource") {
+    	mod = jagg.module("resources");
+    	var applicationKey = request.getParameter("applicationKey");
+    	var resourceName = request.getParameter("resourceName");
+    	var resourceDescription = request.getParameter("resourceDescription");
+    	//var stage = request.getParameter("stage");
+    	 var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+    	var contentValue = request.getParameter("contentValue");
+
+        try {
+         for (var i = 0; i < deploymentStages.length; i++) {
+            result = mod.createResource(applicationKey,deploymentStages[i],resourceName,resourceDescription,contentValue);
+                }
+        } catch(e) {
+            throw "Error while creating an resources";
+        }
+    } else if (action == "updateResource") {
+        mod = jagg.module("resources");
+        var applicationKey = request.getParameter("applicationKey");
+        var resourceName = request.getParameter("resourceName");
+        var resourceDescription = request.getParameter("resourceDescription");
+        var stage = request.getParameter("stage");
+        var contentValue = request.getParameter("contentValue");
+
+
+        try {
+
+            result = mod.updateResource(applicationKey,stage,resourceName,resourceDescription,contentValue);
+
+
+        } catch(e) {
+            throw "Error while updating an resources";
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

@@ -1,0 +1,34 @@
+<%
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+jagg.block("datasource/get", {
+    initialize:function (data) {
+
+    } ,
+
+   getOutputs:function (inputs) {
+       var log = new Log();
+       var applicationKey = request.getParameter("applicationKey");
+       var permissionModule = jagg.module("permission");
+       var datasourceModule = jagg.module("datasource");
+       var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+       var hasDbConfigurePermissions = {};
+       var datasources = {};
+       for (var i = 0; i < deploymentStages.length; i++) {
+           var hasDBPermissionToStage= permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_CONFIGURATION_DB_FOR_STAGE +deploymentStages[i]);
+           hasDbConfigurePermissions[deploymentStages[i]] =  hasDBPermissionToStage;
+           if(hasDBPermissionToStage){
+               datasources[deploymentStages[i]] = datasourceModule.invokeNDataSource(applicationKey,deploymentStages[i]);
+           }
+       }
+        log.info(hasDbConfigurePermissions);
+        log.info(datasources);
+       return {
+           "hasDbConfigurePermissions": hasDbConfigurePermissions,
+           "datasources":datasources
+       };
+   }
+
+});
+%>
+

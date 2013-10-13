@@ -1,0 +1,202 @@
+<% jagg.template("subscription/subscription-list-element", function(inputs, outputs, jagg) { %>
+<% var i=outputs.i, app = outputs.app;
+        var str_i = String(i).replace('.','_');
+        %>
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="template.jag#collapseOne<%=str_i%>">
+                  <i class="icon-application icon"></i><%=app.name%>
+                </a>
+              </div>
+              <div id="collapseOne<%=str_i%>" class="accordion-body collapse <% if(i==0){%> in <% } %>">
+                <div class="accordion-inner">
+                    <!-- Accordion Content START -->
+
+                     <div class="data-content">
+                    <div id="appDetails<%=str_i%>_super" class="super-section">
+                         <div class="container-fluid">
+                             <div class="super-rows row-fluid">
+                                            <div class="span12"><h3><%=i18n.localize("keys")%></h3></div>
+                                 </div>
+                         </div>
+                        <div class="container-fluid keyItems">
+                         <input type="hidden" id="prodOldAccessToken<%=str_i%>" value="<%=app.prodKey%>" >
+                         <input type="hidden" id="sandOldAccessToken<%=str_i%>" value="<%=app.sandboxKey%>" >
+                                        <div class="super-rows row-fluid">
+                                            <div class="span6 key-table">
+                                                <div class="key-table-header"><%=i18n.localize("production")%>  <a <% if(app.prodKey==null){%>style="display:none"<% } %> onclick="toggleKey(this)" class="show-hide-key pull-right"><i class="icon-arrow-down icon-white"></i><%=i18n.localize("showKeys")%> </a> <% if(app.prodKey!=null){%> <div class="pull-right" style="padding:0 5px;"> | </div>
+                                                    <span class="show-hide-key pull-right processing-msg" style="display:none;"><%=i18n.localize("generating")%></span>
+                                                    <a class="show-hide-key pull-right"
+                                                 onclick="regenerate('<%=app.name%>','PRODUCTION',<%=str_i%>,this)" ><i class="icon-refresh"></i>
+                                                <%=i18n.localize("regenerate")%></a>
+                                                    <% } %> </div>
+
+                                                <div class="key-table-content">
+                                                    <div class="info-msg">
+                                                        <% if(app.prodKey!=null){%>
+                                                         <%=i18n.localize("showKeysMsg")%>
+                                                        <% } else { %>
+                                                         <%=i18n.localize("prodKeyMsg")%>
+                                                        <% } %>
+                                                    </div>
+                                                    <table id="prodTable<%=str_i%>" class="table table-bordered table-striped" style="display:none">
+                                                        <tr><th><%=i18n.localize("accessToken")%></th>
+                                                            <th class="accessToken">
+                                                                <% if(app.prodKey != null && app.prodKey.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.prodKey%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.prodKey%>
+                                                                <% } %>
+                                                            </th>
+                                                        </tr>
+                                                        <tr><td><%=i18n.localize("consumerKey")%></td>
+                                                            <td class="consumerKey">
+                                                                <% if(app.prodConsumerKey != null && app.prodConsumerKey.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.prodConsumerKey%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.prodConsumerKey%>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                        <tr><td><%=i18n.localize("consumerSecret")%></td>
+                                                            <td class="consumerSecret">
+                                                                <% if(app.prodConsumerSecret != null && app.prodConsumerSecret.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.prodConsumerSecret%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.prodConsumerSecret%>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <div class="gen-btn-wrapper" <% if(app.prodKey!=null){%>style="display:none"<% } %>>
+                                                        <a  class="app-key-generate-button btn btn-primary"
+                                                       data-application="<%=app.name%>"
+                                                       data-keytype="PRODUCTION"
+                                                       iteration="<%=str_i%>"
+                                                        >
+                                                        <%=i18n.localize("generate")%></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="span6 key-table"> <div class="key-table-header"><%=i18n.localize("sandbox")%>
+                                                <a <% if(app.sandboxKey==null){%>style="display:none"<% } %> onclick="toggleKey(this)" class="show-hide-key pull-right"><i class="icon-arrow-down icon-white"></i>Show Keys </a> <% if(app.sandboxKey!=null){%> <div class="pull-right" style="padding:0 5px;"> | </div>
+                                                <span class="show-hide-key pull-right processing-msg" style="display:none;"><%=i18n.localize("generating")%></span>
+                                                <a class="show-hide-key pull-right"
+                                                 onclick="regenerate('<%=app.name%>','SANDBOX',<%=str_i%>,this)"><i class="icon-refresh"></i>  <%=i18n.localize("regenerate")%></a><% } %> </div>
+
+                                                <div class="key-table-content">
+                                                    <div class="info-msg">
+                                                        <% if(app.sandboxKey!=null){%>
+                                                        <%=i18n.localize("showKeysMsg")%>
+                                                        <% } else { %>
+                                                        <%=i18n.localize("sandboxKeyMsg")%>
+                                                        <% } %>
+                                                    </div>
+                                                    <table id="sandTable<%=str_i%>" class="table table-bordered table-striped" style="display:none">
+                                                        <tr><th><%=i18n.localize("accessToken")%></th>
+                                                            <th class="accessToken">
+                                                                <% if(app.sandboxKey != null && app.sandboxKey.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.sandboxKey%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.sandboxKey%>
+                                                                <% } %>
+                                                            </th>
+                                                        </tr>
+                                                        <tr><td><%=i18n.localize("consumerKey")%></td>
+                                                            <td class="consumerKey">
+                                                                <% if(app.sandboxConsumerKey != null && app.sandboxConsumerKey.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.sandboxConsumerKey%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.sandboxConsumerKey%>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                        <tr><td><%=i18n.localize("consumerSecret")%></td>
+                                                            <td class="consumerSecret">
+                                                                <% if(app.sandboxConsumerSecret != null && app.sandboxConsumerSecret.length > 28){ %>
+                                                                    <textarea class="tokenTextarea"><%=app.sandboxConsumerSecret%></textarea>
+                                                                <% } else { %>
+                                                                    <%=app.sandboxConsumerSecret%>
+                                                                <% } %>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <div class="gen-btn-wrapper" <% if(app.sandboxKey!=null){%>style="display:none"<% } %> >
+                                                        <a class="app-key-generate-button btn btn-primary"
+                                                       data-application="<%=app.name%>"
+                                                       data-keytype="SANDBOX"
+                                                       iteration="<%=str_i%>"
+                                                        >
+                                                        <%=i18n.localize("generate")%></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+
+                            </div><!-- container-fluid -->
+                    </div>
+                    <div  id="appDetails<%=str_i%>" class="api-section">
+                                    <div class="container-fluid">
+                                        <div class="row-fluid">
+                                            <div class="span12"><h3><%=i18n.localize("apis")%></h3></div>
+                                        </div>
+                                    </div>
+									<div class="container-fluid subsApiListing">
+                                        <div class="row-fluid">
+
+                                    <%
+
+                                    var apis = app.subscriptions;
+                                    lenJ = apis.length;
+                                    for(j = 0; j < lenJ; j++) {
+                                        api = apis[j];
+                                        prodKey = api.prodKey;
+                                        clazz = (j%2) == 0 ? "even" : "odd";
+                                        path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + api.name + "&version=" + api.version + "&provider=" + api.provider;
+                                        var apiName = api.name;
+                                        if(api.name.length > 12){
+                                            apiName = api.name.substring(0,10)+ "..";
+                                        }
+                                    %>
+                                        <div class="span4 keyListPadding">
+                                            <div class="thumbnail <% if(api.status == "DEPRECATED" || api.status == "RETIRED" || api.status == "BLOCKED") { %>deprecated<% } %>">
+                                                <div class="deprecatedLabel">
+                                                    <% if(api.status == "DEPRECATED") { %>
+                                                    <span class="label label-warning"><%=i18n.localize("deprecated")%></span>
+                                                    <% } else if(api.status == "RETIRED") { %>
+                                                    <span class="label label-important"><%=i18n.localize("retired")%></span>
+                                                    <% }else if(api.status == "BLOCKED") { %>
+                                                    <span class="label label-important"><%=i18n.localize("blocked")%></span>
+                                                    <% } %>
+                                                </div>
+                                                <div class="container-fluid">
+                                                    <div class="row-fluid">
+                                                        <div class="span4">
+                                                            <a href="<%=path%>" class="thumbnailInsideLink"><img width="70" alt="" src="<% if(api.thumburl) { %><%=api.thumburl%><% } else { %><%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/api-default.png"))%><% }%>"/></a>
+                                                        </div>
+                                                        <div class="span8">
+                                                            <img src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/close.png"))%>" onClick="removeSubscription('<%=api.name%>','<%=api.version%>','<%=api.provider%>','<%=app.id%>',this)" align="right" data-master-id="accordionContent<%=str_i%>" class="closeBtn" />
+                                                            <a href="<%=path%>" class="service-name" title="<%=api.name%>-<%=api.version%>"><%=apiName%> - <%=api.version%></a>
+                                                            <div class="provider-info"><%=api.provider%></div>
+                                                            <div class="tier-info"><%=api.tier%> Subscription</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    </div><!-- End row -->
+                            </div><!-- End container-fluid -->
+                    </div>
+            </div><!-- data-content -->
+
+
+                    <!-- Accordion Content END -->
+                </div>
+              </div>
+
+<% }); %>

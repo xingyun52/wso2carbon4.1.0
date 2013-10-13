@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.wso2.carbon.appfactory.jenkins.AppfactoryPluginManager_-DescriptorImpl>
+  <helpRedirect/>
+  <deployBpelEPR>http://appfactorypreview.wso2.com:9763/services/DeployArtifact</deployBpelEPR>
+  <adminUserName>admin@admin.com</adminUserName>
+  <adminPassword>admin</adminPassword>
+  <clientTrustStore>APPFACTORY_HOME/repository/resources/security/wso2carbon.jks</clientTrustStore>
+  <clientTrustStorePassword>wso2carbon</clientTrustStorePassword>
+  <appfactoryServerURL>https://appfactorypreview.wso2.com:9443</appfactoryServerURL>
+  <storagePath>JENKINS_HOME/storage</storagePath>
+  <tempPath>JENKINS_HOME/temp</tempPath>
+</org.wso2.carbon.appfactory.jenkins.AppfactoryPluginManager_-DescriptorImpl>

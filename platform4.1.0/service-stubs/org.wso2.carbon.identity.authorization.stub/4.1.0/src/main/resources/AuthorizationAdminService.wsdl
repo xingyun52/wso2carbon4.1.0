@@ -1,0 +1,663 @@
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://core.authorization.identity.carbon.wso2.org" xmlns:ax2254="http://dto.core.authorization.identity.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2252="http://core.authorization.identity.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://core.authorization.identity.carbon.wso2.org"> 
+    <wsdl:documentation>AuthorizationAdminService</wsdl:documentation> 
+    <wsdl:types> 
+        <xs:schema xmlns:ax2255="http://dto.core.authorization.identity.carbon.wso2.org/xsd" xmlns:ns="http://org.apache.axis2/xsd" xmlns:ax2253="http://core.authorization.identity.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd"> 
+            <xs:import namespace="http://core.authorization.identity.carbon.wso2.org/xsd"/> 
+            <xs:import namespace="http://dto.core.authorization.identity.carbon.wso2.org/xsd"/> 
+            <xs:element name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="IdentityAuthorizationException" nillable="true" type="ax2252:IdentityAuthorizationException"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="setPermissions"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="permissionDTOs" nillable="true" type="ax2254:PermissionDTO"/> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRootSecondaryNodeNames"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="root" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRootSecondaryNodeNamesResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRootNodeNames"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRootNodeNamesResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRolePermissions"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="roleName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRolePermissionsResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2254:PermissionDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRoleList"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="pageNumber" type="xs:int"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getRoleListResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2254:PaginatedRoleDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getPermissionTreeNode"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="root" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="secondaryRoot" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getPermissionTreeNodeResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2254:PermissionTreeNodeDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getPermissionModules"> 
+                <xs:complexType> 
+                    <xs:sequence/> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getPermissionModulesResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getModuleInfo"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getModuleInfoResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2254:PermissionModuleDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getExplicitUserPermissions"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getExplicitUserPermissionsResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2254:PermissionDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllPermitResourcesOfUser"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="action" nillable="true" type="xs:string"/> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllPermitResourcesOfUserResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="clearUserPermissions"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="permissionDTOs" nillable="true" type="ax2254:PermissionDTO"/> 
+                        <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+        </xs:schema> 
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://core.authorization.identity.carbon.wso2.org/xsd"> 
+            <xs:complexType name="IdentityAuthorizationException"> 
+                <xs:sequence/> 
+            </xs:complexType> 
+        </xs:schema> 
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dto.core.authorization.identity.carbon.wso2.org/xsd"> 
+            <xs:complexType name="PermissionDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="action" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="authorized" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="permissionId" nillable="true" type="xs:string"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="resources" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="subject" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="userPermission" type="xs:boolean"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="PaginatedRoleDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="numberOfPages" type="xs:int"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="roleNames" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="PermissionTreeNodeDTO"> 
+                <xs:sequence> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childNodes" nillable="true" type="ax2254:PermissionTreeNodeDTO"/> 
+                    <xs:element minOccurs="0" name="fullPathSupported" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="hierarchicalTree" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="rootId" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="rootIdentifier" nillable="true" type="xs:string"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="supportedActions" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="PermissionModuleDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="fullyPathSupported" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="hierarchicalTree" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="moduleName" nillable="true" type="xs:string"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="nameForChildRootNodeSet" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="rootIdentifier" nillable="true" type="xs:string"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="rootNodeNames" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="secondaryRootSupported" type="xs:boolean"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="supportedActions" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+        </xs:schema> 
+    </wsdl:types> 
+    <wsdl:message name="getRootNodeNamesRequest"> 
+        <wsdl:part name="parameters" element="ns1:getRootNodeNames"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRootNodeNamesResponse"> 
+        <wsdl:part name="parameters" element="ns1:getRootNodeNamesResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getPermissionTreeNodeRequest"> 
+        <wsdl:part name="parameters" element="ns1:getPermissionTreeNode"/> 
+    </wsdl:message> 
+    <wsdl:message name="getPermissionTreeNodeResponse"> 
+        <wsdl:part name="parameters" element="ns1:getPermissionTreeNodeResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRootSecondaryNodeNamesRequest"> 
+        <wsdl:part name="parameters" element="ns1:getRootSecondaryNodeNames"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRootSecondaryNodeNamesResponse"> 
+        <wsdl:part name="parameters" element="ns1:getRootSecondaryNodeNamesResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getExplicitUserPermissionsRequest"> 
+        <wsdl:part name="parameters" element="ns1:getExplicitUserPermissions"/> 
+    </wsdl:message> 
+    <wsdl:message name="getExplicitUserPermissionsResponse"> 
+        <wsdl:part name="parameters" element="ns1:getExplicitUserPermissionsResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+        <wsdl:part name="parameters" element="ns1:AuthorizationAdminServiceIdentityAuthorizationException"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRolePermissionsRequest"> 
+        <wsdl:part name="parameters" element="ns1:getRolePermissions"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRolePermissionsResponse"> 
+        <wsdl:part name="parameters" element="ns1:getRolePermissionsResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="setPermissionsRequest"> 
+        <wsdl:part name="parameters" element="ns1:setPermissions"/> 
+    </wsdl:message> 
+    <wsdl:message name="clearUserPermissionsRequest"> 
+        <wsdl:part name="parameters" element="ns1:clearUserPermissions"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRoleListRequest"> 
+        <wsdl:part name="parameters" element="ns1:getRoleList"/> 
+    </wsdl:message> 
+    <wsdl:message name="getRoleListResponse"> 
+        <wsdl:part name="parameters" element="ns1:getRoleListResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getPermissionModulesRequest"> 
+        <wsdl:part name="parameters" element="ns1:getPermissionModules"/> 
+    </wsdl:message> 
+    <wsdl:message name="getPermissionModulesResponse"> 
+        <wsdl:part name="parameters" element="ns1:getPermissionModulesResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getAllPermitResourcesOfUserRequest"> 
+        <wsdl:part name="parameters" element="ns1:getAllPermitResourcesOfUser"/> 
+    </wsdl:message> 
+    <wsdl:message name="getAllPermitResourcesOfUserResponse"> 
+        <wsdl:part name="parameters" element="ns1:getAllPermitResourcesOfUserResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="getModuleInfoRequest"> 
+        <wsdl:part name="parameters" element="ns1:getModuleInfo"/> 
+    </wsdl:message> 
+    <wsdl:message name="getModuleInfoResponse"> 
+        <wsdl:part name="parameters" element="ns1:getModuleInfoResponse"/> 
+    </wsdl:message> 
+    <wsdl:portType name="AuthorizationAdminServicePortType"> 
+        <wsdl:operation name="getRootNodeNames"> 
+            <wsdl:input message="tns:getRootNodeNamesRequest" wsaw:Action="urn:getRootNodeNames"/> 
+            <wsdl:output message="tns:getRootNodeNamesResponse" wsaw:Action="urn:getRootNodeNamesResponse"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionTreeNode"> 
+            <wsdl:input message="tns:getPermissionTreeNodeRequest" wsaw:Action="urn:getPermissionTreeNode"/> 
+            <wsdl:output message="tns:getPermissionTreeNodeResponse" wsaw:Action="urn:getPermissionTreeNodeResponse"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRootSecondaryNodeNames"> 
+            <wsdl:input message="tns:getRootSecondaryNodeNamesRequest" wsaw:Action="urn:getRootSecondaryNodeNames"/> 
+            <wsdl:output message="tns:getRootSecondaryNodeNamesResponse" wsaw:Action="urn:getRootSecondaryNodeNamesResponse"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getExplicitUserPermissions"> 
+            <wsdl:input message="tns:getExplicitUserPermissionsRequest" wsaw:Action="urn:getExplicitUserPermissions"/> 
+            <wsdl:output message="tns:getExplicitUserPermissionsResponse" wsaw:Action="urn:getExplicitUserPermissionsResponse"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:getExplicitUserPermissionsAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRolePermissions"> 
+            <wsdl:input message="tns:getRolePermissionsRequest" wsaw:Action="urn:getRolePermissions"/> 
+            <wsdl:output message="tns:getRolePermissionsResponse" wsaw:Action="urn:getRolePermissionsResponse"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:getRolePermissionsAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="setPermissions"> 
+            <wsdl:input message="tns:setPermissionsRequest" wsaw:Action="urn:setPermissions"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:setPermissionsAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="clearUserPermissions"> 
+            <wsdl:input message="tns:clearUserPermissionsRequest" wsaw:Action="urn:clearUserPermissions"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:clearUserPermissionsAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRoleList"> 
+            <wsdl:input message="tns:getRoleListRequest" wsaw:Action="urn:getRoleList"/> 
+            <wsdl:output message="tns:getRoleListResponse" wsaw:Action="urn:getRoleListResponse"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:getRoleListAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionModules"> 
+            <wsdl:input message="tns:getPermissionModulesRequest" wsaw:Action="urn:getPermissionModules"/> 
+            <wsdl:output message="tns:getPermissionModulesResponse" wsaw:Action="urn:getPermissionModulesResponse"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPermitResourcesOfUser"> 
+            <wsdl:input message="tns:getAllPermitResourcesOfUserRequest" wsaw:Action="urn:getAllPermitResourcesOfUser"/> 
+            <wsdl:output message="tns:getAllPermitResourcesOfUserResponse" wsaw:Action="urn:getAllPermitResourcesOfUserResponse"/> 
+            <wsdl:fault message="tns:AuthorizationAdminServiceIdentityAuthorizationException" name="AuthorizationAdminServiceIdentityAuthorizationException" wsaw:Action="urn:getAllPermitResourcesOfUserAuthorizationAdminServiceIdentityAuthorizationException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getModuleInfo"> 
+            <wsdl:input message="tns:getModuleInfoRequest" wsaw:Action="urn:getModuleInfo"/> 
+            <wsdl:output message="tns:getModuleInfoResponse" wsaw:Action="urn:getModuleInfoResponse"/> 
+        </wsdl:operation> 
+    </wsdl:portType> 
+    <wsdl:binding name="AuthorizationAdminServiceSoap11Binding" type="tns:AuthorizationAdminServicePortType"> 
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/> 
+        <wsdl:operation name="getRootNodeNames"> 
+            <soap:operation soapAction="urn:getRootNodeNames" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionTreeNode"> 
+            <soap:operation soapAction="urn:getPermissionTreeNode" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRootSecondaryNodeNames"> 
+            <soap:operation soapAction="urn:getRootSecondaryNodeNames" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRolePermissions"> 
+            <soap:operation soapAction="urn:getRolePermissions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getExplicitUserPermissions"> 
+            <soap:operation soapAction="urn:getExplicitUserPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setPermissions"> 
+            <soap:operation soapAction="urn:setPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="clearUserPermissions"> 
+            <soap:operation soapAction="urn:clearUserPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRoleList"> 
+            <soap:operation soapAction="urn:getRoleList" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionModules"> 
+            <soap:operation soapAction="urn:getPermissionModules" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPermitResourcesOfUser"> 
+            <soap:operation soapAction="urn:getAllPermitResourcesOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getModuleInfo"> 
+            <soap:operation soapAction="urn:getModuleInfo" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:binding name="AuthorizationAdminServiceSoap12Binding" type="tns:AuthorizationAdminServicePortType"> 
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/> 
+        <wsdl:operation name="getRootNodeNames"> 
+            <soap12:operation soapAction="urn:getRootNodeNames" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionTreeNode"> 
+            <soap12:operation soapAction="urn:getPermissionTreeNode" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRootSecondaryNodeNames"> 
+            <soap12:operation soapAction="urn:getRootSecondaryNodeNames" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRolePermissions"> 
+            <soap12:operation soapAction="urn:getRolePermissions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getExplicitUserPermissions"> 
+            <soap12:operation soapAction="urn:getExplicitUserPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setPermissions"> 
+            <soap12:operation soapAction="urn:setPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="clearUserPermissions"> 
+            <soap12:operation soapAction="urn:clearUserPermissions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRoleList"> 
+            <soap12:operation soapAction="urn:getRoleList" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionModules"> 
+            <soap12:operation soapAction="urn:getPermissionModules" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPermitResourcesOfUser"> 
+            <soap12:operation soapAction="urn:getAllPermitResourcesOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="AuthorizationAdminServiceIdentityAuthorizationException"> 
+                <soap12:fault use="literal" name="AuthorizationAdminServiceIdentityAuthorizationException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getModuleInfo"> 
+            <soap12:operation soapAction="urn:getModuleInfo" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:binding name="AuthorizationAdminServiceHttpBinding" type="tns:AuthorizationAdminServicePortType"> 
+        <http:binding verb="POST"/> 
+        <wsdl:operation name="getRootNodeNames"> 
+            <http:operation location="getRootNodeNames"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionTreeNode"> 
+            <http:operation location="getPermissionTreeNode"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRootSecondaryNodeNames"> 
+            <http:operation location="getRootSecondaryNodeNames"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRolePermissions"> 
+            <http:operation location="getRolePermissions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getExplicitUserPermissions"> 
+            <http:operation location="getExplicitUserPermissions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="setPermissions"> 
+            <http:operation location="setPermissions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+        </wsdl:operation> 
+        <wsdl:operation name="clearUserPermissions"> 
+            <http:operation location="clearUserPermissions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+        </wsdl:operation> 
+        <wsdl:operation name="getRoleList"> 
+            <http:operation location="getRoleList"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getPermissionModules"> 
+            <http:operation location="getPermissionModules"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPermitResourcesOfUser"> 
+            <http:operation location="getAllPermitResourcesOfUser"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getModuleInfo"> 
+            <http:operation location="getModuleInfo"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:service name="AuthorizationAdminService"> 
+        <wsdl:port name="AuthorizationAdminServiceHttpsSoap11Endpoint" binding="tns:AuthorizationAdminServiceSoap11Binding"> 
+            <soap:address location="https://localhost:9443/services/AuthorizationAdminService.AuthorizationAdminServiceHttpsSoap11Endpoint/"/> 
+        </wsdl:port> 
+        <wsdl:port name="AuthorizationAdminServiceHttpsSoap12Endpoint" binding="tns:AuthorizationAdminServiceSoap12Binding"> 
+            <soap12:address location="https://localhost:9443/services/AuthorizationAdminService.AuthorizationAdminServiceHttpsSoap12Endpoint/"/> 
+        </wsdl:port> 
+        <wsdl:port name="AuthorizationAdminServiceHttpsEndpoint" binding="tns:AuthorizationAdminServiceHttpBinding"> 
+            <http:address location="https://localhost:9443/services/AuthorizationAdminService.AuthorizationAdminServiceHttpsEndpoint/"/> 
+        </wsdl:port> 
+    </wsdl:service> 
+</wsdl:definitions>

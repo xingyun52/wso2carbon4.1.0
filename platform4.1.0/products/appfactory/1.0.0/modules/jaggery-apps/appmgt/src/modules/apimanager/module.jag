@@ -1,0 +1,23 @@
+<%
+jagg.module("apimanager", {
+
+    createApplication:function () {
+        return jagg.require(jagg.getModulesDir() + "apimanager/add/add.jag").createApplication.apply(this, arguments);
+    },
+    getApplicationAPI:function () {
+            return jagg.require(jagg.getModulesDir() + "apimanager/get/get.jag").getApplicationAPI.apply(this, arguments);
+    },
+    getAPIInformation:function () {
+            return jagg.require(jagg.getModulesDir() + "apimanager/get/get.jag").getAPIInformation.apply(this, arguments);
+    },
+    generateKeys:function () {
+            return jagg.require(jagg.getModulesDir() + "apimanager/key/key.jag").generateKeys.apply(this, arguments);
+    },
+    createDependencies:function () {
+            return jagg.require(jagg.getModulesDir() + "apimanager/key/key.jag").createDependencies.apply(this, arguments);
+    },
+    getAPICount:function () {
+            return jagg.require(jagg.getModulesDir() + "apimanager/get/get.jag").getAPICount.apply(this, arguments);
+    }
+});
+%>

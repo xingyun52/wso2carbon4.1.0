@@ -1,0 +1,45 @@
+<%
+var login = function (username, password) {
+    var result,
+            log = new Log(),
+            manager = jagg.module("manager"),
+            provider = manager.getAPIProviderObj();
+
+    result = provider.login(username, password);
+
+    if (result.error) {
+        if (log.isDebugEnabled()) {
+            log.debug("Error while authenticating user : " + username);
+        }
+        return {
+            error:result.error,
+            cookie:null,
+            message:result.detail
+        };
+    }else{
+    cookie = result.sessionId;
+    cookie = cookie.split(';')[0];
+    jagg.setUser({username:username, cookie:cookie});
+
+    var api = jagg.module("api");
+    var isCreatePermitted=api.hasCreatePermission();
+    var isPublishPermitted=api.hasPublishPermission();
+    jagg.setCreatePermitted(isCreatePermitted);
+    jagg.setPublishPermitted(isPublishPermitted);
+
+    return {
+        error:false,
+        cookie:cookie
+    };
+    }
+};
+
+var logout = function () {
+    //TODO : implement logout
+     session.put("createPermitted", null);
+     session.put("publishPermitted", null);
+    return {
+        error:false
+    };
+};
+%>

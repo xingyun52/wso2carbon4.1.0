@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="appfactory">
+  <fileSets>
+    <fileSet filtered="true"  encoding="UTF-8">
+      <directory></directory>
+      <includes>
+        <include>synapse.xml</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>

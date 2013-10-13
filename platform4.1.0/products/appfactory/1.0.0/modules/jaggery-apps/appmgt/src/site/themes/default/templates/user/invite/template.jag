@@ -1,0 +1,784 @@
+<% jagg.template("user/invite", function(inputs, outputs, jagg) { %>
+
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+    jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION_CONFIGURATION_API_MANAGER);
+    var hasInviteUserPermission = outputs.hasInviteUserPermission;
+%>
+ 
+
+<script type="text/javascript">
+var userNames;//global user names
+var userArrayList=new Array();//contains users recieved from the ajax call
+var searchText=" ";//text to be search , this is updated before doing the search
+var lastSearchText=" ";//to hold the finally searched word
+var enterPressed;//boolean to detect whether enter key is pressed in the page
+var backspacePressed;//boolean to detect whether backspace key is pressed in the page
+var commaPressed=true;
+var firstTimeRun=true;
+////newly added part/////
+
+
+var IDLE_TIMEOUT = 1.5; //set waiting time to pop up the autocomplete
+var _idleSecondsCounter = 0;
+document.onclick = function() {
+    _idleSecondsCounter = 0;
+};
+document.onmousemove = function() {
+    _idleSecondsCounter = 0;
+};
+document.onkeypress = function() {
+    _idleSecondsCounter = 0;
+};
+window.setInterval(CheckIdleTime, 1000); //set idle method for the page
+
+/*This is the method that runs in the page always*/
+function CheckIdleTime() {
+    _idleSecondsCounter++;
+    var oPanel = document.getElementById("searchTxt");
+    var tempText=$('#searchTxt').attr('value');
+    if(firstTimeRun==false){
+        var tempUserNames=[];
+        if(tempText.indexOf(',')>1){
+            tempUserNames=tempText.split(',');
+            searchText=tempUserNames[tempUserNames.length-1];//reg expression wild card
+            searchText.replace(" ",'');
+        }
+
+    }
+
+    if ((_idleSecondsCounter >= IDLE_TIMEOUT)&&(enterPressed==true||backspacePressed==true)&&(commaPressed==true)&&(document.activeElement.nodeName == 'TEXTAREA' || document.activeElement.nodeName == 'INPUT')) {   //check conditions to make back end call
+
+           if(firstTimeRun||(isBeginWith(searchText,lastSearchText))==false){
+               //do not search populate select box from existing user array
+               firstTimeRun=false;
+               doSearch();
+
+           }
+        else if(enterPressed==true){
+
+               fillSelectFromExistingUserArray();
+
+           }
+
+
+    }
+}
+function  fillSelectFromExistingUserArray(){
+    debugger;
+    var tempText=$('#searchTxt').attr('value');
+
+    var tempUserNames=[];
+    if(tempText.indexOf(',')>1){
+        tempUserNames=tempText.split(',');
+        searchText=tempUserNames[tempUserNames.length-1];//reg expression wild card
+        searchText.replace(" ",'');
+    }
+
+
+    for(var user in userArrayList){
+        if(isBeginWith(userArrayList[user],searchText)===true){
+            $('#autocompleteBox').append($('<option value="'+userArrayList[user]+'" >'+userArrayList[user]+'</option>'));
+
+        }
+    }
+
+    $('#autocompleteBox').show();
+}
+ function isBeginWith(fullString,subString){
+
+     var n=fullString.indexOf(subString);
+
+     if(n==0){
+         return true;
+     }
+     else{
+         return false;
+     }
+
+ }
+function doSearch(){
+
+    var tempText=$('#searchTxt').attr('value');
+    var len=tempText.length;
+    var tempUserNames=[];
+    if(tempText.indexOf(',')>1){
+        tempUserNames=tempText.split(',');
+        searchText=tempUserNames[tempUserNames.length-1];//reg expression wild card
+        if(searchText.replace(" ",'').length>1){
+            searchUser(true);
+
+            $('#auto-complete-div').show();
+        }
+    }
+    else{//not contains a comma
+
+        searchText=tempText;//reg expression wild card
+        console.log("search text for without comma is "+searchText);
+
+        if(searchText.replace(" ",'').length>1){
+            searchUser(true);
+
+            $('#auto-complete-div').show();
+
+
+
+
+        }
+
+
+    }
+    lastSearchText=searchText;
+    searchText='';//clear serachText after searching
+    backspacePressed=false;
+    enterPressed=false;
+    commaPressed=false;
+}
+
+//////end of newly added part//////
+$(document).ready(function() {
+    $('#notifier').hide();
+	var pos=$('#searchTxt').offset();
+    var divPos=[];
+	divPos.left=pos.left;
+    divPos.top=pos.top+$('#searchTxt').height();
+    $('#auto-complete-div').offset(divPos);
+	$('#auto-complete-div').hide();
+    /*search text key up event*/
+    $('#searchTxt').keyup(function(evt) {
+        _idleSecondsCounter = 0;
+         if($(this).attr('value').length>1){
+
+            enterPressed=true;
+            backspacePressed=true;
+
+         }
+        if((evt.keyCode==40)||(evt.keyCode==38)){//check for down or up arrow press
+           $('#autocompleteBox').focus(0);
+
+        }
+        else if(evt.keyCode==8){//check for back space key
+        	$('#auto-complete-div').hide();
+
+        }
+        else if(evt.keyCode==188){
+            commaPressed=true;
+        }
+ });
+
+
+
+    updateTable();
+});
+
+
+/*this method fill up the table that depicts the roles and the relevant users */
+function updateTable(){
+
+
+    $("#userRolesTable td").remove();
+    jagg.post("../blocks/application/users/get/ajax/list.jag", {
+                action:"getAppUsersWithRoles",
+                applicationKey:'<%=applicationKey%>'
+            },
+            function (result) {
+
+                var parsedArray = jQuery.parseJSON(result);
+                for (var i = 0; i < parsedArray.length; i++) {
+                    var userRoles = parsedArray[i];
+
+                    var row = $("<tr><td>"+userRoles.userName+"</td><td>"+userRoles.displayName+"</td></tr>");//<td><button type='button' class='btnDelete' onclick='deleteUser(this)' id='"+userRoles.userName+"'>D</button></td><td><button type='button' class='btnUpdate' id='"+userRoles.userName+"'>U</button></td></tr>");
+
+                    $("#userbody").append(row);
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                // add the error label in the grid
+            });
+}
+
+/*send the invitaion a given user for a given roles*/
+function sendInvite(newUserNames,role){
+
+    jagg.post("../blocks/application/users/add/ajax/add.jag", {
+                action:"inviteUserToApplication",
+                applicationKey:$("#applicationKey").attr('value'),
+                requestersUsername:$("#userName").attr('value'),
+                newUsername:newUserNames,
+                newUserRole:role
+            },
+
+            function (result) {
+
+                if(result != undefined || result==true){
+                    var repositoryPath = result.toString();
+                    // TODO implement addApplicationToApp(applicationKey,
+                    // applicationName, applicationDescription);
+                    return result;
+                }else if(result==false){
+
+                    showNotification('This user has already been invited!','warn');
+                    return result;
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+
+                showNotification('Your invitation has not been sent to '+newUserNames,'error');
+            });
+
+
+
+}
+
+$(document).ready(function($){
+
+    $('#inviteForm').validate({
+        submitHandler: function(form) {
+        }
+    });
+});
+
+/* This method validates a single email address given as an input parameter */
+function ValidateEmail(inputText){
+
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if(mailformat.test(inputText)){
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}
+/*validates a given set of emails*/
+function ValidateAllEmails(emailArray){
+
+    var result=true;
+    for(var i=0;i<emailArray.length;i++){
+        if(ValidateEmail(emailArray[i].replace(' ',''))==false){
+            //jagg.message({content:'Wrong email address found.'+emailArray[i]+' Please Correct it and Try again',type:'info' });
+            showNotification('Wrong email address found','warn');
+            result=false;
+            break;
+        }
+    }
+
+    return result;
+}
+
+
+/* This method adds users to the textBox userNames with seperated by commas */
+function addToUserList(userNameToAdd,txtArea){
+    console.log('in user adding '+userNameToAdd+' '+txtArea);
+    var textAreaControls=document.getElementsByTagName('textarea');
+
+    for(var i=0;i<textAreaControls.length;i++)
+    {
+        if(textAreaControls[i].id==txtArea){
+            console.log('in user adding '+userNameToAdd+' '+textAreaControls[i].id+'text length'+textAreaControls[i].value.length);
+            if(textAreaControls[i].value.length==0){
+                textAreaControls[i].value=userNameToAdd;
+
+            }
+            else{
+                textAreaControls[i].value+=","+userNameToAdd;
+
+            }
+        }
+    }
+}
+/* names that are obtained from the search are appended to a given text box */
+function addToTextBox(userNameToAdd,textboxid){
+	// console.log('in user adding '+userNameToAdd+' '+txtArea);
+	var textBox=document.getElementById(textboxid);
+	if(textBox.value.length==0){
+		textBox.value=userNameToAdd;
+
+	}
+	else{
+		textBox.value+=","+userNameToAdd;
+
+	}
+}
+function setSelectionRange(input, selectionStart, selectionEnd) {
+    if (input.setSelectionRange) {
+        input.focus();
+        input.setSelectionRange(selectionStart, selectionEnd);
+    }
+    else if (input.createTextRange) {
+        var range = input.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', selectionEnd);
+        range.moveStart('character', selectionStart);
+        range.select();
+    }
+}
+
+function setCaretToPos (input, pos) {
+    setSelectionRange(input, pos, pos);
+}
+
+/*append the selected item from the select to the comma seperated list*/
+function appendToCommaSepList(){
+
+    var us=$('#autocompleteBox').find(":selected").text();
+    var val=$('#searchTxt').attr('value');
+
+    var uList=new Array();
+
+    uList=val.split(',');
+
+    var listLength=uList.length;
+    $('#searchTxt').val('');
+
+    uList[listLength-1]=us;
+
+    for(var i=0;i<listLength;i++){
+
+        addToUserList(uList[i],'searchTxt');
+
+    }
+    ClearOptionsFast('autocompleteBox');
+
+
+
+
+    $('#auto-complete-div').hide();
+    searchText='';
+
+    $('#searchTxt').focus();
+
+
+}
+/*fill select from users */
+function fillSelectFromUsers(){
+
+    for(var user in userArrayList){
+        $('#autocompleteBox').append($('<option value="'+userArrayList[user]+'" >'+userArrayList[user]+'</option>'));
+
+    }
+
+    $('#autocompleteBox').keyup(function(evt){
+
+        if(evt.keyCode==13){//check for "enter" key press
+            enterPressed=true;
+            appendToCommaSepList();
+            var n=$('#searchTxt').attr('value').length;
+
+            setCaretToPos(document.getElementById("searchTxt"),n);
+            
+        }
+        else if(evt.keyCode==8){//check for back space key
+            backspacePressed=true;
+        	$('#auto-complete-div').hide();
+        	$('#searchTxt').focus();
+
+        }
+      
+    });
+
+}
+/*This method clears the elements in the select specified by the ID*/
+function ClearOptionsFast(id)
+{
+    var selectObj = document.getElementById(id);
+    var selectParentNode = selectObj.parentNode;
+    var newSelectObj = selectObj.cloneNode(false); // Make a shallow copy
+    selectParentNode.replaceChild(newSelectObj, selectObj);
+    return newSelectObj;
+}
+
+
+/* This method performs the search user functinality */
+/*parameter: autocomplete=true;when search is called for autocomplete actions*/
+/*parameter: autocomplete=false;when search is called forsearch button actions*/
+function searchUser(autocomplete){
+
+    var userName;
+    var searchPara;
+    if(autocomplete==true){
+        searchPara=searchText+"*";
+    }
+    else{
+        searchPara=searchText;
+    }
+    userArrayList.length=0;
+    $('#userListContainer').html("");
+     ClearOptionsFast('autocompleteBox');
+    //jagg post to get users contains a given part of text in the name
+    jagg.post("../blocks/application/users/get/ajax/list.jag", {
+                action:"getAllUsersHavingName",
+                userName: searchPara//$("#searchTxt").attr('value')
+            },
+            function (result) {
+                userNames=JSON.parse(result);
+                if(userNames.usernames.length>0){
+                    for(var i=0;i<userNames.usernames.length;i++){
+                        userArrayList.push(userNames.usernames[i]);
+                        //following part add the users to the given division with check boxes
+
+                       if(autocomplete==false){
+                            $('#userListContainer').append($('<label class="checkbox"><input type="checkbox" value="'+userNames.usernames[i]+'" />'+userNames.usernames[i]+'</label>'));
+                           $('#parentuserListContainer').fadeIn()
+                        }
+
+                    }
+                    if(autocomplete==true){
+                        $('#parentuserListContainer').hide();
+                        fillSelectFromUsers();
+                        //  $('#autocompleteBox').append($('<option value="'+userNames.usernames[i]+'" >'+userNames.usernames[i]+'</option>'));
+                        //  $('#autocompleteBox').append('<option value="test1">test1</option>');
+
+                    }
+                  ;
+                }else{
+                    $('#parentuserListContainer').fadeOut();
+                    // jagg.message({content:'No user found!',type:'warning'});
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                // jagg.message({content:'User Searching Failed',type:'info' });
+            });
+
+}
+/*this mehtod sends all the invitaions for check boxes and comma seperated list*/
+function SendAll(roletoSend,len){
+	if(haveVaildRecipents('searchTxt')){
+		sendInvitationsPerRoleFromTextBox(roletoSend);
+	}
+
+
+}
+
+//check whether there are vaild recipients
+function haveVaildRecipents(controlId)
+{
+    var control=document.getElementById(controlId);
+   	var userArray=control.value.split(',');
+    return ValidateAllEmails(userArray);
+
+}
+
+
+/*send invitaitons for users when the main text box contains email addresses*/
+function sendInvitationsPerRoleFromTextBox(role)
+{
+
+    var i=0;
+    var results=new Array();
+    var faliures=new Array();
+    var txtbx=document.getElementById('searchTxt');
+
+
+    var userArray= txtbx.value.split(',');
+
+    if(ValidateAllEmails(userArray)==true){
+        for(var i=0 ;i<userArray.length;i++){
+
+
+            results[i]=sendInvite(userArray[i],role);//check results for further processing with notificaitons
+
+        }
+
+        for(var i=0;i<results.length;i++){
+            if(results[i]==false){
+            	 faliures.push(results[i]);
+            }
+        }
+        if(faliures.length>0){
+            var stringFaliures="";
+            for(var i=0;i<results.length;i++){
+                if(i==0)
+                {
+                    stringFaliures=faliures[i];
+
+                }
+                else{
+                    stringFaliures+=","+faliures[i];
+                }
+
+            }
+            showNotification('Invitations have not been sent to '+stringFaliures,'error');
+        }
+        else{
+            showNotification('Your invitation has been sent','success');
+        }
+    }
+
+
+}
+/*Clear all selected users*/
+function clearAll(){
+    var collection=document.getElementById("userListContainer").getElementsByTagName('INPUT');
+    for (var x=0; x<collection.length; x++) {
+        if ((collection[x].type.toUpperCase()=='CHECKBOX')&&(collection[x].checked==true)){
+            collection[x].checked=false;
+
+        }
+
+    }
+
+}
+/*Select all users in the search box at once*/
+function selectAll(){
+    var collection=document.getElementById("userListContainer").getElementsByTagName('INPUT');
+    for (var x=0; x<collection.length; x++) {
+        if ((collection[x].type.toUpperCase()=='CHECKBOX')&&(collection[x].checked==false)){
+            collection[x].checked=true;
+
+        }
+
+    }
+}
+/*delete a given user*/
+function deleteUser(btn){
+
+ 	var userToDelete= btn.id;
+	jagg.post("../blocks/application/users/update/ajax/update.jag", {
+         action:"removeUserFromApplication",
+         applicationKey:$("#applicationKey").attr('value'),
+         userName:userToDelete
+    },
+
+     function (result) {
+
+         if(result != undefined && result==true){
+             var repositoryPath = result.toString();
+             // TODO implement addApplicationToApp(applicationKey,
+             // applicationName, applicationDescription);
+             //jagg.message({content:'This user ('+userToDelete+')has been removed from the application succesfully !',type:'info'});
+             return result;
+         }else if(result==false){
+             // jagg.message({content:'This user ('+newUserName+') has already
+             // been invited!',type:'info'});
+            // jagg.message({content:'This user ('+userToDelete+')has not been removed from the application !',type:'info'});
+
+             return result;
+         }
+     },
+     function (jqXHR, textStatus, errorThrown) {
+         //jagg.message({content:'Error Occured during the removal process of '+userToDelete:'error' });
+     });
+
+
+}
+/*add checked user to the comma seperated list*/
+function AddCheckedUser(){
+    var collection=document.getElementById("userListContainer").getElementsByTagName('INPUT');
+    var len=$('#userListContainer input:checked').length;
+    for(var key in collection){
+        if(collection[key].checked==true){
+            addToUserList(collection[key].value,"searchTxt");
+
+        }
+
+    }
+
+
+}
+function searchCall(){
+    searchText=$('#txtTags').attr('value');
+    searchUser(false);
+}
+function inviteAll(){
+
+     var collection=document.getElementById("rolesContainer").getElementsByTagName('INPUT');
+   // var len=$('#userListContainer input:checked').length;
+    for(var key in collection){
+        if(collection[key].checked==true){
+
+            sendInvitationsPerRoleFromTextBox(collection[key].value);
+
+        }
+
+    }
+
+
+     updateTable();
+
+}
+/*shows the warning,error,success*/
+function showNotification(content,type){
+    $('#message').empty();
+    $('#notifier').removeClass();
+
+
+    if(type==="warn"){
+
+        $('#notifier').show();
+        $('#notifier').addClass('alert');
+        $('#message').append('<strong>Warning!</strong> '+content);
+
+
+
+
+    }else if(type==="error"){
+
+        $('#notifier').show();
+        $('#notifier').addClass('alert alert-error');
+        //$('#message').append($('<strong>Error!</strong>AAA'));
+
+        $('#message').append('<strong>Error!</strong> '+content);
+
+
+    }else{
+
+        $('#notifier').show();
+        $('#notifier').addClass('alert alert-success');
+        $('#message').append('<strong>Completed!</strong> '+content);
+
+    }
+
+}
+
+function fromSelectToTextBox(select){
+    var elt = document.getElementById('autocompleteBox');
+
+    if (elt.selectedIndex == -1)
+        return null;
+
+    appendToCommaSepList();
+    var n=$('#searchTxt').attr('value').length;
+
+    setCaretToPos(document.getElementById("searchTxt"),n);
+
+
+}
+</script>
+<div class="container">
+    <div class="title-section">
+        <div class="row">
+            <div class="span12">
+                <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"User Administration","pos":"titlebar" }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--START  content section-->
+<div class="container content-container wrapper">
+    <div class="row">
+        <div class="span12 content-section shadow-up tab-content" style="padding-bottom:20px;">
+            <form id='inviteForm' method='post'>
+
+
+                        <!--Newly Added Part -->
+
+                        <div class="container-fluid" id="haveUsersDiv">
+                            <div class="row-fluid">
+                                <div id="rolesTable" class="span12">
+                                    <h4>Users In App</h4>
+                                    <table class="table table-bordered table-hover user-tables" id='userRolesTable'>
+                                        <thead>
+                                        <tr>
+                                            <th class="span2">User Name</th>
+                                            <th>Role</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="userbody">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="span6">
+                            <div class="control-group">
+                                <h4 class=''>Invite Users</h4>
+                                <label class="control-label">Users:</label>
+                                <div class="controls ui-widget">
+                                    <textarea name="searchTxt" id='searchTxt' class='textarea' autocomplete="off"></textarea>
+                                    <div id='auto-complete-div'>
+                                        <select id='autocompleteBox' class="auto-complete" size="5" onclick="fromSelectToTextBox(this)">
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div class="help-block ">
+                                    Enter Comma seperated list manually or use suggesstion to assist yourself.
+                                </div>
+                            </div>
+
+
+                            <div id="notifier" class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <div id="message">
+
+                                </div>
+                            </div>
+
+
+
+                            <div id='rolesContainer' class="">
+                                <label class="checkbox"><input type="checkbox" name="devoloper" value="devoloper" onchange='addUsers(this)'> Developer</label>
+                                <label class="checkbox"><input type="checkbox" name="QA" value="QA" onchange='addUsers(this)'> QA</label>
+                                <label class="checkbox"><input type="checkbox" name="DevOps" value="DevOps" onchange='addUsers(this)'> DevOps</label>
+                                <div class="help-block">
+                                    Select the role to assign and click Invite to add users to the application.Then Refresh the page to see changes.
+                                </div>
+                                <div class="controls">
+
+                                    <input type='button' name='Submit' value='Invite' class='btn btn-primary' onclick="inviteAll()" />
+                                    <input type="button" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/user.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'" value='Cancel' class='btn'/>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div  id="inviteUserPane" class="span5">
+                            <h4 class=''>Search Users</h4>
+
+                            <div class="control-group">
+
+
+                                <label class="control-label" for="txtTags">User Name</label>
+                                <div class="controls ui-widget" id="autocompletePanel">
+                                    <input id="txtTags" />
+                                    <button type='button' name='btnSearch' class='btn' onClick="searchCall()"><i class="icon-search"></i> Search</button>
+
+                                </div>
+                                <div class="help-block ">
+                                    Use Regular Expression to search users.
+                                </div>
+
+                            </div>
+                            <div id="parentuserListContainer"  style="display:none">
+
+
+                                <div id="userListContainer" class="userListContainer" style="border:1px solid #EFEFEF; padding:10px;margin-bottom:15px;"></div>
+
+                                <a type='button'  onClick=" clearAll()" ><i class="icon-remove"></i> Clear All </a>
+                                <a type='button'  onClick=" selectAll()" ><i class="icon-plus-sign"></i> Select All </a>
+                                <hr />
+                                <a type='button' class="btn" onClick=" AddCheckedUser()" ><i class="icon-plus-sign"></i> Add </a>
+                                <div class="help-block ">
+                                    Select users and click Add to add users to the comma seperated list.
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<input type="hidden" id="userName" value='<%= session.get("LOGGED_IN_USER") %>' />
+<input type="hidden" id="applicationKey" value='<%= applicationKey %>' />
+
+
+
+
+
+        <% }); %>

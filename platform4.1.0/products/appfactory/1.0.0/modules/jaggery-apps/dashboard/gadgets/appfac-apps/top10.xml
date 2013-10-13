@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+	<ModulePrefs title="App Factory — Applications by Popularity" />
+    <UserPref name="gadgetName" display_name="apps-top10" default_value="apps-top10"/>
+	<Content type="html">
+		<![CDATA[
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap.css"></link>
+        <link rel="stylesheet" type="text/css" href="../../css/dashboard-gadgets/styles.css"></link>
+        <script src="../../js/constants.js"></script>
+		<table class="table table-hover">
+            <tbody>
+            <tr class="first-row vgood-row">
+                <td>Amila De Silva</td>
+                <td class="value-cell">120</td>
+                <td class="value-cell">10%</td>
+            </tr>
+            <tr>
+                <td>Chanaka Jayasena</td>
+                <td class="value-cell">100</td>
+                <td class="value-cell">8%</td>
+            </tr>
+        </table>
+
+		]]>
+	</Content>
+</Module>

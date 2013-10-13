@@ -1,0 +1,106 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+// used for logging
+var log = new Log();
+var modManager = jagg.module("manager");
+
+var generateKeys = function (applicationKey, apiName, apiVersion, apiProvider){
+    var ws = require('ws');
+    var apiManagerIntegration = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.1;
+    options.action = "urn:generateKeys";
+    options["HTTPHeaders"] = [
+            { name : "Cookie", value :modManager.getAdminCookie() },
+            { name : "username", value :session.get("LOGGED_IN_USER") },
+            { name : "SAMLToken" , value : session.get("SAML_TOKEN") }
+        ];
+
+    var namespace = getProperty(API_MANAGER_SERVICE_NAMESPACE);
+    var payload = '<int:generateKeys xmlns:int="' + namespace+ '"><int:appId>' + applicationKey + '</int:appId><int:apiName>'
+            + apiName + '</int:apiName><int:apiVersion>' + apiVersion + '</int:apiVersion><int:apiProvider>'
+            + apiProvider + '</int:apiProvider></int:generateKeys>';
+    var result;
+
+    try {
+        var serviceName =getProperty(API_MANAGER_SERVICE_NAME);
+        var serverUrl = getProperty(APPFACTORY_SERVER_URL);
+
+        var endPoint = serverUrl + serviceName;
+
+        apiManagerIntegration.open(options,endPoint, false);
+        apiManagerIntegration.send(payload);
+        result = apiManagerIntegration.responseE4X;
+        if(log.isDebugEnabled()){
+            log.debug("Invoking service endpoint:"+endPoint+" returned result:"+result);
+        }
+    } catch (e) {
+        log.error("Error while generating keys of application "+ applicationKey + "\n"+e.message);
+        throw "Error while generating keys of application "+ applicationKey;
+    }
+}
+
+var createDependencies = function(applicationId){
+    var ws = require('ws');
+    var apiManagerIntegration = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.1;
+    options.action = "urn:createDependencies";
+    options["HTTPHeaders"] = [
+            { name : "Cookie", value :modManager.getAdminCookie() },
+            { name : "username", value :session.get("LOGGED_IN_USER") },
+            { name : "SAMLToken" , value : session.get("SAML_TOKEN") }
+        ];
+
+    var namespace = getProperty(API_MANAGER_SERVICE_NAMESPACE);
+    var payload = '<int:createDependencies xmlns:int="' + namespace+ '"><int:applicationId>'
+                    + applicationId + '</int:applicationId></int:createDependencies>';
+    var result;
+
+    try {
+        var serviceName =getProperty(API_MANAGER_SERVICE_NAME);
+        var serverUrl = getProperty(APPFACTORY_SERVER_URL);
+
+        var endPoint = serverUrl + serviceName;
+
+        apiManagerIntegration.open(options,endPoint, false);
+        apiManagerIntegration.send(payload);
+        result = apiManagerIntegration.responseE4X;
+        if(log.isDebugEnabled()){
+            log.debug("Invoking service endpoint:"+endPoint+" returned result:"+result);
+        }
+
+        var elements = result.*::["return"];
+        var elementsArray = [];
+        var mainDictionary={};
+
+        for(var i in elements){
+            var entry = elements[i];
+
+            var ref=entry.*::reference.text();
+            var object={};
+            object.name=entry.*::type.text();
+            object.env=entry.*::environment.text();
+
+            if(mainDictionary[name]==null){
+                var arr=[];
+                arr.push(object)
+                mainDictionary[name]=arr;
+            }else{
+                mainDictionary[name].push(object);
+            }
+
+        }
+        log.info(mainDictionary);
+        var finalValue = {};
+        finalValue.dependencies = elementsArray;
+        return stringify(finalValue);
+    } catch (e) {
+        log.error("Error while creating dependencies for "+ applicationKey + "\n"+e.message);
+        throw "Error while creating dependencies for "+ applicationKey;
+    }
+}
+%>

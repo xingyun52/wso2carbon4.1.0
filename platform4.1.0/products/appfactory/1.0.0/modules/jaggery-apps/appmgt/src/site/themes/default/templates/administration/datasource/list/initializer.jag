@@ -1,0 +1,8 @@
+<%
+jagg.initializer("administration/datasource/list", {
+
+    preInitialize:function () {
+
+    }
+});
+%>

@@ -1,0 +1,56 @@
+<%
+
+    var query = request.getParameter('query');
+    var dbType = request.getParameter('dbType');
+
+    function createTableJSON(result) {
+        var len = result.length;
+        var rows = [];
+        var columnNames = [];
+        var rowEntryStr = "";
+        for (var i = 0; i < len; i++) {
+            var obj = result[i];
+            var row = []
+            for(var k in obj) {
+                if ({}.hasOwnProperty.call(obj, k)) {
+                    if (i == 0) {
+                        columnNames.push(k);
+                    }
+                    rowEntryStr = encodeURI(obj[k]);
+                    row.push(rowEntryStr);
+                    //row.push(obj[k]);
+                }
+            }
+            rows.push(row);
+        }
+        return {Rows: rows, ColumnNames : columnNames};
+    }
+
+    function queryResults(q){
+        var result;
+        try{
+            var db;
+            if(dbType == "RDBMS"){
+                db = new Database("WSO2BAM_DATASOURCE");
+            } else if(dbType == "cassandra"){
+                var config = {
+                    "driverClassName":"org.apache.cassandra.cql.jdbc.CassandraDriver"
+                }
+                db = new Database("jdbc:cassandra://localhost:9160/EVENT_KS", "admin", "admin", config);
+            }
+
+            result = db.query(q);
+        }
+        catch(e){
+            result = "";
+        }
+        finally{
+            db.close();
+        }
+        return result;
+    }
+
+    var result = queryResults(query);
+    var respJson = createTableJSON(result);
+    print(respJson);
+%>

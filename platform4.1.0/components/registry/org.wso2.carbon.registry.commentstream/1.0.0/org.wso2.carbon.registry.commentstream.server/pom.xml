@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.commentstream</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.registry.commentstream.server</artifactId>
+	<packaging>bundle</packaging>
+	<version>1.0.0</version>
+	<name>Registry Comment Stream Feature Server Component</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jaggeryjs</groupId>
+			<artifactId>org.jaggeryjs.scriptengine</artifactId>
+			<version>0.9.0.ALPHA2-wso2v3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jaggeryjs</groupId>
+			<artifactId>org.jaggeryjs.hostobjects.web</artifactId>
+			<version>0.9.0.ALPHA2-wso2v3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jaggeryjs</groupId>
+			<artifactId>org.jaggeryjs.hostobjects.file</artifactId>
+			<version>0.9.0.ALPHA2-wso2v3</version>
+		</dependency>
+		<dependency>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.7R1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jaggeryjs</groupId>
+			<artifactId>org.jaggeryjs.hostobjects.file</artifactId>
+			<version>0.9.0.ALPHA2-wso2v3</version>
+		</dependency>
+		<dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+	</dependencies>
+	
+	<build>
+        <plugins>
+        	 <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Export-Package>
+                            org.wso2.carbon.registry.commentstream.hostobject.*;
+                        </Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

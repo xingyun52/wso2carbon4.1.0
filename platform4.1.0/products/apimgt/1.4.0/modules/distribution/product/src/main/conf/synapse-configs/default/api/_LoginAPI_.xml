@@ -1,0 +1,17 @@
+<api name="_WSO2AMLoginAPI_" context="/login" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/*">
+        <inSequence>
+	    <log level="custom" category="WARN">
+                <property name="MESSAGE" value="**The /login API has been deprecated. Please use the /token url for access token generation.**"/>
+            </log>
+            <send>
+                <endpoint>
+                    <address uri="https://localhost:9443/oauth2endpoints/token"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+    </resource>
+</api>

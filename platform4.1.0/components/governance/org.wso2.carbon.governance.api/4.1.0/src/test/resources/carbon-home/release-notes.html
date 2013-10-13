@@ -1,0 +1,143 @@
+<!--
+~ Copyright 2005-2011 WSO2, Inc. (http://wso2.com)
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+<html>
+<head>
+<meta http-equiv="content-type" content="" />
+<title>WSO2 Carbon ${carbon.version} Release Notes</title>
+</head>
+
+<body>
+	<h1>WSO2 Carbon ${carbon.version} Release Notes</h1>
+
+	<h3>${buildNumber}</h3>
+
+	<p>WSO2 Carbon is the base platform for all WSO2 products, powered
+		by OSGi. It is a lightweight, high performing platform which is a
+		collection of OSGi bundles. All the major features which are included
+		in WSO2 products have been developed as pluggable Carbon components
+		and installed into this base Carbon platform. Carbon base platform
+		includes many key features that are used by all products which runs on
+		top of it.</p>
+
+	<p>
+		An open source product, WSO2 Carbon is available under the <a
+			target="_blank"
+			href="http://www.apache.org/licenses/LICENSE-2.0.html"> Apache
+			Software License (v2.0) </a>
+	</p>
+
+	<h2>What's New In This Release</h2>
+	<ul>
+		<li>Enhanced Deployment Synchronizer</li>
+		<li>JDK 1.7 support</li>
+		<li>Tomcat 7</li>
+		<li>Equinox SDK 3.7</li>
+		<li>P2 Repository: Features grouped by product</li>
+		<li>Documentation Enhancements</li>
+		<li>Various bug fixes(<a
+			href="https://wso2.org/jira/secure/IssueNavigator.jspa?mode=hide&requestId=10742"
+			target="_blank">https://wso2.org/jira/secure/IssueNavigator.jspa?mode=hide&requestId=10742</a>)
+			&amp; enhancements including stabilizing WSO2 Carbon.
+		</li>
+	</ul>
+
+	<h2>Key Features</h2>
+	<ul>
+		<li>Bundling(OSGi) embedded version of tomcat and making exposing
+			it as standard HTTPService - This new architectural improvement
+			allows web-apps to see carbon server classpath and provides native
+			CXF support etc</li>
+
+		<li>Supporting standard Catalina-server.xml - Carbon now supports
+			standard server.xml file that gets shipped with standalone
+			tomcat-distribution. Users who are already familiar with
+			apache-tomcat configuration find it easy to work with WSO2 carbon
+			products.</li>
+
+		<li>Latest Equinox-SDK - WSO2 carbon now embeds the latest
+			Equinox SDK (3.7) as its OSGi runtime.</li>
+
+		<li>Improvements to feature manager functionality - It now allows
+			you to install feature categories based on products. If you want to
+			make ESB out of Carbon, just install ESB feature category.</li>
+
+		<li>Persistence - Completely re-architected persistence layer
+			that allows convenient artifact management across clusters.</li>
+
+		<li>Coordination: This component which is based on Apache
+			ZooKeeper, bring distributed coordination support to the Carbon Core.
+			It implements features such as distributed queues, barriers, group
+			communication and leader election functionality. This is mainly used
+			in clustering setups for components such as scheduled tasks, data
+			sources and message broker.</li>
+
+		<li>Security related improvements : Carbon user store is
+			supported to operate with AD (Active directory) and AD LDS
+			(Light-weight version of AD) with both read/write mode.</li>
+		<li>Registry improvements.</li>
+	</ul>
+
+	<h2>Known Issues</h2>
+	<ol>
+		<li>All known issues have been recorded at <a
+			href="https://wso2.org/jira/browse/CARBON" target="_blank">
+				https://wso2.org/jira/browse/CARBON</a>
+		</li>
+	</ol>
+
+	<h2>Reporting Problems</h2>
+	<br /> Issues can be reported using the public JIRA available at
+	<a href="https://wso2.org/jira/browse/CARBON" target="_blank">
+		https://wso2.org/jira/browse/CARBON</a>
+
+	<h2>Contact us</h2>
+	WSO2 Carbon developers can be contacted via the mailing lists:
+	<br />
+	<strong>Carbon Developers List:</strong>
+	<a href="mailto:dev@wso2.org">dev@wso2.org</a>
+	<br />
+	<strong>Carbon Architecture List:</strong>
+	<a href="mailto:architecture@wso2.org">architecture@wso2.org</a>
+	<br /> For details on subscriptions see
+	<a href="http://wso2.org/mail">http://wso2.org/mail</a>
+	<br />
+	<strong>Wiki:</strong>
+	<a href="http://docs.wso2.org/wiki/display/Carbon400/WSO2+Carbon+4.0.0+Documentation"
+		target="_blank">
+		http://docs.wso2.org/wiki/display/Carbon400/WSO2+Carbon+4.0.0+Documentation</a>
+
+	<h2>Support</h2>
+
+	<p>
+		WSO2 Inc. offers a variety of development and production support
+		programs, ranging from Web-based support up through normal business
+		hours, to premium 24x7 phone support. <br /> <br /> For additional
+		support information please refer to <a target="_blank"
+			href="http://wso2.com/support/">http://wso2.com/support/</a>
+	</p>
+
+	<p>	
+		For more information on WSO2 Carbon, visit <a
+			href="http://wso2.com/products/carbon" target="_blank">WSO2 Carbon Home Page</a>
+	</p>
+
+	<p>Thank you for your interest in WSO2 Carbon</p>
+	<strong> <em>-The WSO2 Carbon Development Team</em>
+	</strong>
+	<hr />
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+var log = new Log();
+
+
+function validateUser(userName){
+	var log = new Log();
+    var ws = require('ws');
+
+    var version = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.useWSA = 1.0;
+    options.action = "urn:doesUserExist";
+    var payload = '<p:doesUserExist xmlns:p="http://services.registration.user.appfactory.carbon.wso2.org"><p:userName>'+userName+'</p:userName></p:doesUserExist>';
+    var result;
+    var endPoint = getProperty(APPFACTORY_SERVER_URL) + "UserRegistrationService";
+
+    try {
+        version.open(options,endPoint, false ,getProperty(ADMIN_USERNAME) , getProperty(ADMIN_PASSWORD));
+        version.send(payload);
+        result = version.responseE4X;
+        var ns=new Namespace("http://services.registration.user.appfactory.carbon.wso2.org");
+        
+        result = result.ns::["return"].text();
+        
+    } catch (e) {
+        log.error("Error when validating"+e.toString());
+        return e.toString();
+    }
+    
+    return result;
+}
+
+
+function getUserConfirmationObject(secreteKey) {
+    try {
+        var result = getConfirmationObject(secreteKey);
+        var ax2342=new Namespace("http://util.verification.email.carbon.wso2.org/xsd");
+        var ns=new Namespace("http://services.verification.email.carbon.wso2.org");
+        var data=new XML(result.ns::["return"].ax2342::data+"");
+
+        var confirmationObject=new Array();
+        confirmationObject.admin=(data.admin.text());
+        confirmationObject.email=data.email.text();
+        confirmationObject.confirmationKey=data.confirmationKey.text();
+        return confirmationObject;
+    } catch(e) {
+        throw "Error while getting confirmation object";
+    }
+}
+
+/*This method returns the users that contains the given part of text*/
+function getAllUsersHavingName(userName) {
+ 
+	var ws = require("ws");
+    var userAdmin = new ws.WSRequest();
+    var options = new Array();
+    
+    options.useSOAP = 1.1;
+    options.action = "urn:listUsers";
+   
+  
+ 
+    var payload = '<mgt:listUsers xmlns:mgt="http://mgt.user.carbon.wso2.org"><mgt:filter>' + userName + '</mgt:filter></mgt:listUsers>';
+    var result;
+     
+   
+    try {
+        var endPoint = getProperty(APPFACTORY_SERVER_URL) + "UserAdmin";
+        
+        userAdmin.open(options, endPoint, false,getProperty(ADMIN_USERNAME),getProperty(ADMIN_PASSWORD));
+        userAdmin.send(payload);
+        result = userAdmin.responseE4X;
+        var ns=new Namespace("http://mgt.user.carbon.wso2.org");
+        var elements = result.ns::["return"];
+        var elementsArray = new Array();
+        for(var i=0;i<elements.length();i++){
+    	   	   elementsArray.push(elements[i].text());
+       }
+       	var userNames={};
+        userNames.usernames=elementsArray;
+        return userNames; 
+    } catch (e) {
+        log.error("Error while getting application of user" + e.message);
+        throw "Error while getting application of user";
+    }
+}
+
+function getConfirmationObject(secreteKey) {
+    var ws = require("ws");
+    var emailVerificationService = new ws.WSRequest();
+    var options = [];
+    options.useSOAP = 1.2;
+    options.action = "urn:confirmUser";
+    options.username = getProperty(ADMIN_USERNAME);
+    options.password = getProperty(ADMIN_PASSWORD);
+
+    var payload = <ser:confirmUser xmlns:ser="http://services.verification.email.carbon.wso2.org"></ser:confirmUser>;
+    var ser = new Namespace("http://services.verification.email.carbon.wso2.org");
+    payload.ser::secretKey = secreteKey;
+    var result;
+    try {
+        var endPoint = getProperty(APPFACTORY_SERVER_URL) + "EmailVerificationService";
+        emailVerificationService.open(options, endPoint, false);
+        emailVerificationService.send(payload);
+        result = emailVerificationService.responseE4X;
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking service endpoint:" + endPoint + " returned result:" + result);
+        }
+        return result;
+    } catch (e) {
+        log.error("Email varification failed \n" + e.message);
+        throw "Email varification failed";
+    }
+}
+%>

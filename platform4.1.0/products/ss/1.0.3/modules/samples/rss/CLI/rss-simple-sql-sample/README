@@ -1,0 +1,45 @@
+Prerequisites:
+
+Having and mysql server with known database url and a user.
+
+Storage Server RSS CLI Sample
+=============================
+
+This sample simply connect to a mysql server and execute a script which is located in the jar package and insert values into created
+database tables and retrieve data from values inserted from through the program.
+
+Build the project with dependency libraries using following maven build command.
+
+	mvn clean assembly:assembly
+
+If you want to build the project without dependencies use following command.
+
+	mvn clean install
+
+Execute the build jar with dependencies named  which is located under target folder by passing command line arguments as follows.
+
+During this command line arguments are inject as system properties.
+
+Note:There should be a created database and the database url provided along with the database name.Parameters can be describe as follow
+
+-Djdbcurl=Database url along with a already created database
+-Ddriver=Database driver name
+-Dusername=Username of the database user
+-Dpassword=Password of the database user
+
+Eg:Execute the built jar with dependencies using with the given parameters.
+
+Input
+
+java -jar  -Djdbcurl=jdbc:mysql://localhost:3306/rssdb -Ddriver=com.mysql.jdbc.Driver -Dusername=root -Dpassword=root target/RSSClient-4.0.5-jar-with-dependencies.jar
+
+Output
+
+SQL query executed successfully.
+Hansen
+Svendson
+Pettersen
+77895
+44678
+22456
+24562

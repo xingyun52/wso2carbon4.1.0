@@ -1,0 +1,28 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS ActivityDataTable
+	(messageID STRING, sentTimestamp BIGINT, activityID STRING, version STRING, soapHeader STRING, soapBody STRING, host STRING)
+	STORED BY 'org.apache.hadoop.hive.cassandra.CassandraStorageHandler'
+	WITH SERDEPROPERTIES (
+ 	"cassandra.host" = "127.0.0.1" ,
+	"cassandra.port" = "9160" ,
+	"cassandra.ks.name" = "EVENT_KS" ,
+	"cassandra.ks.username" = "admin" ,
+	"cassandra.ks.password" = "admin" ,
+	"cassandra.cf.name" = "org_wso2_bam_activity_monitoring" ,
+	"cassandra.columns.mapping" =
+	":key, payload_timestamp, correlation_bam_activity_id, Version, payload_SOAPHeader, payload_SOAPBody, meta_host" );
+
+CREATE EXTERNAL TABLE IF NOT EXISTS ActivitySummaryTable(
+	messageRowID STRING, sentTimestamp BIGINT, bamActivityID STRING, soapHeader STRING, soapBody STRING, host STRING)
+	STORED BY 'org.wso2.carbon.hadoop.hive.jdbc.storage.JDBCStorageHandler'
+	TBLPROPERTIES (
+	'wso2.carbon.datasource.name'='WSO2BAM_DATASOURCE',
+	'hive.jdbc.update.on.duplicate' = 'true' ,
+	'hive.jdbc.primary.key.fields' = 'messageRowID' ,
+	'hive.jdbc.table.create.query' =
+	'CREATE TABLE ActivitySummary (messageRowID VARCHAR(100) NOT NULL PRIMARY KEY,
+	 sentTimestamp BIGINT, bamActivityID VARCHAR(40), soapHeader TEXT, soapBody TEXT, host VARCHAR(25))' );
+
+insert overwrite table ActivitySummaryTable
+	select messageID, sentTimestamp, activityID, soapHeader, soapBody, host
+	from ActivityDataTable
+	where version= "1.0.0";

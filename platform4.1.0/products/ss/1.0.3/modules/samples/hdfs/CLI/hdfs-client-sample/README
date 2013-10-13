@@ -1,0 +1,21 @@
+Prerequisites
+
+Running Storage Server or local cassandra server along with maven build tool
+
+HDFS Client Sample
+------------------------------
+HDFS Client connects with the HDFS file system secure manner with Kerberos ticket and creates a file in the HDFS file system.
+
+
+Build the project with Maven build too using following command
+
+	mvn clean install
+
+Build the project with dependency libraries using following maven build command
+
+	mvn clean assembly:assembly
+
+Execute the build jar which is located under target folder by passing command line arguments as follows.
+
+     java -jar target/HDFSClient-4.0.5-jar-with-dependencies.jar
+

@@ -1,0 +1,148 @@
+
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+
+var log= new Log();
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+     if(action == "getTemplates"){
+       
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+
+          try {
+            result = mod.getTemplates(applicationKey);
+           
+            print(result);
+
+        } catch(e) {
+            throw "Error while reading templates";
+        }
+
+    }else  if(action == "dropTemplate"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var name= request.getParameter("templateName");
+          try {
+            mod.dropTemplate(applicationKey,getEnvironmentName(name),name);
+
+        } catch(e) {
+            throw "Error while deleting template";
+        }
+
+    }else  if(action == "createTemplate"){
+     
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var name= request.getParameter("name");
+          var databaseServerInstanceName= request.getParameter("databaseServerInstanceName");
+          var alterPriv=createValue(request.getParameter("alterPriv"));
+          var alterRoutinePriv=createValue(request.getParameter("alterRoutinePriv"));
+          var createPriv=createValue(request.getParameter("createPriv"));
+          var createRoutinePriv=createValue(request.getParameter("createRoutinePriv"));
+          var createTmpTablePriv=createValue(request.getParameter("createTmpTablePriv"));
+          var createViewPriv=createValue(request.getParameter("createViewPriv"));
+          var deletePriv=createValue(request.getParameter("deletePriv"));
+          var dropPriv=createValue(request.getParameter("dropPriv"));
+          var eventPriv=createValue(request.getParameter("eventPriv"));
+          var executePriv=createValue(request.getParameter("executePriv"));
+          var grantPriv=createValue(request.getParameter("grantPriv"));
+          var indexPriv=createValue(request.getParameter("indexPriv"));
+          var insertPriv=createValue(request.getParameter("insertPriv"));
+          var lockTablesPriv=createValue(request.getParameter("lockTablesPriv"));
+          var referencesPriv=createValue(request.getParameter("referencesPriv"));
+          var selectPriv=createValue(request.getParameter("selectPriv"));
+          var showViewPriv=createValue(request.getParameter("showViewPriv"));
+          var triggerPriv=createValue(request.getParameter("triggerPriv"));
+          var updatePriv=createValue(request.getParameter("updatePriv"));
+
+         // this is to identify the role name that maps to environment.
+         name = getEnvironmentAwareTemplateName(name, databaseServerInstanceName );
+          try {
+            mod.createTemplate(applicationKey,databaseServerInstanceName,name,alterPriv,alterRoutinePriv, createPriv,createRoutinePriv, createTmpTablePriv, createViewPriv,deletePriv,dropPriv,eventPriv,executePriv,grantPriv,indexPriv,insertPriv,lockTablesPriv,referencesPriv,selectPriv,showViewPriv,triggerPriv,updatePriv);
+
+        } catch(e) {
+            throw "Error while creating template";
+        }
+
+    }else if(action == "editDbTemplate"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var name= request.getParameter("name");
+          var alterPriv=createValue(request.getParameter("alterPriv"));
+          var alterRoutinePriv=createValue(request.getParameter("alterRoutinePriv"));
+          var createPriv=createValue(request.getParameter("createPriv"));
+          var createRoutinePriv=createValue(request.getParameter("createRoutinePriv"));
+          var createTmpTablePriv=createValue(request.getParameter("createTmpTablePriv"));
+          var createViewPriv=createValue(request.getParameter("createViewPriv"));
+          var deletePriv=createValue(request.getParameter("deletePriv"));
+          var dropPriv=createValue(request.getParameter("dropPriv"));
+          var eventPriv=createValue(request.getParameter("eventPriv"));
+          var executePriv=createValue(request.getParameter("executePriv"));
+          var grantPriv=createValue(request.getParameter("grantPriv"));
+          var indexPriv=createValue(request.getParameter("indexPriv"));
+          var insertPriv=createValue(request.getParameter("insertPriv"));
+          var lockTablesPriv=createValue(request.getParameter("lockTablesPriv"));
+          var referencesPriv=createValue(request.getParameter("referencesPriv"));
+          var selectPriv=createValue(request.getParameter("selectPriv"));
+          var showViewPriv=createValue(request.getParameter("showViewPriv"));
+          var triggerPriv=createValue(request.getParameter("triggerPriv"));
+          var updatePriv=createValue(request.getParameter("updatePriv"));
+	  var databaseServerInstanceName= request.getParameter("databaseServerInstanceName");
+          log.info(databaseServerInstanceName);
+          try {
+            mod.editDbTemplate(applicationKey,databaseServerInstanceName,name,alterPriv,alterRoutinePriv, createPriv,createRoutinePriv, createTmpTablePriv, createViewPriv,deletePriv,dropPriv,eventPriv,executePriv,grantPriv,indexPriv,insertPriv,lockTablesPriv,referencesPriv,selectPriv,showViewPriv,triggerPriv,updatePriv);
+
+        } catch(e) {
+            throw "Error while editing the  template";
+        }
+
+    }else if(action == "editTemplate"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var name= request.getParameter("name");
+          var databaseServerInstanceName= request.getParameter("databaseServerInstanceName");
+          try {
+          result =  mod.editTemplate(applicationKey,name,databaseServerInstanceName);
+          print(result);
+        } catch(e) {
+            throw "Error while deleting template";
+        }
+
+    }  else {
+       throw new Error("No action specified");
+    }
+}());
+
+function createValue(value){
+   
+   if(value=='true'){
+       value="Y";
+   }else{
+       value="N";
+   }
+  return value;
+
+}
+function getEnvironmentAwareTemplateName(template, environment){
+    return template +'@'+environment;
+}
+function getEnvironmentLessTemplateName(environmentAwareTemplateName){
+    return environmentAwareTemplateName.substring(0, environmentAwareTemplateName.lastIndexOf('@'));
+}
+function getEnvironmentName(environmentAwareTemplateName){
+    return environmentAwareTemplateName.substring(environmentAwareTemplateName.lastIndexOf('@')+1,environmentAwareTemplateName.length);
+}
+
+%>
+

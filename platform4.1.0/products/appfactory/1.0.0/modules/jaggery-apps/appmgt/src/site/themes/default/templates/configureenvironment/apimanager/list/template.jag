@@ -1,0 +1,361 @@
+<% jagg.template("configureenvironment/apimanager/list", function(inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+    jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION_CONFIGURATION_API_MANAGER);
+//Getting the apiManager Server Url here.
+var apiManagerServerUrl = getProperty(API_MANAGER_STORE_URL);
+var modApiManager = jagg.module("apimanager");
+%>
+<!-- adding script elements here -->
+<script type="text/javascript">
+    function addApi(applicationKey) {
+        jagg.post("../blocks/apimanager/add/ajax/add.jag", {
+            action:"createApplication",
+            applicationKey:applicationKey
+        });
+    }
+
+    function generateKeys(applicationKey, apiName, apiVersion, apiProvider) {
+        jagg.post("../blocks/apimanager/key/ajax/key.jag", {
+            action:"generateKeys",
+            applicationKey:applicationKey,
+            apiName:apiName,
+            apiVersion:apiVersion,
+            apiProvider:apiProvider
+        });
+    }
+
+    function getAPIInformation(apiName, apiVersion, apiProvider) {
+        jagg.post("../blocks/apimanager/get/ajax/get.jag", {
+                            action:"getAPI",
+            apiName:apiName,
+            apiVersion:apiVersion,
+            apiProvider:apiProvider
+        },
+        function (result) {
+            var divName = "#divContent" + apiName+apiVersion+apiProvider;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).innerHTML = "";
+            var parsedResult = jQuery.parseJSON(result);
+            var apiInfo = jQuery.parseJSON(parsedResult.apiInfo[0]);
+
+            var wadl = apiInfo.wadl;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild($('<div class="row-fluid"><div class="span4">WADL</div><div class="span8">' + wadl + '</div>')[0]);
+
+            var wsdl = apiInfo.wsdl;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild($('<div class="row-fluid"><div class="span4">WSDL</div><div class="span8">' + wsdl + '</div>')[0]);
+
+
+            var owner = apiInfo.owner;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild($('<div class="row-fluid"><div class="span4">Owner</div><div class="span8">' + owner + '</div>')[0]);
+
+            var context = apiInfo.context;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild($('<div class="row-fluid"><div class="span4">Context</div><div class="span8">' + context + '</div>')[0]);
+
+            var description = apiInfo.description;
+            document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild($('<div class="row-fluid"><div class="span">Description</div><div class="span8">' + description + '</div>')[0]);
+
+            var endpoints = apiInfo.endpoints;
+
+            for (var i = 0; i < endpoints.length; i++) {
+                var endpoint = jQuery.parseJSON(endpoints[i]);
+                var row = $('<div class="row-fluid"><div class="span4">' + endpoint.name + '</div><div class="span8">' + endpoint.value + '</div>')[0];
+                document.getElementById("divContent" + apiName+apiVersion+apiProvider).appendChild(row);
+            }
+
+            document.getElementById("div" + apiName + apiVersion + apiProvider).style.display = 'block';
+            document.getElementById("button" + apiName + apiVersion + apiProvider) .style.display = 'none';
+            document.getElementById("less" + apiName + apiVersion + apiProvider) .style.display = 'block';
+
+        },
+        function (jqXHR, textStatus, errorThrown) {
+        //add the error label in the grid
+        });
+    }
+
+    function hideMore(apiName,apiVersion,apiProvider){
+       document.getElementById("div" + apiName + apiVersion + apiProvider).style.display = 'none';
+       document.getElementById("button" + apiName + apiVersion + apiProvider) .style.display = 'block';
+       document.getElementById("less" + apiName + apiVersion + apiProvider) .style.display = 'none';
+    }
+    function createDependencies(applicationKey){
+      jagg.post("../blocks/apimanager/key/ajax/key.jag", {
+                  action:"createDependencies",
+                  applicationKey:applicationKey
+              },
+              function (result) {
+                  var parsedResult = jQuery.parseJSON(result);
+
+                  for(var key in parsedResult){
+                  var tableHeaderHTML="<th></th>";
+                  var tableBodyRow=$("<tr></tr>");
+                      var valuePairArray=parsedResult[key];
+                       var cell=$("<td></td>").text(key);
+                       tableBodyRow.append(cell);
+
+                        for(var index in valuePairArray){
+                            var valuePair=valuePairArray[index];
+
+                            var title=valuePair.env;
+                            var value=valuePair.name;
+
+                            tableHeaderHTML=tableHeaderHTML.concat("<th>"+title+"</th>");
+                            $("#dependancyTable thead tr").html(tableHeaderHTML);
+
+                            var cell=$("<td></td>").text(value);
+                            tableBodyRow.append(cell);
+
+                        }
+
+                        $("#dependancyTable tbody").append(tableBodyRow);
+                  }
+              },
+              function (jqXHR, textStatus, errorThrown) {
+              //add the error label in the grid
+              });
+    }
+    $(document).ready(function(){
+
+    });
+</script>
+    <style type="text/css">
+    .span9 label{
+     font-size:12px;
+    }
+    </style>
+    <div class="container">
+           <div class="title-section">
+               <div class="row">
+                   <div class="span12">
+                       <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Subscribe to API","pos":"titlebar" }); %>
+                   </div>
+               </div>
+           </div>
+    </div>
+
+    <!--START  content section-->
+    <div class="container content-container wrapper">
+
+         <div class="row">
+             <div class="span12 content-section shadow-up">
+                 <div class="content-data">
+                     <div class="container-fluid">
+                         <div class="row-fluid">
+                             <div class="span3">
+                                 <h5>Subscribe to an API </h5>
+
+                                 <div class=""></div>
+                             </div>
+                             <div class="span9">
+                                 <div class="control-group">
+                                     <div class="control-label">
+                                         <a for="SubscribeToAPI" href='<%=apiManagerServerUrl%>'
+                                            onclick="addApi('<%=applicationKey%>')"
+                                            target="_blank" class='btn'>
+                                             <i class="icon-api-add"></i>
+                                             Add Api</a>
+                                     </div>
+
+                                     <div class="controls">
+                                         <div class="help-block">
+                                             log-in to API Manager and subscribe to an API<br/>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row-fluid">
+                             <hr/>
+                         </div>
+                         <div class="row-fluid">
+                             <div class="span3">
+                                 <h5>Create Dependencies </h5>
+
+                                 <div class=""></div>
+                             </div>
+                             <div class="span9">
+                                 <div class="control-group">
+                                     <div class="control-label">
+                                        <button class="btn"
+                                                    onclick="createDependencies('<%=applicationKey%>')">
+                                                <i class="icon-create-dep"></i>
+                                                Create Dependencies
+                                        </button>
+                                     </div>
+
+                                     <div class="controls">
+                                         <div class="help-block">
+                                             Create dependency references in environments<br/>
+                                         </div>
+                                     </div>
+
+                                     <!--div id="application_Dependencies">
+                                     </div-->
+                                 </div>
+                                 <div class="control-group">
+                                     <table class="table table-stripped table-bordered" id="dependancyTable" style="font-size:11px;">
+                                        <thead>
+                                                 <tr></tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+
+                                    </table>
+                                 </div>
+                             </div>
+
+                         <div class="row-fluid">
+                             <hr/>
+                         </div>
+                         <div class="row-fluid">
+
+                             <div class="span3">
+                                 <h5>Subscribed API Information</h5>
+
+                                 <div class=""></div>
+                             </div>
+                             <div class="span9" style="font-size:12px;">
+                                 <%
+
+                                 var apiInformation = modApiManager.getApplicationAPI(applicationKey);
+                                 var apiInfoJson = apiInformation;
+                                 var apiInfoArray = apiInfoJson.apiInfo;
+
+                                 for (var i = 0; i < apiInfoArray.length; i++) {
+                                 var apiData = apiInfoArray[i];
+                                 var log = new Log();
+                                 //log.info(apiData.keys);
+
+                                 %>
+                                 <div class="container-fluid">
+                                    <div class="row-fluid">
+                                        <div class="span4">
+                                            <label class="control-label" for='<%="name" + apiData.name%>'>Name </label>
+                                        </div>
+                                        <div class="span8">
+                                            <label id='<%="name" + apiData.name%>'><%=apiData.name%> </label>
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <div class="container-fluid">
+                                    <div class="row-fluid">
+                                        <div class="span4">
+                                            <label class="control-label" for='<%="version"+apiData.version%>'>Version</label>
+                                        </div>
+                                        <div class="span8">
+                                            <label  id='<%="version"+apiData.version%>'><%=apiData.version%></label>
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <div class="container-fluid">
+                                    <div class="row-fluid">
+                                        <div class="span4">
+                                            <label class="control-label" for='<%="Provider"+apiData.provider%>'>Provider</label>
+                                        </div>
+                                        <div class="span8">
+                                            <label  id='<%="Provider"+apiData.provider%>'><%=apiData.provider%></label>
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <div class="container-fluid">
+                                     <%
+                                     var keysArray = apiData.keys;
+
+                                     if(keysArray.length > 0){
+                                         for(var j =0 ;j< keysArray.length; j++){
+                                         var key = keysArray[j];
+                                         %>
+                                         <div class="row-fluid">
+                                         <div class="span4">
+                                              <label  id='<%="keys"+apiData.name+key.name%>'><%=key.name%></label>
+                                         </div>
+                                         <div class="span8">
+                                              <label  id='<%="keys"+apiData.name+key.value%>'><%=key.value%></label>
+                                         </div>
+                                         </div>
+                                         <%
+                                         }
+                                     }else{
+                                     %>
+                                     <div class="row-fluid">
+                                        <div>
+                                            <div class="span12">
+                                                <div class="control-label">
+                                                    <input type="BUTTON"
+                                                    onclick="generateKeys('<%=applicationKey%>','<%=apiData.name%>','<%=apiData.version%>','<%=apiData.provider%>')"
+                                                    value="Generate Keys"/>
+
+                                                </div>
+
+                                                <div class="controls">
+                                                    <div class="help-block">
+                                                        Use the given button to generate keys for this API
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <%
+                                      }
+                                      %>
+
+                                 </div>
+                                 <div class="control-group" >
+                                    <div class="container-fluid" id='<%="button" + apiData.name + apiData.version + apiData.provider%>'>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <div class="control-label">
+                                                    <input type="BUTTON"
+                                                    onclick="getAPIInformation('<%=apiData.name%>','<%=apiData.version%>','<%=apiData.provider%>')"
+                                                    value="More"/>
+
+                                                </div>
+
+                                                <div class="controls">
+                                                    <div class="help-block">
+                                                        Use the given button to display more information about the API
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id='<%="div" + apiData.name + apiData.version + apiData.provider %>'>
+                                        <div class="container-fluid" id='<%="divContent" + apiData.name + apiData.version + apiData.provider %>'>
+
+                                        </div>
+                                    </div>
+                                    <div class="container-fluid" id='<%="less" + apiData.name + apiData.version + apiData.provider%>' style='display : none'>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <div class="control-label">
+                                                    <input type="BUTTON"
+                                                    onclick="hideMore('<%=apiData.name%>','<%=apiData.version%>','<%=apiData.provider%>')"
+                                                    value="Hide"/>
+
+                                                </div>
+
+                                                <div class="controls">
+                                                    <div class="help-block">
+                                                        Use the given button to display basic information about the API
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                     <hr/>
+                                 </div>
+                                 <%
+                                 }
+                                 %>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+    </div>
+        
+<% }); %>

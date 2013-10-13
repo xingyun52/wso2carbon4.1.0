@@ -1,0 +1,104 @@
+<% jagg.template("overview", function(inputs, outputs, jagg) { %>
+<% var api=outputs.api; var createPermitted=outputs.isCreatePermitted;%>
+<div class="row-fluid">
+    <div class="span2">
+         <% jagg.includeBlock("item-nav-list",{api:api}); %>
+    </div>
+    <div class="span10">
+    <%if(api.description!=''){%>
+        <div class="well" id="apiView"><%=api.description%>
+        </div>
+    <%}%>
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <td class="span3">Context</td>
+                <td id="inUrl"><%=api.context%></td>
+            </tr>
+             <tr>
+                <td class="span3">Endpoint URL</td>
+                <td id="inUrl"><%=api.endpoint%></td>
+            </tr>
+            <%if(api.sandbox!=''){%>
+            <tr>
+                <td>Sandbox URL</td>
+                <td id="sandbox"><%=api.sandbox%></td>
+            </tr>
+            <%}%>
+            <%if(api.wsdl!=''){%>
+            <tr>
+                <td>WSDL</td>
+                <td id="wsdl"><a href="<%=api.wsdl%>" target="_blank"><%=api.wsdl%></a></td>
+            </tr>
+            <%}
+            if(api.wadl!=''){%>
+            <tr>
+                <td>WADL</td>
+                <td id="wadl"><a href="<%=api.wadl%>" target="_blank"><%=api.wadl%></a></td>
+            </tr>
+            <%}%>
+            <tr>
+                <td>Date Last Updated</td>
+                <td id="inUpdated"><%=api.lastUpdated%></td>
+            </tr>
+            <tr>
+                <td>Tier Availability</td>
+                <td id="tierAvb"><%=api.availableTiers%></td>
+            </tr>
+            <% if(api.tags!=''){%>
+            <tr>
+                <td>Tags</td>
+                <td id="tags"><%=api.tags%></td>
+            </tr>
+             <%
+            }if(api.bizOwner!=''){%>
+             <tr>
+                <td>Business Owner</td>
+                <td id="bizOwnerData"><%=api.bizOwner%> <% if(api.bizOwnerMail!=''){%>
+                [<a href="mailto:<%=api.bizOwnerMail%>"><%=api.bizOwnerMail%></a>]
+                <%}%>
+                </td>
+            </tr>
+             <%
+             }if(api.techOwner!=''){%>
+             <tr>
+                <td>Technical Owner</td>
+                <td id="techOwnerData"><%=api.techOwner%><% if(api.techOwnerMail!=''){%>
+                [<a href="mailto:<%=api.techOwnerMail%>"><%=api.techOwnerMail%></a>]
+                <%}%>
+                </td>
+            </tr>
+            <%}%>
+            </tbody>
+        </table>
+    </div>
+    <div class="span4">
+        <div id="chart1"></div>
+    </div>
+</div>
+
+<!-- Row -->
+<%if(createPermitted){%>
+        <script>
+            var provider = '<%=api.provider%>';
+        </script>
+<div class="row-fluid">
+    <form id="copyApiForm">
+    <div class="well" id="copy-api">
+        <input type="hidden" id="overviewAPIVersion" value="<%=api.version%>"/>
+        <input type="hidden" id="overviewAPIName" value="<%=api.name%>"/>
+        <label>To Version</label>
+        <input type="text" class="span3 required" id="new-version"><span class="help-inline">Ex:v1.0.1</span>
+        <div class="copy-buttons">
+            <button type="submit" class="btn btn-primary copy-button">Done</button>
+            <button type="button" class="btn cancel-button" onclick="javascript:$('#copy-api').toggle('slow');$('#show-copy-api').toggle()">Cancel</button>
+        </div>
+    </div>
+    <div id="show-copy-api" class="form-actions">
+        <button type="button" class="btn" onclick="javascript:$('#copy-api').toggle('slow');$('#show-copy-api').toggle()">Copy</button>
+    </div>
+    </form>
+</div>
+<%}%>
+
+<% }); %>

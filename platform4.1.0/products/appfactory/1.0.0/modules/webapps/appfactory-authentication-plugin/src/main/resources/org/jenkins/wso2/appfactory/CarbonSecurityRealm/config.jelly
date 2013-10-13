@@ -1,0 +1,14 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="Authentication Service EPR" field="authenticationServiceEPR"
+      description="Enter the EPR of Carbon authentication Service">
+    <f:textbox default="https://localhost:9443/services/AuthenticationAdmin" value="${instance.authenticationServiceEPR}"/>
+    </f:entry>
+    <f:entry title="Client Trust Store" field="clientTrustStore"
+                  description="Enter the Client Trust Store to connect appfactory securely">
+        <f:textbox  value="${instance.clientTrustStore}" default="APPFACTORY_HOME/repository/resources/security/wso2carbon.jks" />
+    </f:entry>
+    <f:entry title="Client Truststore Password" field="clientTrustStorePassword"
+                      description="Enter the Client Trust Store Password to connect appfactory securely">
+        <f:textbox value="${instance.clientTrustStorePassword}" default="wso2carbon" />
+    </f:entry>
+</j:jelly>

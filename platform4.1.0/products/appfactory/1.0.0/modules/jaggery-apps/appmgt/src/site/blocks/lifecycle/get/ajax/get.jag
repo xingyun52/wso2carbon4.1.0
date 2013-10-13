@@ -1,0 +1,33 @@
+<%
+
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+	
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+ 	var log = new Log();
+ 
+    if (action == "getLifeCycleHistoryForApplication") {
+    	mod = jagg.module("lifecycle");
+    	
+    	var applicationKey = request.getParameter("applicationKey");
+    	var version = request.getParameter("version");
+    	var stageName = request.getParameter("stageName");
+    	var userName = request.getParameter("userName");
+        var result = mod.getLifeCycleHistoryForApplication(applicationKey,version,stageName,userName);
+        print(result);
+    }else {
+		log.error("No action specified");
+	}
+}());
+
+
+
+
+
+%>

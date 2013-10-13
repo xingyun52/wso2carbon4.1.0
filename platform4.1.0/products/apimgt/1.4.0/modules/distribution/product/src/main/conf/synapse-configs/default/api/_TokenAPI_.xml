@@ -1,0 +1,14 @@
+<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2AMTokenAPI_" context="/token">
+    <resource methods="POST" url-mapping="/*">
+        <inSequence>
+            <send>
+                <endpoint>
+                    <address uri="https://localhost:9443/oauth2endpoints/token"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+    </resource>
+</api>

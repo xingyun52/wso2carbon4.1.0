@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2009, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"/>
+        <title>WSO2 API Manager v1.3.0 - 17th December 2012</title>
+    </head>
+    <body>
+        <div id="main-content">
+            <h1>The WSO2 API Manager 1.3.0 Released!</h1>
+
+            <p>
+                The WSO2 API Manager team is pleased to announce the release of version 1.3.0 of
+                the Open Source API Manager.
+            </p>
+
+            <p>
+                WSO2 API Manager is a platform for creating, managing, consuming and monitoring
+                APIs. It employs proven SOA best practices to solve a wide range of API
+                management challenges such as API provisioning, API governance, API security
+                and API monitoring. It combines some of the most powerful and mature components
+                of the WSO2's state-of-the-art Carbon platform to deliver a smooth and end-to-end
+                API management experience while catering to both API publisher and API consumer
+                requirements.
+            </p>
+            
+            <p>
+                WSO2 API Manager is comprised of several modules.
+            </p>
+            <ul>
+                <li><b>API provider:</b> Define new APIs and manage them</li>
+                <li><b>API store:</b> Browse published APIs and subscribe to them</li>
+                <li><b>API gateway:</b> The underlying API runtime based on WSO2 ESB</li>
+            </ul>
+
+            <p>
+                WSO2 API Manager is developed on top of the revolutionary
+                <a href="http://wso2.org/projects/carbon">WSO2 Carbon platform</a>
+                (Middleware a' la carte),
+                an OSGi based framework that provides seamless modularity to your SOA via
+                componentization. This release also contains many new features and a range of
+                optional components (add-ons) that can be installed to customize the behavior 
+                of the API Manager. Further, any existing features of the product which are not 
+                required in your environment can be easily removed using the underlying 
+                provisioning framework of Carbon. In brief, WSO2 API Manager can be fully 
+                customized and tailored to meet your exact API management needs.
+            </p>
+            
+            <p>
+                For more information on WSO2 API Manager please visit <a href="http://wso2.com/products/api-manager">
+                http://wso2.com/products/api-manager</a>. Also take a look at the online product
+                <a href="http://docs.wso2.org/wiki/display/AM130/WSO2+API+Manager+Documentation">documentation</a>.
+            </p>
+
+            <h2>How to Run</h2>
+            <ol>
+                <li>Extract the downloaded zip</li>
+                <li>Go to the bin directory in the extracted folder</li>
+                <li>Run the wso2server.sh or wso2server.bat as appropriate</li>
+                <li>Launch a web browser and navigate to <a href="https://localhost:9443/publisher">https://localhost:9443/publisher</a>
+                    to access the API provider webapp
+                </li>
+                <li>Navigate to <a href="https://localhost:9443/store">https://localhost:9443/store</a> to access the API store</li>
+                <li>Use "admin", "admin" as the username and password to login as an admin</li>
+                <li>If you need to start the OSGi console with the server use the property
+                    -DosgiConsole when starting the server. The INSTALL.txt file found on the
+                    installation directory will give you a comprehensive set of options and
+                    properties that can be passed into the startup script
+                </li>                
+            </ol>
+
+            <h2>New Features of WSO2 API Manager 1.3.0</h2>
+            <p>
+                This release of API Manager comes with a horde of new features and bug fixes.
+            </p>
+
+<h2>        New Feature
+</h2>
+<ul>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-774'>APIMANAGER-774</a>] -         Support PostgreSQL deployment
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-814'>APIMANAGER-814</a>] -         API Store needs to be changed to support multiple languages
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-839'>APIMANAGER-839</a>] -         Implement specifying  the Authentication Scheme at resources level 
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-845'>APIMANAGER-845</a>] -         Integrate Google Analytics as alternative to BAM for API Gateway
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-849'>APIMANAGER-849</a>] -         More graphs/widgets on error statistics
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-851'>APIMANAGER-851</a>] -         Include a REST client to the API Store
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-852'>APIMANAGER-852</a>] -         Access token revoke functionality
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-853'>APIMANAGER-853</a>] -         Improve Self registration Process by reusing IS feature
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-862'>APIMANAGER-862</a>] -         Support for secured backend services
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-868'>APIMANAGER-868</a>] -         Throttle requests per Application
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-871'>APIMANAGER-871</a>] -         Ability define Private / Public APIs
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-911'>APIMANAGER-911</a>] -         Partition access token storage when multiple user stores are configured
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-913'>APIMANAGER-913</a>] -         Workflow extension support for API Store self sign up process
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-914'>APIMANAGER-914</a>] -         Include a billing data generation sample
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-915'>APIMANAGER-915</a>] -         More search criterias for API search and Access Token search
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-925'>APIMANAGER-925</a>] -         New theme for API Store (dark)
+</li>
+</ul>
+
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-491'>APIMANAGER-491</a>] -         Need an advanced search to locate a particular API, when there are loads of them, from store UI
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-676'>APIMANAGER-676</a>] -         Provide a UI to configure Tiers
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-724'>APIMANAGER-724</a>] -         Refresh token should not re-generate new tokens for tokens marked in-active
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-744'>APIMANAGER-744</a>] -         API search is case sensitive &amp; support only exact searches 
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-747'>APIMANAGER-747</a>] -         Include POST_TO_URI property by default to the API synapse configuration
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-860'>APIMANAGER-860</a>] -         Throttling Improvements
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-907'>APIMANAGER-907</a>] -         Deprecate the Login API and rename its url to /token
+</li>
+</ul>
+
+
+
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-1'>APIMANAGER-1</a>] -         [API docs] Attribute values are saved until page is refreshed
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-7'>APIMANAGER-7</a>] -         API MGR does not recover from lost connection to BAM server
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-13'>APIMANAGER-13</a>] -         Shouldn't we support -Dsetup for API Manager DB?
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-104'>APIMANAGER-104</a>] -         [API Store] Search is case sensitive.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-136'>APIMANAGER-136</a>] -         [API Provider] When adding docs of type 'Other', though we specify a value it's not displayed anywhere.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-190'>APIMANAGER-190</a>] -         Cannot change lifecycle states of APIs added through API-Manager
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-349'>APIMANAGER-349</a>] -         Provide users with option to edit API resources
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-409'>APIMANAGER-409</a>] -         [API Provider] When you change the Icon, you have to refresh the page to view the new Icon.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-710'>APIMANAGER-710</a>] -         WSO2 AM generates un-necessary exceptions when Statistics are not enabled
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-738'>APIMANAGER-738</a>] -         Unable to set lifecycle state to PUBLISHED for APIs published through G-Reg
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-750'>APIMANAGER-750</a>] -         Cannot View APIs in API Publisher
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-756'>APIMANAGER-756</a>] -         API-Store tagCloud links not working for special charactors
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-777'>APIMANAGER-777</a>] -         Tier changes is not reflected as expected
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-782'>APIMANAGER-782</a>] -         NPE when editing inline doc content
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-795'>APIMANAGER-795</a>] -         Cannot invoke https endpoints with AM
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-806'>APIMANAGER-806</a>] -         When having multiple user stores cannot distinguish which role comes from which user-store, which becomes an issue when adding users.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-816'>APIMANAGER-816</a>] -         &lt;user1&gt; and &lt;domian.com&gt;/&lt;user1&gt; are treated as two different users in AM-store for subscriptions
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-821'>APIMANAGER-821</a>] -         Revoked User Access tokens get produced in log in API call
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-828'>APIMANAGER-828</a>] -         Subscribers with same name but in different user-store can see/edit the subscriptions of the counterpart
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-831'>APIMANAGER-831</a>] -         Users with email address can't publish APIs
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-838'>APIMANAGER-838</a>] -         Samples broken in intermediate builds
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-864'>APIMANAGER-864</a>] -         Cannot invoke APIs when a WebContextRoot is specified in the carbon.xml
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-865'>APIMANAGER-865</a>] -         Error handling accented letter (&#xE0;)
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-867'>APIMANAGER-867</a>] -         Need to properly handle character encoding of user entered content throughout the Jaggery apps
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-874'>APIMANAGER-874</a>] -         Issue on showing the status of API in 'overview' page once a life-cycle change happened
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-875'>APIMANAGER-875</a>] -         -Dsetup option fails after installing APIManager feature
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-878'>APIMANAGER-878</a>] -         ArrayIndexOutOfBoundsException when searching APIs with &quot;version:&quot; key
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-879'>APIMANAGER-879</a>] -         When searching APIs in publisher later versions are not shown
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-880'>APIMANAGER-880</a>] -         i18 key is shown as error message
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-881'>APIMANAGER-881</a>] -         [Publisher UI] When editing an API cannot change the visibility from public to Restricted
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-882'>APIMANAGER-882</a>] -         NPE when trying to update an API from publisher app
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-883'>APIMANAGER-883</a>] -         Bad Request when extra spaces are present in the Authorization header
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-884'>APIMANAGER-884</a>] -         Cannot subscribe to API's
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-886'>APIMANAGER-886</a>] -         SQL error thrown when invoking an API with an expired token
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-887'>APIMANAGER-887</a>] -         Recently Added APIs tab,doesn't show multiple versions of same API,when the related config is enabled
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-888'>APIMANAGER-888</a>] -         More APIs from provider tab,doesn't show multiple versions of same API,when the related config is enabled
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-889'>APIMANAGER-889</a>] -         Already Revoked Tokens lists when searching tokens 
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-891'>APIMANAGER-891</a>] -         APISecurityException when load testing: Invalid use of SingleClientConnManager: connection still allocated.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-892'>APIMANAGER-892</a>] -         Errors come in store when subscriber session becomes idle and refresh the page
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-893'>APIMANAGER-893</a>] -         API try it feature is broken
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-894'>APIMANAGER-894</a>] -         NPE thrown when changing the life cycle state from PUBLISHED to BLOCKED
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-895'>APIMANAGER-895</a>] -         Samples needed to be updated
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-896'>APIMANAGER-896</a>] -         Version number (1.2.0) is wrong in startup log 
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-897'>APIMANAGER-897</a>] -         i18n key is shown for validation message in Sign up form in Store, Chrome only
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-898'>APIMANAGER-898</a>] -         Registry error when accessing /store
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-899'>APIMANAGER-899</a>] -         Application name in /store needs to be validated
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-900'>APIMANAGER-900</a>] -         API resource verbs are set to null in synapse level ,when edit an published API from publisher app
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-901'>APIMANAGER-901</a>] -         User login call for each API creation
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-902'>APIMANAGER-902</a>] -         Only one API with the version 1.0.0 is shown in store
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-904'>APIMANAGER-904</a>] -         Unexpected EOF in prolog Error, when sending a PUT
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-906'>APIMANAGER-906</a>] -         When accessing 'More APIs by Porvider' tab of Store app,in anonymous mode,backend errors thrown
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-909'>APIMANAGER-909</a>] -         Resource mappings does not update properly in component separated deployment
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-910'>APIMANAGER-910</a>] -         Token Partitioning feature cannot enable with Oracle because table creation fails due to ORA-00972: identifier is too long
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-912'>APIMANAGER-912</a>] -         Unable to open try it in a new tab
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-917'>APIMANAGER-917</a>] -         NPE in Gateway while doing loadtests
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-918'>APIMANAGER-918</a>] -         [LoadTests] API authentication fails periodically
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-920'>APIMANAGER-920</a>] -         &quot;expires_in&quot; value in /login call response is not timely accurate
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-921'>APIMANAGER-921</a>] -         Subscription UI is broken when the token is long
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-922'>APIMANAGER-922</a>] -         404 - when accessing REST Client tool
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-923'>APIMANAGER-923</a>] -         ORA-00972: identifier is too long, error when token partitioning is enabled
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-924'>APIMANAGER-924</a>] -         API Store -When viewing documentation in anonymous mode,it throws errors in backend
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-926'>APIMANAGER-926</a>] -         Store tries to search for the API when you sign out while on the dashboard of a restricted API.
+</li>
+<li>[<a href='https://wso2.org/jira/browse/APIMANAGER-927'>APIMANAGER-927</a>] -         'Subscriptions' for publisher page is empty and throws an ArrayIndexOutOfBound exception when token partitioning is enabled
+</li>
+</ul>
+        
+        
+
+
+
+            <h2>All resolved issues</h2>
+            <ul>
+                <li>
+                    <a href="https://wso2.org/jira/secure/IssueNavigator.jspa?requestId=10888">WSO2 API Manager resolved issues</a>
+                </li>
+            </ul>
+            <h2>Key Features of WSO2 API Manager</h2>
+            <p>
+                Following is a categorization of the core features supported by WSO2 API Manager
+                based on the target user group.
+            </p>
+            <ul>
+                <li>
+                    API Publisher:
+                    <ul>
+                        <li>Publish APIs to external consumers and partners, as well as internal
+                        users; SOAP and REST services are supported</li>
+                        <li>Manage API versions (several versions can be deployed in parallel)</li>
+                        <li>Govern the API lifecycle (publish, deprecate, retire)</li>
+                        <li>Attach documentation (files, external URLs) to APIs</li>
+                        <li>Apply Security policies to APIs (authentication, authorization)</li>
+                        <li>Attach SLAs</li>
+                        <li>Provision and Manage API keys</li>
+                        <li>Track consumers per API</li>
+                        <li>Monitor API usage and performance, SLA compliance</li>
+                        <li>Gather consumers requirements</li>
+                    </ul>
+                </li>
+                <li>
+                    API Consumers:
+                    <ul>
+                        <li>Find useful APIs by browsing or searching through the API Store: view 
+                        top rated, top used and featured APIs</li>
+                        <li>Explore API documentation and ask questions to publisher</li>
+                        <li>Register applications and obtain API keys</li>
+                        <li>Subscribe to API changes and receive news</li>
+                        <li>Evaluate APIs, rate APIs, and share comments</li>
+                        <li>Request features and improvements from publishers</li>
+                        <li>Participate in online forums</li>
+                        <li>OAuth2 support for API access</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Known Issues</h2>
+            <p>
+                All the open issues pertaining to WSO2 API Manager are reported at the following
+                location:
+            </p>
+            <ul>
+                <li>
+                    <a href="https://wso2.org/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10810">
+                        WSO2 API Manager open issues
+                    </a>
+                </li>
+            </ul>
+
+            <h2>How You Can Contribute</h2>
+            <h3>
+                Mailing Lists
+            </h3>
+            <p>
+                Join our mailing list and correspond with the developers directly.
+            </p>
+            <ul>
+                <li>
+                    Developer List :
+                    <a href="mailto:dev@wso2.org">dev@wso2.org</a>
+                    |
+                    <a href="mailto:dev-request@wso2.org?subject=subscribe">Subscribe</a>
+                    |
+                    <a href="http://wso2.org/mailarchive/dev/">Mail Archive</a>
+                </li>
+                <li>
+                    User List :
+                    <a href="mailto:user@wso2.org">user@wso2.org</a>
+                    |
+                    <a href="mailto:user-request@wso2.org?subject=subscribe">Subscribe</a>
+                    |
+                    <a href="http://wso2.org/mailarchive/user/">Mail Archive</a>
+                </li>
+            </ul>
+            <h3>
+                Reporting Issues
+            </h3>
+            <p>
+                We encourage you to report issues, documentation faults and feature requests
+                regarding
+                WSO2 API Manager through the public<a href="https://wso2.org/jira/browse/APIMANAGER">API Manager
+                JIRA</a>. You
+                can use the
+                <a href="http://www.wso2.org/jira/browse/CARBON">Carbon JIRA</a>
+                to report any
+                issues related to the Carbon base framework or associated Carbon components.
+            </p>
+
+            <h2>Support</h2>
+            <p>
+                We are committed to ensuring that your enterprise middleware deployment is
+                completely supported from evaluation to production. Our unique approach
+                ensures that all support leverages our open development methodology and is
+                provided by the very same engineers who build the technology.
+            </p>
+            <p>
+                For more details and to take advantage of this unique opportunity please
+                visit<a href="http://wso2.com/support">http://wso2.com/support</a>.
+            </p>
+            <p>
+                To learn more about WSO2 API Manager and WSO2 support offerings please visit
+                <a href="http://wso2.com/products/api-manager/">http://wso2.com/products/api-manager</a>.
+            </p>
+
+            <p>
+                <i>-- The WSO2 API Manager Team --</i>
+            </p>
+        </div>
+    </body>
+</html>

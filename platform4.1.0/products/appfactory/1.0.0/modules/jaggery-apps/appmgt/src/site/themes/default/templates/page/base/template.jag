@@ -1,0 +1,283 @@
+<% jagg.template("page/base", function(inputs, outputs, jagg) {%>
+<!DOCTYPE html>
+<html>
+<head>
+    <%
+    jagg.includeBlock("header", {});
+    userName = session.get("LOGGED_IN_USER");
+    %>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38397051-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+
+<body>
+<div id="wrap">
+<!--
+   START Header back ground
+   No real content is here just to display the head
+   -->
+<div class="container-fluid header">
+    <div class="row-fluid">
+        <div class="span6"></div>
+        <div class="span6 top-menu"></div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<!--END Header back ground-->
+
+
+<!--START Header menu-->
+<div class="container">
+    <div class="row">
+        <div class="span3 logo-section">
+            <a class="brand" href="<%=jagg.getAbsoluteUrl("/site/pages/index.jag")%>"></a>
+        </div>
+        <div class="span9 menu-back">
+            <div class="menu-content">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        
+                        <ul class="nav pull-right">
+                            <li class="active">
+                            <a href="https://wso2.org/jira/browse/APPFAC" target="_blank">
+                                <i class="icon-feedback"></i>
+                                <br>
+                                Feedback
+                            </a>
+                            </li>
+                            <li class="active">
+                            <a href="http://docs.wso2.org/wiki/display/AF100/User+Guide" target="_blank">
+                                <i class="icon-user-guide"></i>
+                                <br>
+                                User Guide
+                            </a>
+                            </li>
+                            <li class="active">
+                            <a href="http://wso2.com/solutions/app-factory/" target="_blank">
+                                <i class="icon-home"></i>
+                                <br>
+                                APP Factory @ wso2.com
+                            </a>
+                            </li>
+                            <li class="active">
+                            <a href="http://wso2.com/support/" target="_blank">
+                                <i class="icon-support"></i>
+                                <br>
+                                Support
+                            </a>
+                            </li>
+                            <li class="active">
+                            <a href="http://wso2.com/contact/" target="_blank">
+                                <i class="icon-contact"></i>
+                                <br>
+                                Contacts
+                            </a>
+                            </li>
+                            <%
+                            if(userName!=null) {
+                            %>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="icon-user"></i>
+                                    <br/>
+                                    <%=userName%> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <!--This commented section of code may be uncommented when GitHub support is required-->
+                                    <!--
+		                        	<script type="text/javascript">
+			                        //[cdata[
+					                    $(function(){
+					                    	$('.dropdown-menu').click(function(e){
+					                    		e.stopPropagation();
+											});
+											$("#enableGit").bind("click",function(){
+												if($(this).attr("checked")=="checked"){
+													manipulateUIGitHub(true);
+												}else{
+													manipulateUIGitHub(false);
+													saveGitHubUserIfExists("");
+												}
+											});
+											$("#gitUserName").bind("blur",function(){
+												if(isNotEmpty($(this).val())){
+													$(this).css("border","0");
+													saveGitHubUserIfExists($(this).val());
+												}else{
+													$(this).css("border","1px solid #CCCCCC");
+												}
+											}).bind("keyup",function(e){
+												if(e.keyCode==13){
+													if(isNotEmpty($(this).val())){
+														$(this).css("border","0").blur();
+													}else{
+														$(this).css("border","1px solid #CCCCCC");
+													}
+												}
+											}).bind("focus",function(){
+												$(this).css("border","1");
+											});
+										});
+
+										
+										function isNotEmpty(stringValue){
+											if(stringValue!=null && stringValue!="" && gitUserName.length!=0){
+												return true;
+											}
+											return false;
+										}
+										function manipulateUIGitHub(isEnabled){
+											if(isEnabled){
+												$("#gitUserName").fadeIn().focus();
+												$("#gitLabel").text("GitHub User Name");
+												$("#gitHubClue").fadeOut();
+											}else{
+												$("#gitUserName").fadeOut();
+												$("#gitLabel").text("Enable GitHub");
+												$('.dropdown.open').removeClass('open');
+												$("#gitHubClue").fadeIn();
+											}
+										}
+									
+										function saveGitHubUserIfExists(userName){
+											var k33g = new Gh3.User(userName);
+											k33g.fetch(function (err, resUser){
+												console.log(resUser.url);
+												if(resUser.url!=undefined && resUser.url.length!=0){
+													saveGitUserName(userName);
+												}else{
+													$('.dropdown.open').removeClass('open');
+													jagg.message({
+														content:'GitHub user name is not found!',
+														type:'Error'
+													});
+												}
+											});
+										}
+										
+										function saveGitUserName(gitUserName){
+											jagg.post("../blocks/application/users/add/ajax/add.jag", {
+													action:"pushGitHubUserName",
+													userName:"<%=userName%>",
+													gitUserName:gitUserName
+											},
+											function (result) {
+												$('.dropdown.open').removeClass('open');
+												//if(isNotEmpty(result)){
+													jagg.message({
+														content:'Your GitHub user name was successfully modified.',
+														type:'info'
+													});
+												//}
+											},
+											function (jqXHR, textStatus, errorThrown) {
+												$('.dropdown.open').removeClass('open');
+												jagg.message({
+													content:'Error while saving GitHub user name',
+													type:'Error'
+												});
+											});
+										}
+			                        //]]
+			                        </script>
+			                        -->
+	                        		
+									<!--jaggery coding
+									var gitProvider=getProperty("RepositoryProviderConfig.git.Property.Provider");
+									if(gitProvider!=null && gitProvider=="github"){
+									-->
+									<!--
+									<li>
+										<ul style="padding:8px;margin:0px;color:#000000;list-style:none;width:200px;">
+											<li style="margin-bottom:8px;">
+												<input id="enableGit" type="checkbox"/>&nbsp;
+												<label id="gitLabel" for="enableGit"  style="display:inline;">Enable GitHub</label>
+											</li>
+											<li><input id="gitUserName" type="text" style="display:none;width:160px;" placeholder="Your GitHub User name"/></li>
+											<li>
+											<span id="gitHubClue" style="color:#000111">If you're willing to use GitHub as the 'repository provider' of the applications you create, 
+											please Enable GitHub &amp; save your GitHub user name<span><hr/>
+											</li>
+										</li>
+									</li>
+									-->
+									<!--jaggery coding}-->
+									<!--This commented section of code may be uncommented when GitHub support is required-->
+                                   <li><a id="logout-link"  onClick="window.location.href='logout.jag'">Sign Out</a></li>
+                                </ul>
+                            </li>
+                            <%
+                            }
+                            %>
+                        </ul>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="message-block" id="messageBlock" style="display: none;">
+    Your message has been discarded.
+</div>
+<!--END Header menu-->
+
+<% jagg.includeBlocks(outputs.body); %>
+
+<div id="push"></div>
+</div> <!-- End wrap div -->
+
+
+<% jagg.includeBlock("footer", {}); %>
+<!--Elements to display popups-->
+<div class="modal fade" id="messageModal"></div>
+<div id="confirmation-data" style="display:none;">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&#215;</button>
+        <h3 class="modal-title">Modal header</h3>
+    </div>
+    <div class="modal-body">
+        <p>One fine body…</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn btn-primary">Save changes</a>
+        <a href="#" class="btn btn-other" data-dismiss="modal">Close</a>
+    </div>
+</div>
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-transition.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-alert.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-modal.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-dropdown.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-scrollspy.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-tab.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-tooltip.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-popover.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-button.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-collapse.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-carousel.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/bootstrap/js/bootstrap-typeahead.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/lib/jquery/jquery.validate.min.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/js/messages.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/gh3.js'))%>"></script>
+<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('js/underscore.js'))%>"></script>
+</body>
+</html>
+<% }); %>

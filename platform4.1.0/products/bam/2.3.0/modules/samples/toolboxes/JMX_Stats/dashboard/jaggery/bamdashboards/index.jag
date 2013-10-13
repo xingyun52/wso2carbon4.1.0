@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Business Activity Monitor Dashboard</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="resources/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="resources/bootstrap/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/bam-dashboard-common-styles.css" />
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+<style type="text/css">
+    body {padding-top: 60px;
+        padding-bottom: 40px;
+    }
+    .sidebar-nav {
+        padding: 9px 0;
+    }
+	#dashboardWrapper{
+		position:relative;
+		overflow:auto;
+		font-family:"Lucida Grande","Lucida Sans","Microsoft Sans Serif","Lucida Sans Unicode","Verdana","Sans-serif","trebuchet ms" !important;
+		padding:20px;
+		clear:both;	
+	}
+	#dashboardDeatils{
+		position:relative;
+		float:left;
+		width:68%;
+	}
+	#dashboardLogin{
+		position:relative;
+		float:right;
+		width:27%;
+		min-width:240px;
+		border-left:2px dotted #C8B4B4;
+	}
+	#btnSignIn{
+		font-family:"Calibri","Lucida Grande","Lucida Sans","Microsoft Sans Serif","Lucida Sans Unicode","Verdana","Sans-serif","trebuchet ms" !important;
+		font-weight:500;
+	}
+	.featureItem{
+		clear:both;
+		overflow:auto;
+		margin:4px 0;
+		position:relative;
+	}
+	.imgIcon{
+		position:relative;
+	}
+	.featureItem .descFeature{
+		float:left;
+		margin:3px 20px 10px;
+		position:relative;
+		width:80%;
+	}
+	.featureItem span.imgIconHolder{
+		float:left;
+		position:relative;
+		width:10%;
+		max-width:50px;
+	}
+	.dashboardLoginWraapper{
+		background-color: #F5F5F5;
+    		border: 1px solid rgba(0, 0, 0, 0.15);
+    		border-radius: 4px 4px 4px 4px;
+    		display: block;
+		margin:60px 0;
+	}
+	.descFeature p{
+		font-size:0.9em;
+	}	
+</style>
+</head>
+<body>
+
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="#"><img src="resources/images/bamlogo.png" alt=""><span style="color: #B4D8FF;margin: 0 10px;">Dashboard</span></a>
+      <!--<div class="btn-group pull-right">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+          <i class="icon-user"></i> Username
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Profile</a></li>
+          <li class="divider"></li>
+          <li><a href="#">Sign Out</a></li>
+        </ul>
+      </div>
+      <div class="nav-collapse">
+      </div>--><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span12">
+	<div class="dashboardLoginWraapper" style="line-height: 12px;">
+		<div id="dashboardWrapper">
+			<div id="dashboardDeatils">
+				<div class="featureItem">
+					<span class="imgIconHolder">
+						<a class="imgIcon" href="http://docs.wso2.org/wiki/display/BAM200/WSO2+Business+Activity+Monitor+Documentation" target="_blank">
+							<img src="resources/images/user-guide.gif"></a>
+					</span>	
+					<div class="descFeature">
+						<h5><a href="http://docs.wso2.org/wiki/display/BAM200/WSO2+Business+Activity+Monitor+Documentation" target="_blank">User Guide</a></h5>
+						<p>WSO2 Carbon user guide.</p>
+					</div>
+				</div>
+				<div class="featureItem">
+					<span class="imgIconHolder">
+						<a class="imgIcon" href="http://wso2.org/forum/967" target="_blank"><img src="resources/images/forum.gif"></a>
+					</span>
+					<div class="descFeature">
+						<h5><a href="http://wso2.org/forum/967" target="_blank">Forum</a></h5>
+						<p>The interactive message board for sharing information, questions and comments about WSO2 products.</p>
+					</div>
+				</div>
+				<div class="featureItem">
+					<span class="imgIconHolder">
+						<a class="imgIcon" href="https://wso2.org/jira/browse/BAM" target="_blank"><img src="resources/images/issue-tracker.gif"></a>
+					</span>	
+					<div class="descFeature">
+						<h5><a href="https://wso2.org/jira/browse/BAM" target="_blank">
+                                        Issue Tracker</a></h5>
+                                    <p>Users are encouraged to report issues &amp; suggest improvements using the JIRA issue tracker. In addition, users can observe the status of the reported issues in progress.</p>
+					</div>
+				</div>
+				<div class="featureItem">
+					<span class="imgIconHolder">
+						<a class="imgIcon" href="http://wso2.org/mail" target="_blank"><img src="resources/images/mailing-list.gif"></a>
+					</span>	
+					<div class="descFeature">
+						<h5><a href="http://wso2.org/mail" target="_blank">
+                                        Mailing Lists</a></h5>
+
+                                    <p>Report issues, provide feedback &amp; get help from our mailing lists.</p>
+					</div>
+				</div>
+			</div>
+			<div id="dashboardLogin"><br /><center><h4 style="color:#0088B5">Sign in</h4></center><br />
+	      			<div style="text-align:right">User Name : <input type="text" id="userName" name="userName" /></div><br />
+				<div style="text-align:right">Password  : <input type="password" id="password" name="password" /></div><br />
+				<div style="text-align:right;margin-right:160px;"><input type="button" id="btnSignIn" name="btnSignIn" value="Sign In" /></div><br /><br /><br /><br /><br />
+			</div>
+		</div>
+	</div>
+      
+    </div><!--/span-->
+  </div><!--/row-->
+  <hr>
+
+  <footer>
+    <p class="wso2copyRight_footer">&copy; <a href="http://wso2.org">WSO2</a> Inc</p>
+    <span class="wso2Logo_footer">
+        <a class="wso2" target="_blank" href="http://www.wso2.com"></a>
+    </span>
+  </footer>
+	
+</div><!--/.fluid-container-->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="resources/scripts/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="resources/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="bamdashboard.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#btnSignIn").click(function(){
+			var usrName = $("#userName").val();
+			var pass = $("#password").val();
+			var usr = {name:""+usrName+"",pass:""+pass+"",host:""+location.host+""}
+			$.post("createSession.jag",usr);
+			redirectToDashboard();
+		});
+	});
+</script>
+</body>
+</html>

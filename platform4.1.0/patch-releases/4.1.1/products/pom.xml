@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-patch-releases</artifactId>
+        <version>4.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>platform-patch-releases-products</artifactId>
+    <packaging>pom</packaging>
+    <version>4.1.1</version>
+    <name>WSO2 Carbon - Patch releases - products - Aggregator Module</name>
+    <url>http://wso2.org</url>
+    <profiles>
+
+       <profile>
+         <id>product-appfactory</id>
+         <activation>
+           <property>
+             <name>product</name>
+             <value>appfactory</value>
+           </property>
+         </activation>
+         <modules>
+           <module>../../../products/appfactory/1.0.0/pom.xml</module>
+         </modules>
+       </profile>
+	
+	<profile>
+         <id>product-apimgt</id>
+         <activation>
+           <property>
+             <name>product</name>
+             <value>apimgt</value>
+           </property>
+         </activation>
+         <modules>
+           <module>../../../products/apimgt/1.4.0/pom.xml</module>
+         </modules>
+       </profile>
+
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation> 
+		    <modules>
+			<module>../../../products/appfactory/1.0.0/pom.xml</module>
+			<module>../../../products/apimgt/1.4.0/pom.xml</module>
+		    </modules>
+	</profile>
+   </profiles>
+</project>

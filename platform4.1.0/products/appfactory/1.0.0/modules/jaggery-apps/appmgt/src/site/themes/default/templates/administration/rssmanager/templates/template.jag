@@ -1,0 +1,514 @@
+<% jagg.template("administration/rssmanager/templates", function(inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+    
+%>
+
+  <div class="container">
+          <div class="title-section">
+              <div class="row">
+                  <div class="span12">
+                      <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Manage Database Roles","pos":"titlebar" }); %>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+    <!--START  content section-->
+    <div class="container content-container wrapper">
+        <div class="row">
+
+            <div class="span12 content-section shadow-up">
+                <div class="content-data">
+                    <div class="container-fluid">
+
+
+
+
+                        <!--Second Database-->
+
+                        <div class="row-fluid">
+
+
+<script type="text/javascript">
+var rssEnvs = "";
+
+$(document).ready(function(){
+       jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"getTemplates",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+            
+                        if(result != undefined){
+
+             var contentHeader= '<table class="table table-bordered">'+
+                                '<tr>'+
+
+                        '<th>Roles</th>'+
+                   
+                        '<th>Actions</th>'+
+
+                    '</tr>';       
+                 
+                 var parsedArray = jQuery.parseJSON(result);
+              
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+                    
+                    var row='<tr>'+
+                        '<td width="25%">'+name+'</td>'+
+                       
+                        '<td width="25%"><a href="#" onclick="deleteTemplate('+"'"+name+"'"+')">Delete</a>'+
+                                      '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="editTemplate('+"'"+name+"'"+')">Edit</a>' +'</td>'+
+                        '</tr>';
+                 	  contentHeader += row;
+                }
+                contentHeader += '</table>';
+                if(parsedArray.length > 0){
+                    $('#table').html(contentHeader);
+                }else{
+                    $('#table').html('<div class="alert alert-info">No templates created yet..</div>');
+                }
+
+   }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading templates',type:'error' });
+          });
+            jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                action:"getRSSinstances",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+            
+                        if(result != undefined){
+
+                 var parsedArray = jQuery.parseJSON(result);
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+
+                    var row='<option>'+name+'</option>';
+                    rssEnvs = rssEnvs.concat(row);
+
+                }
+                $("#rssInstances").append(rssEnvs);
+          
+               }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+          });
+       
+   });
+
+function deleteTemplate(name){
+     jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"dropTemplate",
+                                applicationKey:$("#applicationKey").attr('value'),
+                                templateName:name
+
+                                },function (result) {
+                                      document.location.reload(true);
+                                    },function (jqXHR, textStatus, errorThrown) {
+                                                      jagg.message({content:'Error occurred while deleting template',type:'error' });
+                                    });
+   
+} 
+
+function editTemplate(name){
+ 
+  var ele= document.getElementById("createTemplateForm");
+  ele.style.display = "none"; 
+  var editForm= document.getElementById("editTemplateForm");
+  editForm.style.display = "";
+
+  jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"editTemplate",
+                                applicationKey:$("#applicationKey").attr('value'),
+                                name:name,
+                                databaseServerInstanceName:$('#rssInstances').val()
+    }, function (result) {
+            
+                       if(result != undefined){
+			  
+                       var parsedArray = jQuery.parseJSON(result);
+                       var textArea= document.getElementById("editTemplateName");
+                       textArea.value = parsedArray[0].name;
+                       textArea.readOnly=true; 
+		       $("#rssInstances2").append(rssEnvs);
+		    
+             
+                       document.getElementById("editselectPriv").checked = setValue(parsedArray[0].selectPriv);
+                       document.getElementById("editinsertPriv").checked = setValue(parsedArray[0].insertPriv);
+                       document.getElementById("editupdatePriv").checked = setValue(parsedArray[0].updatePriv);
+                       document.getElementById("editdeletePriv").checked = setValue(parsedArray[0].deletePriv); 
+                       document.getElementById("editcreatePriv").checked = setValue(parsedArray[0].createPriv);
+                       document.getElementById("editdropPriv").checked = setValue(parsedArray[0].dropPriv);
+                       document.getElementById("editgrantPriv").checked = setValue(parsedArray[0].grantPriv);
+                       document.getElementById("editreferencesPriv").checked = setValue(parsedArray[0].referencesPriv);
+                       document.getElementById("editindexPriv").checked = setValue(parsedArray[0].indexPriv);
+                       document.getElementById("editalterPriv").checked = setValue(parsedArray[0].alterPriv);
+                       document.getElementById("editcreateTmpTablePriv").checked = setValue(parsedArray[0].createTmpTablePriv);
+                       document.getElementById("editlockTablesPriv").checked = setValue(parsedArray[0].lockTablesPriv);      
+                       document.getElementById("editcreateViewPriv").checked = setValue(parsedArray[0].createViewPriv);
+                       document.getElementById("editshowViewPriv").checked = setValue(parsedArray[0].showViewPriv);
+                       document.getElementById("editcreateRoutinePriv").checked = setValue(parsedArray[0].createRoutinePriv);
+                       document.getElementById("editalterRoutinePriv").checked = setValue(parsedArray[0].alterRoutinePriv);
+                       document.getElementById("editexecutePriv").checked = setValue(parsedArray[0].executePriv); 
+                       document.getElementById("editeventPriv").checked = setValue(parsedArray[0].eventPriv);
+                       document.getElementById("edittriggerPriv").checked = setValue(parsedArray[0].triggerPriv);
+
+
+
+
+
+		   }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+ 
+                  jagg.message({content:'Error occurred while reading templates',type:'error' });
+          });
+} 
+
+function setValue(value){
+ 
+  if(value == 'Y'){
+   
+    return true;
+  }else if (value == 'N'){
+    
+    return false;
+  }
+}
+
+function selectAllOptions() {
+    var selectAll = document.getElementById('selectAll');
+    var c = new Array();
+    c = document.getElementsByTagName('input');
+    if (selectAll.checked) {
+        for (var i = 0; i < c.length; i++) {
+            if (c[i].type == 'checkbox') {
+                c[i].checked = true;
+            }
+        }
+    } else {
+        for (var j = 0; j < c.length; j++) {
+            if (c[j].type == 'checkbox') {
+                c[j].checked = false;
+            }
+        }
+    }
+}
+
+function editDbTemplate(){
+
+ var alterPriv=(document.getElementById("editalterPriv"));
+ var alterRoutinePriv=(document.getElementById("editalterRoutinePriv"));
+ var createPriv=(document.getElementById("editcreatePriv"));
+ var createRoutinePriv=(document.getElementById("editcreateRoutinePriv"));
+ var createTmpTablePriv=(document.getElementById("editcreateTmpTablePriv"));
+ var createViewPriv=(document.getElementById("editcreateViewPriv"));
+ var deletePriv=(document.getElementById("editdeletePriv"));
+ var dropPriv=(document.getElementById("editdropPriv"));
+ var eventPriv=(document.getElementById("editeventPriv"));
+ var executePriv=(document.getElementById("editexecutePriv"));
+ var grantPriv=(document.getElementById("editgrantPriv"));
+ var indexPriv=(document.getElementById("editindexPriv"));
+ var insertPriv=(document.getElementById("editinsertPriv"));
+ var lockTablesPriv=(document.getElementById("editlockTablesPriv"));
+ var referencesPriv=(document.getElementById("editreferencesPriv"));
+ var selectPriv=(document.getElementById("editselectPriv"));
+ var showViewPriv=(document.getElementById("editshowViewPriv"));
+ var triggerPriv=(document.getElementById("edittriggerPriv"));
+ var updatePriv=(document.getElementById("editupdatePriv"));
+
+  jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"editDbTemplate",
+                                applicationKey:$("#applicationKey").attr('value'),
+                                name:$("#editTemplateName").attr('value'),
+                                alterPriv:alterPriv.checked,
+                                alterRoutinePriv:alterRoutinePriv.checked,
+                                createPriv:createPriv.checked,
+                                createRoutinePriv:createRoutinePriv.checked,
+                                createTmpTablePriv:createTmpTablePriv.checked,
+                                createViewPriv:createViewPriv.checked,
+                                deletePriv:deletePriv.checked,
+                                dropPriv:dropPriv.checked,
+                                eventPriv:eventPriv.checked,
+                                executePriv:executePriv.checked,
+                                grantPriv:grantPriv.checked,
+                                indexPriv:indexPriv.checked,
+                                insertPriv:insertPriv.checked,
+                                lockTablesPriv:lockTablesPriv.checked,
+                                referencesPriv:referencesPriv.checked,
+                                selectPriv:selectPriv.checked,
+                                showViewPriv:showViewPriv.checked,
+                                triggerPriv:triggerPriv.checked,
+                                updatePriv:updatePriv.checked,
+                                databaseServerInstanceName:$('#rssInstances2').val()
+
+    },function (result) {
+                                      document.location.reload(true);
+                                    },function (jqXHR, textStatus, errorThrown) {
+                                                      jagg.message({content:'Error occurred while editing roles',type:'error' });
+                                    });
+ 
+
+
+}
+
+
+function createTemplate(){
+
+ var alterPriv=(document.getElementById("alterPriv"));
+ var alterRoutinePriv=(document.getElementById("alterRoutinePriv"));
+ var createPriv=(document.getElementById("createPriv"));
+ var createRoutinePriv=(document.getElementById("createRoutinePriv"));
+ var createTmpTablePriv=(document.getElementById("createTmpTablePriv"));
+ var createViewPriv=(document.getElementById("createViewPriv"));
+ var deletePriv=(document.getElementById("deletePriv"));
+ var dropPriv=(document.getElementById("dropPriv"));
+ var eventPriv=(document.getElementById("eventPriv"));
+ var executePriv=(document.getElementById("executePriv"));
+ var grantPriv=(document.getElementById("grantPriv"));
+ var indexPriv=(document.getElementById("indexPriv"));
+ var insertPriv=(document.getElementById("insertPriv"));
+ var lockTablesPriv=(document.getElementById("lockTablesPriv"));
+ var referencesPriv=(document.getElementById("referencesPriv"));
+ var selectPriv=(document.getElementById("selectPriv"));
+ var showViewPriv=(document.getElementById("showViewPriv"));
+ var triggerPriv=(document.getElementById("triggerPriv"));
+ var updatePriv=(document.getElementById("updatePriv"));
+   
+ 
+ 
+ jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"createTemplate",
+                                applicationKey:$("#applicationKey").attr('value'),
+                                name:$("#templateName").attr('value'),
+                                databaseServerInstanceName:$('#rssInstances').val(),
+                                alterPriv:alterPriv.checked,
+                                alterRoutinePriv:alterRoutinePriv.checked,
+                                createPriv:createPriv.checked,
+                                createRoutinePriv:createRoutinePriv.checked,
+                                createTmpTablePriv:createTmpTablePriv.checked,
+                                createViewPriv:createViewPriv.checked,
+                                deletePriv:deletePriv.checked,
+                                dropPriv:dropPriv.checked,
+                                eventPriv:eventPriv.checked,
+                                executePriv:executePriv.checked,
+                                grantPriv:grantPriv.checked,
+                                indexPriv:indexPriv.checked,
+                                insertPriv:insertPriv.checked,
+                                lockTablesPriv:lockTablesPriv.checked,
+                                referencesPriv:referencesPriv.checked,
+                                selectPriv:selectPriv.checked,
+                                showViewPriv:showViewPriv.checked,
+                                triggerPriv:triggerPriv.checked,
+                                updatePriv:updatePriv.checked,
+                                
+   }
+            ,function (result) {
+                                      document.location.reload(true);
+                                    },function (jqXHR, textStatus, errorThrown) {
+                                                      jagg.message({content:'Error occurred while creating role',type:'error' });
+                                    });
+}
+ 
+	function validateRole(){
+		var username = $("#templateName").val();
+		var validation = false;
+		if(username == ""){
+			$("#templatename_empty_warning").show();
+		} else{
+			validation = true;
+			$("#templatename_empty_warning").hide();
+		}
+		return validation;
+	}
+
+</script>
+
+
+
+
+<form method='post' class="form-horizontal">
+
+ <div class="row-fluid">
+        <div class="span12">
+                 <div id="table"></div>
+          </div>
+    </div>
+
+
+
+ <div id="createTemplateForm" class="row-fluid">
+        <div class="span12"><h4>Add Database Privilege Template</h4>
+        </div>
+        <div class="span3">
+            <div class=""></div>
+        </div>
+        <div class="span9">
+             <div class="control-group">
+                <label class="control-label" for="databaseName">Database Environment<span class="requiredAstrix">*</span></label>
+                <div class="controls">
+                    <select id='rssInstances'>
+                     </select>
+                </div>
+
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="databaseName">Role<span class="requiredAstrix">*</span></label>
+                <div class="controls">
+                    <textarea id='templateName' rows=1 cols=50 onKeyUp="validateRole();"></textarea>
+                </div>
+                <div  class="controls">
+                	<label id="templatename_empty_warning" style="display: none;"><font color='red'>Role cannot be empty</font></label>
+                </div>
+
+            </div>
+           <div class="control-group">
+                <label class="control-label" for="databaseName">Permission</label>
+                <div class="controls">
+                   <label class="checkbox"><input type="checkbox" name="selectAll" id='selectAll' checked="checked" onclick="selectAllOptions()">SELECT ALL</label><br>
+                   <br>
+                    <label class="checkbox"><input type="checkbox" name="permission" id='selectPriv' checked="checked">SELECT</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='insertPriv' checked="checked"> INSERT</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='updatePriv' checked="checked"> UPDATE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='deletePriv' checked="checked"> DELETE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='createPriv' checked="checked"> CREATE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='dropPriv' checked="checked"> DROP</label>
+                  <label class="checkbox"><input type="checkbox" name="permission" id='grantPriv' checked="checked"> GRANT</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='referencesPriv' checked="checked"> REFERENCES</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='indexPriv' checked="checked"> INDEX</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='alterPriv' checked="checked"> ALTER</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='createTmpTablePriv' checked="checked"> CREATE_TEMP_TABLE</label>
+                  <label class="checkbox"><input type="checkbox" name="permission" id='lockTablesPriv' checked="checked"> LOCK_TABLES</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='createViewPriv' checked="checked"> CREATE_VIEW</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='showViewPriv' checked="checked"> SHOW_VIEW</label>
+                  <label class="checkbox"><input type="checkbox" name="permission" id='createRoutinePriv' checked="checked"> CREATE_ROUTINE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='alterRoutinePriv' checked="checked"> ALTER_ROUTINE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='executePriv' checked="checked"> EXECUTE</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='eventPriv' checked="checked"> EVENT</label>
+                   <label class="checkbox"><input type="checkbox" name="permission" id='triggerPriv' checked="checked"> TRIGGER</label>
+
+                </div>
+
+            </div>
+
+        </div>
+ <input type="hidden" id='applicationKey' value='<%=request.getParameter("applicationKey")%>' />
+
+
+    <div class="row-fluid">
+        <div class="span3">
+
+            <div class=""></div>
+        </div>
+        <div class="span9">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type='button' name='Submit' value='Save' onclick="if(validateRole()){createTemplate();}"
+                           class='btn btn-primary'/>
+                <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'" value='Cancel' class='btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="editTemplateForm" style="display:none" class="row-fluid">
+        <div class="span3">
+            <h4>Edit Database Privilege Template</h4>
+            <div class=""></div>
+        </div>
+        <div class="span9">
+           
+            <div class="control-group">
+                <label class="control-label" for="databaseName">Database Environment<span class="requiredAstrix">*</span></label>
+                <div class="controls">
+                    <select id='rssInstances2'>
+                     </select>
+                </div>
+
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="databaseName">Name</label>
+                <div class="controls">
+                    <textarea id='editTemplateName' rows=1 cols=50></textarea>
+                </div>
+
+            </div>
+           <div class="control-group">
+                <label class="control-label" for="databaseName">Permission</label>
+                <div class="controls">
+ 		
+                    <br><input type="checkbox" name="permission" id='editselectPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp SELECT<br>
+                   <input type="checkbox" name="permission" id='editinsertPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp INSERT<br>
+                   <input type="checkbox" name="permission" id='editupdatePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp UPDATE<br>
+                   <input type="checkbox" name="permission" id='editdeletePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp DELETE<br>
+                   <input type="checkbox" name="permission" id='editcreatePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE<br>
+                   <input type="checkbox" name="permission" id='editdropPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp DROP<br>
+                  <input type="checkbox" name="permission" id='editgrantPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp GRANT<br>
+                   <input type="checkbox" name="permission" id='editreferencesPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp REFERENCES<br>
+                   <input type="checkbox" name="permission" id='editindexPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp INDEX<br>
+                   <input type="checkbox" name="permission" id='editalterPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp ALTER<br>
+                   <input type="checkbox" name="permission" id='editcreateTmpTablePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_TEMP_TABLE<br>
+                  <input type="checkbox" name="permission" id='editlockTablesPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp LOCK_TABLES<br>
+                   <input type="checkbox" name="permission" id='editcreateViewPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_VIEW<br>
+                   <input type="checkbox" name="permission" id='editshowViewPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp SHOW_VIEW<br>
+                  <input type="checkbox" name="permission" id='editcreateRoutinePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_ROUTINE<br>
+                   <input type="checkbox" name="permission" id='editalterRoutinePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp ALTER_ROUTINE<br>
+                   <input type="checkbox" name="permission" id='editexecutePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp EXECUTE<br>
+                   <input type="checkbox" name="permission" id='editeventPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp EVENT<br>
+                   <input type="checkbox" name="permission" id='edittriggerPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp TRIGGER<br>
+
+                 
+                </div>
+
+            </div>
+
+        </div>
+
+<div class="row-fluid">
+        <div class="span3">
+
+            <div class=""></div>
+        </div>
+        <div class="span9">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type='button' name='Submit' value='Save' onclick="editDbTemplate();"
+                           class='btn btn-primary'/>
+                  <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'" value='Cancel' class='btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+</form>
+ </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="push"></div>
+    </div>
+    <div class="clearfix"></div>
+
+<% }); %>
+
+
+
+
+
+
+
+

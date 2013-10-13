@@ -1,0 +1,14 @@
+<data name="${artifactId}-${version}">
+   <config id="DS1">
+      <property name="driverClassName">com.mysql.jdbc.Driver</property>
+      <property name="url">jdbc:mysql://localhost:3306/test</property>
+      <property name="username">root</property>
+      <property name="password">root</property>
+   </config>
+   <query id="SQL1" useConfig="DS1">
+      <sql>Select * from Persons</sql>
+   </query>
+   <operation name="OP1">
+      <call-query href="SQL1"/>
+   </operation>
+</data>

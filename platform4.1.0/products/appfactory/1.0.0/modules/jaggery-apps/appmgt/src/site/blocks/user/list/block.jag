@@ -1,0 +1,9 @@
+<%
+jagg.block("user/list", {
+    initialize:function (data) {
+
+    }
+
+
+});
+%>

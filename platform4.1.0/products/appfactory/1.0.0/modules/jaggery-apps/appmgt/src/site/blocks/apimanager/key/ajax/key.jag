@@ -1,0 +1,47 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "generateKeys"){
+        mod = jagg.module("apimanager");
+
+        var applicationId = request.getParameter("applicationKey");
+        var apiName = request.getParameter("apiName");
+        var apiVersion = request.getParameter("apiVersion");
+        var apiProvider = request.getParameter("apiProvider");
+
+        try{
+            result = mod.generateKeys(applicationId, apiName, apiVersion, apiProvider);
+            if(result != null){
+                print(result);
+            }else{
+                throw "Error while getting the API information";
+            }
+        }catch(e){
+            throw "Error while getting API information"
+        }
+    } else if(action == "createDependencies"){
+        mod = jagg.module("apimanager");
+
+        var applicationId = request.getParameter("applicationKey");
+        try{
+            result = mod.createDependencies(applicationId);
+            if(result != null){
+                print(result);
+            }else{
+                throw "Error while creating dependencies";
+            }
+        }catch(e){
+            throw "Error while creating dependencies"
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

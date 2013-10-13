@@ -1,0 +1,16 @@
+{
+    "theme" : {
+        "base" : "fancy"
+    },
+    "context" : "/store"
+     ,    
+    "ssoConfiguration" : {
+        "enabled" : "true",
+        "issuer" : "API_STORE",
+        "identityProviderURL" : "https://appfactorypreview.wso2.com:9443/samlsso",
+        "keyStorePassword" : "wso2carbon",
+        "identityAlias" : "wso2carbon",
+        "keyStoreName" : "APPFACTORY_HOME/repository/resources/security/wso2carbon.jks"
+    }
+
+}

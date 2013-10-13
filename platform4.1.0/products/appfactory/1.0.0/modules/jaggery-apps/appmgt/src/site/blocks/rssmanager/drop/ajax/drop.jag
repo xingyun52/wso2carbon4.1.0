@@ -1,0 +1,32 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+
+var log= new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "dropDatabase") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+            var databaseName = request.getParameter("databaseName");
+            var databaseServerInstanceName = request.getParameter("rssInstanceName");
+       
+        try {
+            mod.dropDatabase(applicationKey,databaseName,databaseServerInstanceName);
+
+        } catch(e) {
+            throw "Error while deleting the database";
+        }
+
+    } else {
+        throw new Error("No action specified");
+
+	}
+}());
+%>
+

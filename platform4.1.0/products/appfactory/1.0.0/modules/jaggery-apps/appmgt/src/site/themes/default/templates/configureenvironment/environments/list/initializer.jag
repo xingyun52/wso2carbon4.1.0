@@ -1,0 +1,8 @@
+<%
+jagg.initializer("configureenvironment/environments/list", {
+
+    preInitialize:function () {
+
+    }
+});
+%>

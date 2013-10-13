@@ -1,0 +1,50 @@
+<%
+include("/jagg/jagg.jag");
+var site = require("/site/conf/site.json");
+
+(function () {
+    user = jagg.getUser();
+    if (!user) {
+        response.sendRedirect(jagg.getAbsoluteUrl("/site/pages/login.jag"));
+        return;
+    }
+    var userId = request.getParameter("uname");
+    var apis, result, mod;
+
+    mod = jagg.module("api");
+    result = mod.getAPIsByProvider(userId);
+    apis = result.apis;
+    jagg.render({
+        "name":"page/base",
+        "inputs":{
+            "title":"API Publisher - Users Keys",
+             "header":{
+                "name":"menu/primary"
+            },
+            "body":[
+                {
+                    "name":"layout/extended",
+                    "inputs":{
+                        "middle":{
+                            "name":"user-apis",
+                            "inputs":{
+                                "apis":apis
+                            }
+                        }
+                    }
+                }
+            ],"footer":[
+                {
+                    "name":"footer"
+                }
+            ]
+        }
+    });
+}());
+
+%>
+
+
+
+
+

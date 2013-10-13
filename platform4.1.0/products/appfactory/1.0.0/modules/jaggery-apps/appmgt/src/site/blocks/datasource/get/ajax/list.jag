@@ -1,0 +1,48 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+var log=new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "datasourceCount") {
+        mod = jagg.module("datasource");
+	    var applicationKey = request.getParameter("applicationKey");
+	   
+	    var devStage = 'dev';
+        var testStage = 'test';
+        var prodStage = 'prod';
+        
+        try {
+    	    var dbCount = mod.datasourceCount(applicationKey, devStage);
+            dbCount = dbCount + mod.datasourceCount(applicationKey, testStage);
+            dbCount = dbCount + mod.datasourceCount(applicationKey, prodStage);
+            
+            print(dbCount);
+        } catch(e) {
+            print(0);
+        }
+    }else if (action == "getDatasources") {
+
+		var applicationKey = request.getParameter("applicationKey");
+       var permissionModule = jagg.module("permission");
+       var datasourceModule = jagg.module("datasource");
+       var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+       var hasDbConfigurePermissions = {};
+       var datasources = {};
+       for (var i = 0; i < deploymentStages.length; i++) {
+           var hasDBPermissionToStage= permissionModule.isUserAccessGranted(applicationKey, PERMISSION_CONFIGURATION_DB_FOR_STAGE +deploymentStages[i]);
+           hasDbConfigurePermissions[deploymentStages[i]] =  hasDBPermissionToStage;
+           if(hasDBPermissionToStage){
+               datasources[deploymentStages[i]] = datasourceModule.invokeNDataSource(applicationKey,deploymentStages[i]);
+           }
+       }
+	print(datasources);
+	} else {
+        throw new Error("No action specified");
+    }
+}());
+%>

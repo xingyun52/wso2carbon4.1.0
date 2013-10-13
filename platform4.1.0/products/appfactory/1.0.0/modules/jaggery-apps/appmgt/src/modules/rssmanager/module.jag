@@ -1,0 +1,83 @@
+
+<%
+jagg.module("rssmanager", {
+
+  
+    createDatabase:function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").createDatabase.apply(this, arguments);
+    },
+    
+
+    getDatabases:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/add/add.jag").getDatabases.apply(this,arguments);
+    },
+  
+    dropDatabase:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/drop/drop.jag").dropDatabase.apply(this,arguments);
+    },
+    
+    getTemplates:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/templates/add.jag").getTemplates.apply(this,arguments);
+    },
+
+    dropTemplate:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/templates/add.jag").dropTemplate.apply(this,arguments);
+    },
+
+    createTemplate:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/templates/add.jag").createTemplate.apply(this,arguments);
+    }, 
+    
+    editTemplate:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/templates/add.jag").editTemplate.apply(this,arguments);
+    }, 
+
+    editDbTemplate:function() {
+       return jagg.require(jagg.getModulesDir()+"rssmanager/templates/add.jag").editDbTemplate.apply(this,arguments);
+    },
+
+    getDatabaseUsers:function() {
+      return jagg.require(jagg.getModulesDir()+"rssmanager/users/list.jag").getDatabaseUsers.apply(this,arguments);
+    },
+
+    getAvailableUsersToAttachToDatabase:function() {
+      return jagg.require(jagg.getModulesDir()+"rssmanager/users/list.jag").getAvailableUsersToAttachToDatabase.apply(this,arguments);
+    },
+    
+    getRSSinstances:function() {
+      return jagg.require(jagg.getModulesDir()+"rssmanager/add/add.jag").getRSSinstances.apply(this,arguments);
+    },
+
+    deleteUser:function() {
+      return jagg.require(jagg.getModulesDir()+"rssmanager/users/list.jag").deleteUser.apply(this,arguments);
+    },
+
+    createDatabaseUser:function() {
+      return jagg.require(jagg.getModulesDir()+"rssmanager/users/list.jag").createDatabaseUser.apply(this,arguments);
+    },
+   
+    getAttachedUsers:function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").getAttachedUsers.apply(this, arguments);
+    },
+
+    attachNewUser :function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").attachNewUser.apply(this, arguments);
+    },
+
+    detachUser:function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").detachUser.apply(this, arguments);
+    },
+
+    getUserPrivileges:function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").getUserPrivileges.apply(this, arguments);
+    },
+
+    editUserPermissions:function () {
+        return jagg.require(jagg.getModulesDir() + "rssmanager/add/add.jag").editUserPermissions.apply(this, arguments);
+    }
+
+    
+
+
+});
+%>

@@ -1,0 +1,22 @@
+<%
+jagg.block("listing", {
+    initializer:function (data) {
+
+    },
+
+    getInputs:function () {
+        return {
+            "apis":null,
+            "currentPage":null,
+            "numberOfPages":null,
+        };
+    },
+
+    getStaticBlocks:function() {
+        return [
+            "search/api-search"
+        ];
+    }
+
+});
+%>

@@ -1,0 +1,48 @@
+Prerequisites:
+
+Running Storage Server or local cassandra server along with maven build tool
+
+Hector CQL Sample
+------------------------------
+
+This sample shows the way of using CQL through the hector
+
+Build the project with Maven build too using following command
+
+	mvn clean install
+
+Build the project with dependency libraries using following maven build command
+
+	mvn clean assembly:assembly
+
+Execute the program from the build jar which is located under target folder
+
+	java -jar target/target/CQL-4.0.5-jar-with-dependencies.jar
+
+
+------------------------------
+
+Output
+
+------------------------------
+
+User can specify cassandra host and the port of the cassandra server to get the connection. Leaving both of host and port cause to connect to the local cassandra server available in the
+user local machine.
+
+User need to specify the username and a password to authenticate to cassandra. If user using Storage Server user need to specify super tenant or the tenant username and the password.
+
+User can define non-existing keyspace.That user defined keyspace will be created in the cassandra database.
+
+For example user input from the CLI.
+
+Host: localhost
+
+Port:9160
+
+Tenant Id: username@tenantdomain.com
+
+Tenant Password: userpassword
+
+Keyspace Name: Apache
+
+Then explore the keyspace to see the executions happen in the program

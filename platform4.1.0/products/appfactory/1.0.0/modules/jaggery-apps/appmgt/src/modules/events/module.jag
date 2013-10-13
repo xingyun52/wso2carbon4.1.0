@@ -1,0 +1,12 @@
+<%
+jagg.module("events", {
+
+    getEvents:function () {
+        return jagg.require(jagg.getModulesDir() + "events/get/list.jag").getEvents.apply(this, arguments);
+    },
+
+    getUserEvents:function () {
+        return jagg.require(jagg.getModulesDir() + "events/get/list.jag").getUserEvents.apply(this, arguments);
+    }
+});
+%>

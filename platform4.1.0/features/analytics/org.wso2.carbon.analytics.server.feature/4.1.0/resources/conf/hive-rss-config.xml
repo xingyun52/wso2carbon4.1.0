@@ -1,0 +1,5 @@
+<hive-rss-config>
+	<rss-server-url>https://127.0.0.1:9443/</rss-server-url>
+	<rss-server-admin-userName>admin</rss-server-admin-userName>
+	<rss-server-admin-password>admin</rss-server-admin-password>
+</hive-rss-config>

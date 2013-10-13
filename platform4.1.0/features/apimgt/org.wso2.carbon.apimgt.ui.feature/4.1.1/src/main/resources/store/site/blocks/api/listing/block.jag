@@ -1,0 +1,40 @@
+<%
+include("/jagg/jagg.jag");
+jagg.block("api/listing", {
+    initializer:function (data) {
+
+    },
+
+    getInputs:function () {
+        return {
+            "apis":null
+        };
+    },
+    getOutputs:function () {
+        var apis, result, mod,error, message, list=[],
+                tag = request.getParameter("tag"),
+                query = request.getParameter("query");
+        if (tag) {
+            mod = jagg.module("api");
+            result = mod.getAPIsByTag(tag);
+            apis = result.apis;
+        } else if (query) {
+            mod = jagg.module("search");
+            result = mod.searchAPIs(query);
+            apis = result.apis;
+            error = result.error;
+            message = result.message;
+        } else {
+            mod = jagg.module("api");
+            result = mod.getAllPublishedAPIs();
+            apis = result.apis;
+        }
+
+        return {
+            "apis":apis,
+            "error":error,
+            "message":message
+        };
+    }
+});
+%>

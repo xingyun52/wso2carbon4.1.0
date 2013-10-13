@@ -1,0 +1,248 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+ // used for logging
+ var log = new Log();
+ var modManager = jagg.module("manager");
+
+// get the roles of the logged in user for the given application
+var getRoles=function (applicationKey, userName) {
+    var ws = require('ws');
+    var request = new ws.WSRequest();
+    var options = [];
+    options.useSOAP = 1.1;
+    options.timeout = 1000000;
+    options.action = "urn:getRolesOfUserPerApplication";
+    options["HTTPHeaders"] = [
+        { name : "Cookie", value :modManager.getAdminCookie() }
+    ];
+    var payload = '<p:getRolesOfUserPerApplication xmlns:p="http://service.mgt.application.appfactory.carbon.wso2.org"><xs:appId xmlns:xs="http://service.mgt.application.appfactory.carbon.wso2.org">' + applicationKey + '</xs:appId><xs:userName xmlns:xs="http://service.mgt.application.appfactory.carbon.wso2.org">' + userName + '</xs:userName></p:getRolesOfUserPerApplication>';
+    var result;
+
+    try {
+        var endPoint = getProperty(APPFACTORY_SERVER_URL) + "ApplicationManagementService";
+        request.open(options, endPoint, false);
+        request.send(payload);
+        result = request.responseE4X;
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking service endpoint:" + endPoint + " returned result:" + result);
+        }
+    } catch (e) {
+        throw "Error while retrieving roles";
+    }
+    return result;
+};
+
+//getUsers of the application
+var getUsers=function (applicationKey) {
+    var ws = require('ws');
+    var request = new ws.WSRequest();
+    var options = [];
+    options.useSOAP = 1.1;
+    options.timeout = 1000000;
+    options.action = "urn:getUsersOfApplication";
+    options["HTTPHeaders"] = [
+        { name : "Cookie", value :modManager.getAdminCookie() }
+    ];
+
+    var payload = '<p:GetUsersOfApplication xmlns:p="http://service.mgt.application.appfactory.carbon.wso2.org"><p:applicationId>' + applicationKey + '</p:applicationId></p:GetUsersOfApplication>';
+    var result;
+    try {
+        var endPoint = getProperty(APPFACTORY_SERVER_URL) + "ApplicationManagementService";
+        request.open(options, endPoint, false);
+        request.send(payload);
+        result = request.responseE4X;      
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking service endpoint:" + endPoint + " returned result:" + result);
+        }
+		return result;
+    } catch (e) {
+        log.error("Error while retrieving users of application \n" + e.message);
+        throw "Error while retrieving users of application";
+    }
+    return result;
+};
+
+var getAppUsersWithRoles = function(applicationKey) {
+    try {
+        var result = getUsers(applicationKey);
+		var ns = new Namespace("http://service.mgt.application.appfactory.carbon.wso2.org");
+		var users = result.ns::["return"].text();
+        if( result != null) {
+            var userArray = new Array();
+        	for (var userIndex in users) {
+        		var user = users[userIndex];
+        		if(user != null) {
+					var roles = getUserRolesForApplication(applicationKey, user);
+					
+					var displayName = '';
+					
+					for(var i = 0; i < roles.length(); ++i) {
+
+						if(i != 0) {
+							displayName = displayName + ' / ';
+						}
+			            displayName = displayName + getProperty("ApplicationRoles.Role." + roles[i] + ".DisplayName");
+			        }
+					
+					var userRoles={};
+           			userRoles.userName = user;
+					userRoles.roles = roles; 
+					userRoles.displayName = displayName; 
+					userArray.push(userRoles);	
+        		}
+        	}
+		return stringify(userArray);
+        } else {
+            throw "Error while retrieving users";
+        }
+    } catch(e) {
+        throw "Error while retrieving users";
+    }
+};
+
+var getUsersInfoOfApplication=function(applicationKey) {
+    var ws = require('ws');
+    var request = new ws.WSRequest();
+    var options = [];
+    options.useSOAP = 1.2;
+    options.timeout = 1000000;
+    options.action = "urn:getUserInfo";
+    options["HTTPHeaders"] = [
+        { name : "Cookie", value :modManager.getAdminCookie() }
+    ];
+
+    var payload = '<p:getUserInfo xmlns:p="http://service.mgt.application.appfactory.carbon.wso2.org"><p:applicationId>' + applicationKey + '</p:applicationId></p:getUserInfo>';
+    var result;
+    try {
+        var endPoint = getProperty(APPFACTORY_SERVER_URL) + "ApplicationManagementService/getUserInfo";
+        request.open(options, endPoint, false);
+        request.send(payload);
+        result = request.responseE4X;
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking service endpoint:" + endPoint + " returned result:" + result);
+        }
+    } catch (e) {
+        throw "Error while retrieving user info";
+    }
+    return result;
+};
+
+var getUserRolesForApplication = function(applicationKey, userName) {
+    try {
+        var result = getRoles(applicationKey, userName);
+        if( result != null) {
+            var roleArray = result.*::["return"].text();
+            return roleArray;
+        } else {
+            throw "Error while retrieving roles";
+        }
+    } catch(e) {
+        throw "Error while retrieving roles";
+    }
+};
+
+//checked
+var getUserAccess = function(applicationKey, userName) {
+	
+	var roleArray = getUserRolesForApplication(applicationKey, userName);
+	var jsonFeed = {};
+	
+   	if (roleArray != null && roleArray.length() > 0){
+		jsonFeed.userHasAccess = true;
+		
+		if(isOwner(roleArray) || isAdmin(roleArray)) {
+			jsonFeed.adminPrivilege = true;
+		}else {
+			jsonFeed.adminPrivilege = false;
+		}
+		
+		if(isDevOps(roleArray)) {
+			jsonFeed.devOpsPrivilege = true;
+		}else {
+			jsonFeed.devOpsPrivilege = false;
+		}
+		
+		if(isDeveloper(roleArray)) {
+			jsonFeed.developerPrivilege = true;
+		}else {
+			jsonFeed.developerPrivilege = false;
+		}
+	}else {
+		jsonFeed.userHasAccess = false;
+		jsonFeed.adminPrivilege = false;
+		jsonFeed.devOpsPrivilege = false;
+		jsonFeed.developerPrivilege = false;
+	}
+	
+	return stringify(jsonFeed);
+};
+
+var isOwner = function(roleArray) {
+    try {
+        var isOwner = false;
+        for(var i =0; i < roleArray.length(); ++i) {
+            if(roleArray[i] == ROLE_APP_OWNER) {
+                isOwner = true;
+                break;
+            }
+        }
+        return isOwner;
+    } catch(e) {
+        return false;
+    }
+};
+
+var isDevOps = function(roleArray) {
+	try {
+        var isDevOps = false;
+        for(var i =0; i < roleArray.length(); ++i) {
+            if(roleArray[i] == ROLE_DEVOPS) {
+            	isDevOps = true;
+                break;
+            }
+        }
+        return isDevOps;
+    } catch(e) {
+        return false;
+    }
+};
+
+var isAdmin = function(roleArray) {
+    try {
+        var isAdmin = false;
+        for(var i =0; i < roleArray.length(); ++i) {
+            if(roleArray[i] == ROLE_ADMIN) {
+            	isAdmin = true;
+                break;
+            }
+        }
+        return isAdmin;
+    } catch(e) {
+        return false;
+    }
+};
+
+var isDeveloper = function(roleArray) {
+	try {
+        var isDeveloper = false;
+        for(var i =0; i < roleArray.length(); ++i) {
+            if(roleArray[i] == ROLE_DEV) {
+            	isDeveloper = true;
+                break;
+            }
+        }
+        return isDeveloper;
+    } catch(e) {
+        return false;
+    }
+};
+
+var getTrunkURL = function(applicationKey) {
+    var repositoryType=getProperty(PREFERRED_REPOSITORY_TYPE);
+	return getProperty('RepositoryProviderConfig.'+ repositoryType+'.Property.BaseURL')+'/'+repositoryType+'/'+applicationKey+'/trunk';
+};
+
+%>

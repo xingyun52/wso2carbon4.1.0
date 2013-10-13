@@ -1,0 +1,90 @@
+        <bucket name="addStatisticsFusion" xmlns="http://wso2.org/carbon/cep" >
+
+
+            <description>BAMServiceStatisticsDataCEPServiceBucket</description>
+            <engineProviderConfiguration engineProvider="SiddhiCEPRuntime">
+                <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
+                <property name="siddhi.enable.distributed.processing">false</property>
+            </engineProviderConfiguration>
+
+            <input topic="inputTopic" brokerName="wsEventServer">
+                <tupleMapping stream="ServiceStatisticsDataEvent" queryEvnetType="Tuple">
+                    <property inputName="symbol"
+                              inputDataType="payload"
+                              type="java.lang.String"/>
+                    <property inputName="price"
+                              inputDataType="payload"
+                              type="java.lang.Double"/>
+                    <property inputName="volume"
+                              inputDataType="payload"
+                              type="java.lang.Integer"/>
+                </tupleMapping>
+                <mapMapping stream="ServiceStatisticsDataEvent" queryEvnetType="Tuple">
+                    <property name="symbol" inputName="symbol"
+                              type="java.lang.String"/>
+                    <property name="price"
+                              type="java.lang.Double"/>
+                    <property name="volume"
+                              type="java.lang.Integer"/>
+                </mapMapping>
+                <xmlMapping stream="ServiceStatisticsDataEvent" queryEvnetType="Tuple">
+                    <xpathDefinition prefix="statdata"
+                                     namespace="http://wso2.org/ns/2009/09/bam/service/statistics/data"/>
+                    <property name="requestCount"
+                              xpath="//statdata:ServiceStatisticsData/statdata:RequestCount"
+                              type="java.lang.Integer"/>
+                    <property name="responseCount"
+                              xpath="//statdata:ServiceStatisticsData/statdata:ResponseCount"
+                              type="java.lang.Integer"/>
+                    <property name="serviceName"
+                              xpath="//statdata:ServiceStatisticsData/statdata:ServiceName"
+                              type="java.lang.String"/>
+                    <streamProperty name="faultCount"
+                              xpath="//statdata:ServiceStatisticsData/statdata:FaultCount"
+                              type="java.lang.Integer"/>
+                </xmlMapping>
+            </input>
+
+            <query name="testesperquery">
+                <expression ><![CDATA[
+                        package org.wso2.carbon.cep.demo.bam;
+                        import java.util.HashMap;
+                        global org.wso2.carbon.cep.fusion.listener.FusionEventListener fusionListener;
+                        declare HashMap
+                           @role( event )
+                        end
+                        rule Statistics
+                        when
+                           serviceStatisticsData : HashMap(this["requestCount"] > 5) over window:time( 2m ) from entry-point ServiceStatisticsDataEvent;
+                        then
+                          fusionListener.onEvent(serviceStatisticsData);
+                end]]></expression>
+                <output topic="statisticsPublishTopic" brokerName="wsEventServer">
+                    <xmlMapping>
+                        <x:ServiceStatisticsData
+                                xmlns:x="http://wso2.org/ns/2009/09/bam/service/statistics/data"
+                                responseCount="{responseCount}">
+                            <x:RequestCount>${requestCount}</x:RequestCount>
+                            <x:MaximumResponseTime serviceName="{serviceName}">
+                                <x:FaultCount>{faultCount}</x:FaultCount>
+                            </x:MaximumResponseTime>
+                        </x:ServiceStatisticsData>
+                    </xmlMapping>
+                    <tupleMapping>
+                        <metaData>
+                            <property valueOf="symbol" name="abc" type="java.lang.Double"/>
+                        </metaData>
+                        <correlationData></correlationData>
+                        <payloadData>
+                            <property valueOf="volume" name="abc" type="java.lang.Double"/>
+                        </payloadData>
+                    </tupleMapping>
+                    <mapMapping>
+                        <property name="symbol" valueOf="symbol"/>
+                        <property name="price" valueOf="symbol"/>
+                        <property name="volume" valueOf="symbol"/>
+                    </mapMapping>
+                </output>
+            </query>
+        </bucket>
+

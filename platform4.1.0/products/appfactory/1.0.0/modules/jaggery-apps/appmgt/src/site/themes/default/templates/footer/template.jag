@@ -1,0 +1,22 @@
+<% jagg.template("footer", function(inputs, outputs, jagg) { %>
+<div id="footer">
+  <div class="container-fluid footer">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="container">
+                    <div class="row">
+                        <div class="span12 copyright">
+                             @ 2013 WSO2
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<% }); %>

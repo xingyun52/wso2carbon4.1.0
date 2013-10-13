@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-patch-releases</artifactId>
+        <version>4.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>platform-patch-releases-dependencies</artifactId>
+    <packaging>pom</packaging>
+    <version>4.1.1</version>
+    <name>WSO2 Carbon - Patch releases - dependencies - Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+    <modules>
+       <module>../../../dependencies/maven-scm-provider-git-commons/1.7.0-wso2v1</module>
+       <module>../../../dependencies/orbit/maven-scm/1.7.0.wso2v3</module>
+
+       <!--Stratos 2-->
+       <module>../../../dependencies/jclouds/vcloud/1.6.0-wso2v1</module>
+       <module>../../../dependencies/jgit/2.1.0.wso2v1</module>
+       <module>../../../dependencies/jsch/0.1.49.wso2v1</module>
+       <!-- Stratos2-->
+    </modules>
+</project>

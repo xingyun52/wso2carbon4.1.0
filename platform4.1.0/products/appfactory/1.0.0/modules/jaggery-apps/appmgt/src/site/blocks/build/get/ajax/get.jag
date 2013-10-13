@@ -1,0 +1,25 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+    var log = new Log();
+    if (action == "getTagNamesOfPersistedArtifacts") {
+   		mod = jagg.module("build");
+		var applicationKey = request.getParameter("applicationKey");
+		var applicationVersion = request.getParameter("applicationVersion");
+		var tags =  mod.getTagNamesOfPersistedArtifacts(applicationKey, applicationVersion);
+		var tagNames = new Array();
+		for (var index in tags) {
+        		var user = tags[index];
+			tagNames.push(user);
+		}
+		print(tagNames);
+	} else {
+       throw new Error("Invalid action specified");
+    }
+}());
+%>

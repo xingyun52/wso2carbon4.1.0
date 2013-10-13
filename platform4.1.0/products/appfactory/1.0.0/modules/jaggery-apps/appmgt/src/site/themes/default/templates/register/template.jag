@@ -1,0 +1,163 @@
+<% jagg.template("register", function(inputs, outputs, jagg) { %>
+ 
+<script type="text/javascript">
+
+
+    function doSubmit() {
+    
+    	
+    	
+    	
+            jagg.post("../blocks/application/users/add/ajax/add.jag", { 
+            		action:"createUserAccount",
+            		firstName:$("#firstName").attr('value'),
+            		lastName:$("#lastName").attr('value'),
+            		email:$("#email").attr('value'),
+            		userName:$("#email").attr('value'),
+            		password:$("#password").attr('value')
+              },
+              function (result) {
+		jagg.message({content:'You have successfully registered to WSO2 AppFactory.Please check your mail to continue.',type:'info',cbk:function(){
+            		window.location.href = "index.jag";
+     			}
+		});        
+              },
+              function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Your request to register in WSO2 AppFactory has been submitted. Please check your mail to continue.',type:'info', cbk:function(){
+            		window.location.href = "index.jag";
+                  	}
+                  });
+        });
+    }
+    
+    function validateEmail(){
+    	  jagg.post("../blocks/application/users/get/ajax/list.jag", { 
+    		action:"validateUser",
+    		userName:$("#email").attr('value')
+	      },
+	      function (result) {
+	    	result = result.replace(/[\r\n]/g, "");
+	    	if(result=="false"){
+	    		doSubmit();
+			}else{
+				jagg.message({content:'Your email address is already registered.',type:'warning'});
+			}
+	      },
+	      function (jqXHR, textStatus, errorThrown) {
+	    	  alert(jqXHR+textStatus+errorThrown);
+	    	  return false ;
+	      });
+    	  
+    }
+    
+    $(document).ready(function($){
+		$('#registerForm').validate({
+			submitHandler: function(form) {
+				validateEmail();
+		   	}
+		});
+    });
+</script>
+
+<div class="container breadcrumb-section">
+    <div class="row">
+        <div class="span12">
+            <a href="index.jag">Home</a>
+            >
+            Sign-up
+            </div>
+    </div>
+</div>
+
+
+<div class="container content-container wrapper">
+    <div class="row">
+        <div class="span12 content-section">
+            <div class="content-data">
+                <h2>Sign-up for WSO2 App Factory</h2>
+                <p class="help-block">Access our application forge tools, start building
+                    Applications, and deploy Applications into the Cloud</p>
+                <br />
+                <br />
+                <form method='post' name="inputData" class='form-horizontal' id='registerForm'>
+                    <div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <h4>About You</h4>
+                            </div>
+                            <div class="span9">
+                                <div class="control-group">
+                                    <label class="control-label" for="firstName">First Name<span class="requiredAstrix">*</span></label>
+
+                                    <div class="controls">
+                                        <input type="text" id="firstName" name="firstName" class="required" />
+                                    </div>
+                                </div>
+
+
+                                <div class="control-group">
+                                    <label class="control-label" for="lastName">Last Name</label>
+
+                                    <div class="controls">
+                                        <input type="text" id="lastName" name="lastName" />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <h4>Login Info</h4>
+                            </div>
+                            <div class="span9">
+                                <div class="control-group">
+                                    <label class="control-label" for="email">Email<span class="requiredAstrix">*</span></label>
+
+                                    <div class="controls">
+                                        <input type="text" id="email" name="email" class="required email" />
+                                        <div class="help-block">Please make sure that you provide a valid Email address. This address will be use to validate your account</div>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="password">Password<span class="requiredAstrix">*</span></label>
+
+                                    <div class="controls">
+                                        <input type="password" id="password" name="password" class="required" />
+                                        <div class="help-block">For a more secure password:<ul><li>Use both letters and numbers</li><li>Add special characters (such as @, ?, %)</li><li>Mix capital and lowercase letters</li></ul></div>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label" for="repeatedPassword">Password (Repeat)<span class="requiredAstrix">*</span></label>
+
+                                    <div class="controls">
+                                        <input type="password" id="repeatedPassword" equalTo="#password" name="repeatedPassword" class="required" />
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input id="submitbtn" type='submit' value='Create My Account'
+                                               class='btn btn-primary'/>
+                                        <input type="button" onclick="location.href='index.jag?'"
+                                               value='Cancel' class='btn'/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        
+<% }); %>

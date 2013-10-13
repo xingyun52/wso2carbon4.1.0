@@ -1,0 +1,257 @@
+<% jagg.template("configureenvironment/resources/list", function(inputs, outputs, jagg) { %>
+<%
+
+var hasConfigureResourcePermissions=outputs.hasConfigureResourcePermissions;
+var dependencies=outputs.dependencies;
+
+%>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+   jagg.post("../blocks/resources/get/ajax/get.jag", {
+                                action:"getAllDependencies",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, 
+    function (result) {
+
+    	if(result != undefined){
+    		var isProperties = false;
+    		result=jQuery.parseJSON(result);
+    		console.log("Result :"+result) 
+    		var shown=true;
+    		for(var stage in result){
+    			console.log((result[stage]));
+    			var depsInStage=(result[stage]).dependencies;
+    			if(shown){
+    				for(var deps in depsInStage){
+
+    					shown=false;
+    					var dep=(depsInStage[deps]);
+    					console.log(dep.value)
+    					var object=(depsInStage[deps]);
+
+    					var tr=$("<tr></tr>");
+    					var cell1=$("<td></td>").text(object.name);
+    					var cell2=$("<td></td>").text(object.description);
+
+    					var values='';
+    					for(var stage2 in result){
+    						var depsInStage2=(result[stage2]).dependencies;
+    						var object2=depsInStage2[deps];
+    						values=values+stage2+":"+object2.value+"<br/>";
+    					}
+    					var cell3=$("<td></td>").html(values);
+    					var cell4=$("<td></td>").html("<input type=\"button\" onclick=\"editResource('"+object.name+"','"+object.description+"');\" value=\"Edit\" class=\"btn\"/>");
+    					tr.append(cell1).append(cell2).append(cell3).append(cell4);
+    					$("#application_Dependencies_th").show();
+    					$("#application_Dependencies").append(tr);}
+    					isProperties = true;
+    			}
+    		}
+    		if (!isProperties){
+    			$("#application_Dependencies_th").html("No properties created yet ...");
+    			$("#application_Dependencies_th").show();
+    		}
+    	}
+    }, 
+    function (jqXHR, textStatus, errorThrown) {
+    	jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+    });
+  
+              
+    }); 
+
+    function createResources()
+        {
+
+    	
+                var varContentValue = $("#contentValue").attr('value');
+
+    	        jagg.post("../blocks/resources/add/ajax/add.jag", {
+    		    		action:"createResource",
+    		    		applicationKey:$("#applicationKey").attr('value'),
+    		    		resourceName:$("#resourceName").attr('value'),
+    		    		resourceDescription:$("#resourceDescription").attr('value'),
+    		    		contentValue:varContentValue
+    		      },
+    		      function (result) {
+    		      	  if(result != undefined){
+                            jagg.message({content:'Resource has been created',type:'info' });
+                           window.location.reload(false);                        
+                             console.log("creating "+varStage);
+    	              }
+    		      },
+    		      function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while creating resource',type:'error' });
+                      window.location.reload(false);
+    		    });
+                             console.log("creating in"+varStage);
+                            
+
+    		
+        
+}
+ function editResource(key,description){
+//console.log("this is "+dependenciesInStage[key].devValue);
+var stages = $("[name='stage']");
+var content='<div><label class="control-label" for="value">Name :'+key+'</label></h4><br><label class="control-label" for="value">Resource Value</label><input id="update_value" type="text" name="value"/><br/><select id="sel_stage">'
+    		for (var i = 0; i < stages.length; i++) {
+    		    var varStage = stages[i].value;
+              content=content+"<option value="+varStage+">"+varStage+"</option>";
+}
+content=content+"</option></select></div>";
+ jagg.message({
+            type:'custom',
+            title:"Edit Resource",
+            content:content,
+            buttons:[
+                        {cssClass:'btn',name:'Update',cbk:function(){
+    	        jagg.post("../blocks/resources/add/ajax/add.jag", {
+    		    		action:"updateResource",
+    		    		applicationKey:$("#applicationKey").attr('value'),
+    		    		resourceName:key,
+    		    		resourceDescription:description,
+    		    		stage:$("#sel_stage").attr('value'),
+    		    		contentValue:$("#update_value").attr('value')
+    		      },
+    		      function (result) {
+    		      	  if(result != undefined){
+                            jagg.message({content:'Resource has been updated',type:'info' });
+                            window.location.reload(false);
+                            console.log("creating "+varStage);
+    	              }
+    		      },
+    		      function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while updating resource',type:'error' });
+                      window.location.reload(false);
+    		    });
+                        }}
+                    ]
+        });
+
+  }
+
+</script>
+     <div class="container">
+           <div class="title-section">
+               <div class="row">
+                   <div class="span12">
+                       <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Resources","pos":"titlebar" }); %>
+                   </div>
+               </div>
+           </div>
+    </div>
+
+    <div class="container content-container wrapper">
+         <div class="row">
+             <div class="span12 content-section shadow-up tab-content">
+                 <div class="content-data">
+                     <div class="container-fluid">
+                         <div class="row-fluid">
+                             <div class="span3">
+                                 <h4>Properties</h4>
+
+                                 <div class=""></div>
+                             </div>
+                             <div class="span9">
+                                 <div class="control-group">
+                                     <div class="container-fluid">
+                                     <div class="row-fluid">
+                                     <div  class="span12">
+                                        <label class="control-label" for="displayStage"><b>Properties</b></label>
+                                        <table class="table table-bordered">
+                                            <thead  id="application_Dependencies_th"  style="display:none;">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Description</th>
+                                                    <th>Value</th>
+                                                    <th>Edit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="application_Dependencies">
+
+                                            </tbody>
+  
+ 
+                                        </table> 
+                                     </div>
+                                     </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row-fluid">
+                             <hr/>
+                         </div>
+                         <div class="row-fluid">
+
+                             <div class="span3">
+                                 <h4>Create New Dependency</h4>
+
+                                 <div class=""></div>
+                             </div>
+                             <div class="span9">
+                                <form method='post' class='form-horizontal'>
+                                    <div id="resourceInputTbl">
+                                        <div class="control-group">
+                                            <label class="control-label" for="resourceName">Resource  Name</label>
+                                            <div class="controls">
+                                              <input type="text" id="resourceName" class="span12" />
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <label class="control-label" for="resourceDescription">Resource Description</label>
+                                            <div class="controls">
+                                              <textarea id='resourceDescription' rows="5" class="span12"></textarea>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id='applicationKey' value='<%=request.getParameter("applicationKey")%>' />
+
+                                        <%
+                                        var stages = getProperties('ApplicationDeployment.DeploymentStage');
+                                         for(var i=0; i<stages.length;i++){
+                                            var stage = stages[i];
+                                              %>
+                                       <input type="hidden" name='stage' value='<%=stage%>'/>
+
+                                             <%     
+                                          }          %>                               
+                             
+                                        <hr />
+                                        <div class="control-group">
+                                            <div class="control-group">
+                                                <h5>Create Resource</h5>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="contentValue">Resource Value</label>
+
+                                            <div class="controls">
+                                                <input type='text' id="contentValue" class="span12"/>
+                                            </div>
+                                        </div>
+                                         
+                                          <div class="control-group">
+                                            <div class="controls">
+                                               <input type='button' name='Submit' value='Create' onclick="createResources();" class='btn btn-primary'/>
+                                                    <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+    %>'" value='Cancel' class='btn'/>
+                                            </div>
+                                         </div>  
+                               
+
+                                    </div>  <!-- resourceInputTbl -->
+
+                                 </form>
+
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             </div>
+        </div>
+
+        
+<% }); %>

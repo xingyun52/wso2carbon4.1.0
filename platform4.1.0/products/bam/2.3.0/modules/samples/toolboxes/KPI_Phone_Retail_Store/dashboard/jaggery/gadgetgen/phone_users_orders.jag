@@ -1,0 +1,27 @@
+<%
+        var config = {};
+
+        var db = new Database("jdbc:h2:repository/database/samples/WSO2CARBON_DB;AUTO_SERVER=TRUE",
+        "wso2carbon", "wso2carbon", config);
+    	var result = db.query("select * from UserSummary");
+
+        var respJson = null;
+
+        
+        var colx = "NAME";
+    	var coly = "TOTALORDERS";
+
+    	function convertDBResult(result, colx, coly) {
+			var array = [];
+			for (var i = 0; i < result.length; i++) {
+				// print("The " + i + "th result is : " + result[i]);
+				array.push([result[i][colx],parseFloat(result[i][coly])]);
+			}
+
+			return array;
+        };
+        respJson = convertDBResult(result, colx, coly);
+    
+
+        print(respJson);
+   		 %>

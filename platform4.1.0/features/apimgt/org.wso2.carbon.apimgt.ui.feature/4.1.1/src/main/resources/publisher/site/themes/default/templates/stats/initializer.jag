@@ -1,0 +1,15 @@
+<%
+jagg.initializer("stats", {
+
+    preInitialize:function () {
+    jagg.addHeaderJS("stats", "jplot", "templates/stats/js/stats.js");
+    }
+});
+%>
+
+
+
+
+
+
+

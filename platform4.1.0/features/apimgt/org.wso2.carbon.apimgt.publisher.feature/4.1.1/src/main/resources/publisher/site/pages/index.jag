@@ -1,0 +1,71 @@
+<%
+include("/jagg/jagg.jag");
+var site = require("/site/conf/site.json");
+
+(function () {
+
+  var apis, result, mod,user = jagg.getUser();
+    if (!user) {
+        response.sendRedirect(jagg.getAbsoluteUrl("/site/pages/login.jag"));
+        return;
+    }
+    query = request.getParameter("query");
+    var page = request.getParameter("page");
+    if(page==null){page=1;}
+    var itemsPerPage = 10;
+    var currentPage = page;
+
+    if(query) {
+        mod = jagg.module("search");
+        result = mod.searchAllAPIs(query);
+        apis = result.apis;
+    } else {
+        mod = jagg.module("api");
+        result = mod.getAllAPIs();
+        apis = result.apis;
+    }
+    var itemCount;
+    if(apis!=null){
+    itemCount=apis.length;
+    var numberOfPages = itemCount / itemsPerPage;
+    if (itemCount % itemsPerPage != 0) {
+     numberOfPages++;
+    }
+    if (numberOfPages < currentPage || currentPage <= 0) {
+            currentPage = 1;
+    }
+    }
+    var isCreatePermitted = jagg.getCreatePermitted().permitted;
+    jagg.render({
+        "name":"page/base",
+        "inputs":{
+            "title":"API Publisher Listing",
+            "header":{
+                "name":"menu/primary"
+            },
+            "body":[
+                {
+                    "name":"layout/extended",
+                    "inputs":{
+                        "middle":{
+                            "name":"listing",
+                            "inputs":{
+                                "apis":apis,
+                                "currentPage":currentPage,
+                                "numberOfPages":numberOfPages,
+                                "isCreatePermitted":isCreatePermitted
+                            }
+                        }
+                    }
+                }
+            ],"footer":[
+                {
+                    "name":"footer"
+                }
+            ]
+        }
+    });
+}());
+
+
+%>

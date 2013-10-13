@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>carbon-dependents</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Carbon - Platform Dependent Projects</name>
+    <description>WSO2 Carbon Platform dependent projects</description>
+    <url>http://wso2.org</url>
+
+    <build>
+        <plugins>
+            <plugin> 
+		<groupId>org.jvnet.maven.incrementalbuild</groupId> 
+		<artifactId>incremental-build-plugin</artifactId>
+		<version>1.3</version>
+		<executions> 
+		    <execution> 
+		        <goals> 
+			    <goal>incremental-build</goal>
+			</goals>
+		    </execution> 
+		</executions> 
+	    </plugin>
+        </plugins>
+    </build>
+
+            <modules>
+		<module>rampart/1.6.1-wso2v9</module>
+		<module>commons/caching/4.0.2</module>
+		<module>synapse/2.1.1-wso2v3</module>
+                <module>commons/charon/1.0.1-wso2v1</module>
+                <module>commons/balana/1.0.0-wso2v6</module>
+		<module>commons/siddhi/2.0.0-wso2v1</module>
+                <module>commons/throttle/4.1.0</module>
+                <module>andes/0.13.0-wso2v6</module>
+                <module>hive/0.8.1-wso2v6</module>
+                <module>hadoop/0.20.203.1-wso2v4</module>
+                <module>orbit/andes/0.13.wso2v6</module>
+		<!-- orbit/modules -->
+		<module>orbit/rampart-core/1.6.1.wso2v9</module>
+		<module>orbit/rampart-policy/1.6.1.wso2v9</module>
+		<module>orbit/rampart-trust/1.6.1.wso2v9</module>
+                <module>orbit/hive/0.8.1.wso2v6</module>
+                <module>orbit/hadoop-core/0.20.203.1.wso2v4</module>
+	     </modules>
+   <dependencyManagement>
+	<dependencies>
+		<dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+	</dependencies>
+   </dependencyManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<axis2.version>1.6.1-wso2v8</axis2.version>
+        <jclouds.version>1.5.0-beta.5</jclouds.version>
+    </properties>
+
+</project>
+

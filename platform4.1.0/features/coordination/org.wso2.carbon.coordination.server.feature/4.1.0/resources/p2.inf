@@ -1,0 +1,5 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.coordination.server_${feature.version}/conf/zoo.cfg,target:${installFolder}/../conf/etc/zoo.cfg,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.coordination.server_${feature.version}/conf/jaas.conf,target:${installFolder}/../conf/security/jaas.conf,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/features/org.wso2.carbon.coordination.server_${feature.version}/conf);
+

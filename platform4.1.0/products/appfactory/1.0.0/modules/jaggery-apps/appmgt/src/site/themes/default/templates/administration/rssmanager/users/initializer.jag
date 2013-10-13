@@ -1,0 +1,12 @@
+
+
+
+<%
+jagg.initializer("administration/rssmanager/users", {
+
+    preInitialize:function () {
+
+    }
+});
+%>
+

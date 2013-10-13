@@ -1,0 +1,200 @@
+<% jagg.template("tablinks", function (inputs, outputs, jagg) {
+    include("/jagg/constants.jag");
+    include("/jagg/config_reader.jag");
+    var applicationName = inputs.applicationName;
+    var applicationKey = inputs.applicationKey;
+    var pageName = inputs.pageName;
+
+    var log = new Log();
+    var permissionModule = jagg.module("permission");
+    var userAdministrationAllowed = jagg.module("permission").isUserAccessGranted(applicationKey, PERMISSION_USER_INVITE);
+    var apiManagerConfigurationAllowed = jagg.module("permission").isUserAccessGranted(applicationKey, PERMISSION_CONFIGURATION_API_MANAGER);
+    var buildAllowed = jagg.module("permission").isUserAccessGranted(applicationKey, PERMISSION_BUILD);
+    var deployAllowed = false;
+    var promoteAllowed = false;
+    var demoteAllowed = false;
+    var dbAdministrationAllowed = false;
+    var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+    var hasDeployToStagePermission = {};
+    var hasPromotePermissions = {};
+    var hasDemotePermissions = {};
+    var hasConfigureDbAdministrationPermissions = {};
+    for (var i = 0; i < deploymentStages.length; i++) {
+
+        var hasPermission = permissionModule.isUserAccessGranted(applicationKey, PERMISSION_DEPLOY_TO + deploymentStages[i]);
+        hasDeployToStagePermission[deploymentStages[i]] = hasPermission;
+        if (hasPermission) {
+            deployAllowed = true;
+        }
+
+        var hasPromotePermission = permissionModule.isUserAccessGranted(applicationKey, PERMISSION_GOVERNANCE_PROMOTE_TO + deploymentStages[i]);
+        hasPromotePermissions[deploymentStages[i]] = hasPromotePermission;
+        if (hasPromotePermission) {
+            promoteAllowed = true;
+        }
+
+        var hasDemotePermission = permissionModule.isUserAccessGranted(applicationKey, PERMISSION_GOVERNANCE_DEMOTE_TO + deploymentStages[i]);
+        hasDemotePermissions[deploymentStages[i]] = hasDemotePermission;
+        if (hasDemotePermission) {
+            demoteAllowed = true;
+        }
+        var hasConfigureDbAdministrationPermission = permissionModule.isUserAccessGranted(applicationKey, PERMISSION_CONFIGURATION_DB_FOR_STAGE + deploymentStages[i]);
+        hasConfigureDbAdministrationPermissions[deploymentStages[i]] = hasConfigureDbAdministrationPermission;
+        if (hasConfigureDbAdministrationPermission) {
+            dbAdministrationAllowed = true;
+        }
+    }
+
+
+    var configureResourcesAllowed = (dbAdministrationAllowed || apiManagerConfigurationAllowed);
+    var retireAllowed = jagg.module("permission").isUserAccessGranted(applicationKey, PERMISSION_GOVERNANCE_RETIRE);
+    var governanceAllowed = (promoteAllowed || demoteAllowed || retireAllowed);
+    var repositoryOperationsAllowed = permissionModule.isUserAccessGranted(applicationKey, PERMISSION_REPOSITORY_BRANCH);
+    var allowedLength = 16;
+    var lineBrake = false;
+
+    if (allowedLength < applicationName.length) {
+        lineBrake = true;
+    }
+    %>
+    <div class="container">
+
+               <table class="tab-table">
+                       <tr>
+
+                       <%
+    if (repositoryOperationsAllowed) {
+        %>
+                           <td>
+                               <a id="menu_repository" href="<%=jagg.getAbsoluteUrl("/site/pages/repository.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "Repository") { %> class="active" <%
+        }
+        %>>
+                                   <i class="icon-source"></i>
+                                   <br/>
+                                   <span>Repository</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+
+                       <%
+    if (buildAllowed) {
+        %>
+                           <td>
+                               <a id="menu_jerkinsBuilds" href="<%=jagg.getAbsoluteUrl("/site/pages/build.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "Builds") { %> class="active" <%
+        }
+        %>>
+                                   <i class="icon-builds"></i>
+                                   <br/>
+                                   <span>Builds</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+
+                       <%
+    if (governanceAllowed) {
+        %>
+                            <td>
+                                <a id="menu_governance" href="<%=jagg.getAbsoluteUrl("/site/pages/governance.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "Governance") { %> class="active" <%
+        }
+        %>>
+                                   <i class="icon-gov"></i>
+                                   <br/>
+                                   <span>Governance</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+
+                       <td>
+                           <a id="menu_trackIssues" href="<%=jagg.getAbsoluteUrl("/site/pages/issuetracker.jag")
+    %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+    %>" <%
+    if (pageName == "Track Issues") { %> class="active" <%
+    }
+    %>>
+                               <i class="icon-issue-tracker"></i>
+                               <br/>
+                               <span>Track Issues</span>
+                           </a>
+                       </td>
+
+
+
+
+                       <%
+    if (userAdministrationAllowed) {
+        %>
+                           <td>
+                               <a id="menu_userAdmin"  href="<%=jagg.getAbsoluteUrl("/site/pages/user.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "User Administration") { %> class="active" <%
+        }
+        %>>
+                                   <i class="icon-team-admin"></i>
+                                   <br/>
+                                   <span>User Administration</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+                       <%
+    if (configureResourcesAllowed) {
+        %>
+                           <td>
+                               <a id="menu_dbAdmin" href="<%=jagg.getAbsoluteUrl("/site/pages/configureenvironment.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "Configure Resources") { %> class="active" <%
+        }
+        %>>
+                                   <i class="icon-dbs-color"></i>
+                                   <br/>
+                                   <span>Configure Resources</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+
+                       <%
+    if (getProperty(SHOW_OTHER_SERVICES_TAB) == 'true') {
+        %>
+                           <td>
+                               <a id="menu_otherServices" href="<%=jagg.getAbsoluteUrl("/site/pages/otherservices.jag")
+        %>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+        %>" <%
+        if (pageName == "Other Services") { %> class="active" <%
+        }
+        %>>
+                               <i class="icon-other-services"></i>
+                               <br/>
+                               <span>Other Services</span>
+                               </a>
+                           </td>
+                           <%
+    }
+    %>
+
+                    </tr>
+                </table>
+
+   </div>
+
+   <%
+}); %>

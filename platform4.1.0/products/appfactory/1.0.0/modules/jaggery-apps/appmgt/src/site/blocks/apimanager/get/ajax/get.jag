@@ -1,0 +1,57 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "getApplicationAPI") {
+    	mod = jagg.module("apimanager");
+    	var applicationKey = request.getParameter("applicationKey");
+//    	jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION.CONFIGURATION.API.MANAGER);
+        try {
+            result = mod.getApplicationAPI(applicationKey);
+            if (result != null) {
+                print(result);
+            } else {
+                throw "Error while getting the APIs of application";
+            }
+        } catch(e) {
+            throw "Error while getting the list of APIs";
+        }
+    } else if (action == "getAPI"){
+        mod = jagg.module("apimanager");
+
+        var apiName = request.getParameter("apiName");
+        var apiVersion = request.getParameter("apiVersion");
+        var apiProvider = request.getParameter("apiProvider");
+
+        try{
+            result = mod.getAPIInformation(apiName,apiVersion,apiProvider);
+            if(result != null){
+                print(result);
+            }else{
+                throw "Error while getting the API information";
+            }
+        }catch(e){
+           throw "Error while getting API information"
+        }
+    } else if (action == "getAPICount") {
+    	mod = jagg.module("apimanager");
+    	var applicationKey = request.getParameter("applicationKey");
+
+        try {
+            result = mod.getAPICount(applicationKey);
+            
+			print(result);
+        } catch(e) {
+            print(0);
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

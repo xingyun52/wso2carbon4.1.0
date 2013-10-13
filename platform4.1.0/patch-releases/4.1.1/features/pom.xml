@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>platform-patch-releases</artifactId>
+        <version>4.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>platform-patch-releases-features</artifactId>
+    <packaging>pom</packaging>
+    <version>4.1.1</version>
+    <name>WSO2 Carbon - Patch releases - features - Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+    <modules>
+        <!--Appfactory-->
+        <module>../../../features/appfactory/org.wso2.carbon.appfactory.server.feature/1.0.2</module>
+        <module>../../../features/registry/commenstream/org.wso2.carbon.registry.commentstream.feature/1.0.0</module>
+        <!--/Appfactory-->
+        <!--bpel-->
+        <module>../../../features/attachment-mgt/org.wso2.carbon.attachment.mgt.feature/4.1.1</module>
+        <module>../../../features/attachment-mgt/org.wso2.carbon.attachment.mgt.server.feature/4.1.1</module>
+        <module>../../../features/attachment-mgt/org.wso2.carbon.attachment.mgt.ui.feature/4.1.1</module>
+        <module>../../../features/bpel/org.wso2.carbon.bpel.b4p.feature/4.1.1</module>
+        <module>../../../features/bpel/org.wso2.carbon.bpel.bam.publisher.feature/4.1.1</module>
+        <module>../../../features/bpel/org.wso2.carbon.bpel.feature/4.1.1</module>
+        <module>../../../features/bpel/org.wso2.carbon.bpel.server.feature/4.1.1</module>
+        <module>../../../features/bpel/org.wso2.carbon.bpel.ui.feature/4.1.1</module>
+        <module>../../../features/humantask/org.wso2.carbon.humantask.feature/4.1.1</module>
+        <module>../../../features/humantask/org.wso2.carbon.humantask.server.feature/4.1.1</module>
+        <module>../../../features/humantask/org.wso2.carbon.humantask.ui.feature/4.1.1</module>
+        <!--/bpel-->
+        <!--Stratos 2-->
+        <module>../../../features/stratos/adc-mgt/org.wso2.carbon.adc.mgt.server.feature/2.1.1/pom.xml</module>
+        <module>../../../features/stratos/adc-mgt/org.wso2.carbon.adc.topology.mgt.feature/2.1.1/pom.xml</module>
+        <module>../../../features/stratos/adc-mgt/org.wso2.carbon.adc.mgt.feature/2.1.1/pom.xml </module>
+
+        <module>../../../features/stratos/cartridge-agent/org.wso2.carbon.cartridge.agent.server.feature/2.1.1/pom.xml</module>
+        <module>../../../features/stratos/cartridge-agent/org.wso2.carbon.cartridge.messages.feature/2.1.1/pom.xml</module>
+	<module>../../../features/stratos/cartridge-agent/org.wso2.carbon.cartridge.agent.feature/2.1.1/pom.xml</module>
+
+	<module>../../../features/stratos/cartridge-mgt/org.wso2.carbon.cartridge.mgt.ui.feature/2.1.1/pom.xml</module>
+
+	<module>../../../features/stratos/cloud-controller/org.wso2.carbon.stratos.cloud.controller.feature/2.1.1/pom.xml</module>
+
+        <module>../../../features/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer.feature/4.1.1/pom.xml</module>
+        <module>../../../features/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer.server.feature/4.1.1/pom.xml</module>
+        <module>../../../features/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer.subversion.feature/4.1.1/pom.xml</module>
+        <module>../../../features/deployment-synchronizer/org.wso2.carbon.deployment.synchronizer.git.feature/4.1.1/pom.xml</module>
+        <!--Stratos 2-->
+
+        <!-- ELB -->
+        <module>../../../features/tenantaware-load-balancer/org.wso2.carbon.lb.endpoint.server.feature/4.1.1/pom.xml</module>
+	<module>../../../features/autoscaler/org.wso2.carbon.mediator.autoscale.feature/4.1.1/pom.xml</module>
+        <!-- ELB -->
+
+	<!-- API-Mgt Features-->
+        <module>../../../features/apimgt/org.wso2.carbon.apimgt.server.feature/4.1.1</module>
+        <module>../../../features/apimgt/org.wso2.carbon.apimgt.ui.feature/4.1.1</module>
+        <module>../../../features/apimgt/org.wso2.carbon.apimgt.feature/4.1.1</module>
+	<module>../../../features/apimgt/org.wso2.carbon.apimgt.store.feature/4.1.1</module>
+	<module>../../../features/apimgt/org.wso2.carbon.apimgt.publisher.feature/4.1.1</module>
+	<module>../../../features/apimgt/org.wso2.carbon.apimgt.server.lite.feature/4.1.1</module>
+        <!-- END of API-Mgt Features -->
+    </modules>
+</project>
+

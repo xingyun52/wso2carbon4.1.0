@@ -1,0 +1,9 @@
+<%
+
+jagg.module("logdownload", {
+
+    downloadLogFile:function () {
+        return jagg.require(jagg.getModulesDir() + "logdownload/logdownload.jag").downloadLogFile.apply(this, arguments);
+    }
+});
+%>

@@ -1,0 +1,9 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.apimgt.server_${feature.version}/apimgt/,target:${installFolder}/../../dbscripts/apimgt,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.apimgt.server_${feature.version}/rxts/,target:${installFolder}/../resources/rxts,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.apimgt.server_${feature.version}/rxts/,target:${installFolder}/../resources/rxts,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.apimgt.server_${feature.version}/conf/api-manager.xml/,target:${installFolder}/../conf/api-manager.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/features/org.wso2.carbon.apimgt.server_${feature.version}/conf/master-datasources.xml/,target:${installFolder}/../conf/datasources/master-datasources.xml,overwrite:true);\
+
+
+

@@ -1,0 +1,810 @@
+<% jagg.template("build/list", function(inputs, outputs, jagg) { %>
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+var log = new Log();
+var baseURL =getProperty(BASE_URL);
+var applicationName = request.getParameter("applicationName");
+var applicationKey = request.getParameter("applicationKey");
+
+var stages = getProperties('ApplicationDeployment.DeploymentStage');
+var stagesCount=stages.length;
+    
+print ('<div id="hiddenstagespolicy">');
+
+for(var i=0; i < stagesCount; i++){
+    var stage = stages[i];
+    var storagePolicyLatest = 'ApplicationDeployment.DeploymentStage.'+stage+'.DeploymentArtifact.TriggerBuild.ArtifactStoragePolicy';
+    var policyLatest = getProperty(storagePolicyLatest);
+    var storagePolicyTagged = 'ApplicationDeployment.DeploymentStage.'+stage+'.DeploymentArtifact.PersistedArtifacts';
+    var policyTagged = getProperty(storagePolicyTagged);
+
+    if(policyLatest != null) {
+        print ('<input type="hidden" name="' + stage + '" value="' + policyLatest + '">');
+    }
+    else if(policyTagged != null) {
+        print ('<input type="hidden" name="' + stage + '" value="' + policyTagged + '">');
+    }
+}
+print ('</div>');
+%>
+	<script type="text/javascript" src="/appmgt/site/themes/default/js/jszip.js"></script>
+	<script src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("lib/dojo/dojo/dojo.js"))%>" data-dojo-config="isDebug: 1, async: 1, parseOnLoad: 1"></script>
+ 	<script type="text/javascript" charset="utf-8">
+            function displayTaggedArtifacts(stage, version,type) {
+            	//get tag names of persisted artifacts
+                jagg.post("../blocks/build/get/ajax/get.jag", {
+                              action:"getTagNamesOfPersistedArtifacts",
+                              applicationKey:$("#applicationKey").attr('value'),
+                              applicationVersion:version
+                          },
+                          function (result) {
+                              var parsedArray = jQuery.parseJSON(result);
+                              if (parsedArray.length == 0) {
+                                  jagg.message({content:'No tags found. Please tag a build before deploying', type:'Info' });
+                              } else {
+                                  var content = "";
+                                  for (var i = 0; i < parsedArray.length; i++) {
+                                      var tagName = parsedArray[i];
+                                      var label = "<label class='radio'><input type='radio' name='tag' value=" + tagName + ">";
+                                      content += label + tagName + " </label>";
+                                  }
+                                  jagg.message({
+                                                   type:'custom',
+                                                   title:"Select a tag to be deployed",
+                                                   content:content,
+                                                   buttons:[
+                                                       {cssClass:'btn', name:'Ok', cbk:function () {
+	                                                           var selectedTagValue = $("input:radio[name=tag]:checked").val();
+	                                                           if (selectedTagValue) {
+	                                                        	   //$('#messageModal').modal('hide');
+																   deployTaggedArtifact(version, stage, selectedTagValue);
+
+
+	                                                               afterDeployCall($("#applicationKey").attr('value'),version,stage,type);
+
+
+	                                                           } else {
+	                                                               alert("No tag is selected. Please select a tag to be deployed");
+	                                                           }
+	                                                       }
+                                                       },
+                                                  	   {
+                                                	   		cssClass:'btn',
+                                                	   		name:'Cancel',
+                                                	   		cbk:function () {
+                                                	   			$('#messageModal').modal('hide');
+                                                	   		}
+                                                  	   }
+                                                   ]
+                                               });
+                              }
+                          },
+                          function (jqXHR, textStatus, errorThrown) {
+                              jagg.message({content:'Error loading tag names of persisted artifacts', type:'error' });
+                          });
+            }
+
+            function deployTaggedArtifact(version, stage, selectedTagValue) {
+                jagg.post("../blocks/build/add/ajax/add.jag", {
+                      action:"deployArtifact",
+                      applicationKey:$("#applicationKey").attr('value'),
+                      version:version,
+                      stage:stage,
+                      tagName:selectedTagValue,
+                      doDeploy:true,
+						deployAction:"deploy"
+                  },
+                  function (result) {
+                    if(result != undefined){
+                            jagg.message({content:"Successfully completed the operation",type:'info' });
+	      					//window.location.reload(false);
+				      	}
+                  },
+                  function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:"Error occurred while deploying the application", type:'error' });
+                  }
+                );
+            }
+
+	    function downloadFile() {
+			var stage = $('input[@name="envBtn"]:checked').val();
+		  	jagg.post("../blocks/logdownload/ajax/logdownload.jag", {
+				action:"downloadFile",
+				applicationKey:'<%=applicationKey%>',
+				stage:stage
+			},
+	        function (result) {
+	              if(result != undefined){
+				//This is to download the created logs
+	                var zip = new JSZip();
+					zip.file("log.xml",result);
+					var content = zip.generate();
+					location.href="data:application/zip;base64,"+content;
+	   			  } },
+	        function (jqXHR, textStatus, errorThrown) {
+				jagg.message({content:"Error occurred while downloading the log file",type:'error' });
+			});
+	     }
+
+		function drawJenkinsBuildsHistoryChart(){
+			/* This section will draw the Build History chart.	*/
+
+			var result =null;
+
+			jagg.post("../blocks/build/list/ajax/list.jag", {
+				action:"jenkinsbuilds",
+				applicationKey:'<%=applicationKey%>'
+			},
+	        function (result) {
+				if (result != undefined) {
+
+				    var parsedResult = jQuery.parseJSON(result);
+
+				    var elementArray = parsedResult.labels;
+				    var chartData = new Array();
+
+				    for (var i = 0; i < elementArray.length; i++) {
+				        chartData.push(elementArray[i].data)
+				    }
+
+				    require([
+				    // Require the basic chart class
+				    "dojox/charting/Chart",
+
+				    // Require the theme of our choosing
+				    "dojox/charting/themes/Tom",
+
+				    // Charting plugins:
+
+				    //  We want to plot Lines
+				    "dojox/charting/plot2d/Lines",
+
+				    //  We want to use Markers
+				    "dojox/charting/plot2d/Markers",
+
+				    //  We'll use default x/y axes
+				    "dojox/charting/axis2d/Default",
+
+				    // Wait until the DOM is ready
+				    "dojo/domReady!"], function(Chart, theme) {
+
+						$('#buildHistory').html("");
+				        // Create the chart within it's "holding" node
+				        var chart = new Chart("buildHistory",{
+                          title: "Build number",
+                          titlePos: "Bottom",
+                          titleGap: 20,
+                          titleFont: "normal normal normal 10pt Arial",
+                          titleFontColor: "orange",
+                          scroll:true
+                        });
+
+				        // Set the theme
+				        chart.setTheme(theme);
+
+				        // Add the only/default plot
+				        chart.addPlot("default", {
+				            type : "Lines",
+				            markers : true,
+				            gap : 1
+				        });
+
+				        // Add axes
+				        chart.addAxis("x", parsedResult);
+				        chart.addAxis("x",{
+				            labels:parsedResult.labels,
+				            majorTick: {color: "red", length: 6},
+                            minorTick: {stroke: "black", length: 3},
+                            majorTickStep:10
+				        });
+
+ 				        chart.addAxis("y", {
+				            title: 'Duration (seconds)',
+ 				            vertical : true,
+ 				            fixLower : "major",
+				            fixUpper : "major",
+				            titleFont: "normal normal normal 10pt Arial",
+                           titleFontColor: "orange"
+ 				        });
+
+				        // Add the series of data
+				        chart.addSeries("Build History", chartData);
+
+				        // Render the chart!
+				        chart.render();
+				    });
+				}
+	   		},
+	        function (jqXHR, textStatus, errorThrown) {
+	        	$("#buildHistory").html("<b>Please set Jenkins API-token in order to fetch 'Jenkins build information'</b>");
+			});
+		}
+
+	function deployLatestArtifact(stage, versionId,type) {
+            jagg.post("../blocks/build/add/ajax/add.jag", {
+                          action:"deployArtifact",
+                          applicationKey:$("#applicationKey").attr('value'),
+                          version:versionId,
+                          stage:stage,
+                          tagName:'',
+                          deployAction:"deploy"
+                      },
+                      function (result) {
+                          if(result != undefined){
+                        	  afterDeployCall($("#applicationKey").attr('value'),versionId,stage,type);
+                              jagg.message({content:"Submitted to deploy the application", type:'info' });
+                          }
+                      },
+                      function (jqXHR, textStatus, errorThrown) {
+                          jagg.message({content:"Error occurred while deploying the application", type:'error' });
+                      });
+        }
+
+        function doCreateArtifact(versionId, stage, deploymentPolicy,tagName) {
+
+			var tagName = "";
+
+			if(deploymentPolicy == "Tagged") {
+				tagName = prompt("If you want to store this build artifact permanently, please enter a tag name for your artifact","");
+				if(tagName == null){
+					return;
+				}else if(tagName == ""){
+					jagg.message({content:"Application submitted to build. Your build artifact will not be stored permanently since a tag name is not given ",type:'info' });
+				}else{
+					 jagg.message({content:"Application submitted to build. Your artifact will be stored with tag name: "+ tagName,type:'info' });
+				}
+
+			} else {
+ 				jagg.message({content:"Application submitted to build ",type:'info' });
+			}
+
+			jagg.message({content:"Application submitted to build ",type:'info' });
+            jagg.post("../blocks/lifecycle/add/ajax/add.jag", {
+	            action:"createArtifact",
+	            applicationKey:$("#applicationKey").attr('value'),
+	            version:versionId,
+	            revision:"",
+	            stage:stage,
+	            doDeploy:false,
+	            tagName:tagName
+	        },
+	        function (result) { },
+	        function (jqXHR, textStatus, errorThrown) { });
+        }
+
+        function VersionComparator(a,b) {
+            return a.version.localeCompare(b.version);
+        }
+
+        function setAutoTaskStatus(element ,stage, version, action){
+        	var isChecked = ($(element).attr("checked")=="checked")
+        	jagg.post("../blocks/lifecycle/autodeployment/ajax/set.jag", {
+                action:action,
+                applicationKey:$("#applicationKey").val(),
+                stageName:stage,
+                version:version,
+                isEnable:isChecked
+            },
+            function (result) {
+                if (result != undefined) {
+                    jagg.message({content:"Successfully completed the operation", type:'info' });
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                jagg.message({content:"Error occurred while performing the auto deployment configuration operation", type:'info' });
+            });
+        }
+
+        function setAutoDeployStatus(element ,stage, version){
+        	setAutoTaskStatus(element ,stage, version, "setAutoDeployment");
+        }
+
+        function setAutoBuildStatus(element ,stage, version){
+        	setAutoTaskStatus(element ,stage, version, "setAutoBuild");
+        }
+
+        <%
+        var createArtifact=getProperty("ApplicationDeployment.DeploymentStage.Development.CreateArtifact");
+        %>
+
+	    $(function() {
+
+	    	drawJenkinsBuildsHistoryChart();
+
+	    	//get build information
+		  	jagg.post("../blocks/build/list/ajax/list.jag", {
+	    		action:"buildinfobyappid",
+	    		applicationKey:$("#applicationKey").attr('value')
+	      	},
+	      	function (result) {
+			  /*
+	      	  var parsedArray = jQuery.parseJSON(result);
+	      	  for(var i = 0; i < parsedArray.length; i++) {
+	      	      var name = parsedArray[i].name;
+	      	      var value = parsedArray[i].value;
+
+	      	      if(name == 'Aborted') {
+	      	          $("#aborted").html(value);
+	      	      }else if(name == 'Unstable') {
+	      	      	  $("#unstable").html(value);
+	      	      }else if(name == 'Not Build') {
+	      	      	  $("#notbuild").html(value);
+	      	      }else if(name == 'Successful') {
+	      	      	  $("#success").html(value);
+	      	      }else if(name == 'Failed') {
+	      	      	  $("#failed").html(value);
+	      	      }
+	      	  }
+			  */ // This script gives errors in IE8 -- If not used pls remove it
+	      	},
+	      	function (jqXHR, textStatus, errorThrown) {
+	        	jagg.message({content:'Error loading build information',type:'error' });
+	      	});
+
+			jagg.post("../blocks/application/get/ajax/list.jag", {
+				action:"getAppVersionsInStagesWithMetaData",
+				userName:$("#userName").attr('value'),
+				applicationKey:$("#applicationKey").attr('value'),
+				metaDataNeed:false,
+				buildable:true
+	  		},
+            function (result) {
+
+	  			var headingRow = '<div class="row-fluid build-state-head">' +
+				                '<div class="span2"' +
+				                <%
+				                   if(createArtifact!="Never"){
+				                       print("' style=\"width:60px;\"'+");
+				                   }
+				                %>
+				                '><h5>Version</h5>' +
+				                '</div>' +
+				                '<div class="span2">' +
+				                '<h5>Last Build Status</h5>' +
+				                '</div>' +
+				                <%
+				                if(createArtifact!="Never"){
+				                   print("'<div class=\"span2\" style=\"width:");
+				                   if(artifactStoragePolicy=="Tagged"){
+                                   		print("200px;");
+                                   }else{
+                                   		print("120px;");
+                                   }
+				                   print("\"><h5>Build</h5></div>' +");
+				                }
+				                %>
+                                '<div class="span4">' +
+				                '<h5>Description</h5>' +
+				                '</div>' +
+				                '<div class="span2" style=\"width:85px;\">' +
+				                '<h5>Deploy</h5>' +
+				                '</div>' +
+				                '</div>' +
+				                '<div class="row-fluid"><hr /></div>';
+
+                $("#outerdivTrunk").append(headingRow);
+
+			    var parsedArray = jQuery.parseJSON(result);
+
+                var hasBuildPermission= ($("#hasBuildPermission").attr('value') === 'true');
+
+				for (var i = 0; i < parsedArray.length; i++) {
+		  			var application = parsedArray[i];
+		  			var versions = application.versions;
+		  			versions.sort(VersionComparator);
+
+                    for (var j = 0; j < versions.length; j++) {
+
+                        var versionInfo = versions[j];
+                        var domContent;
+                        var row ;
+
+                        if (hasBuildPermission) {
+
+                            var buildStatus;
+                            var buildId = "" ;
+                            var deployedBuild = "" ;
+                            if (versionInfo.lastBuildResult == "") {
+                                buildStatus = '<i class="build-na"></i>';
+                            } else {
+                                buildStatus = versionInfo.lastBuildResult;
+                                buildId = buildStatus.replace("successful","").replace("failed","").replace("build","").trim();
+                            }
+
+                            if (versionInfo.deployedBuildId != null && versionInfo.deployedBuildId != "") {
+                            	deployedBuild = 'Build ' + versionInfo.deployedBuildId + ' in Deployment';
+                            }
+
+                            var idpartcom = application.key.replace(/\./g,'_')+'_'+versionInfo.version.replace(/\./g,'_');
+							var isAutoBuildChecked="";
+							var isAutoDeployedChecked="";
+
+							if(versionInfo.isAutoBuild=="true"){
+								isAutoBuildChecked='checked="checked"';
+							}
+							if(versionInfo.isAutoDeploy=="true"){
+								isAutoDeployedChecked='checked="checked"';
+							}
+
+
+                            domContent ='<div class="row-fluid">' +
+			                            '<div class="span2"' +
+			                            <%
+			                            if(createArtifact!="Never"){
+			                                print("' style=\"width:60px;\"'+");
+			                            }
+			                            %>
+			                                '><h6>'+versionInfo.version+'</h6>' +
+			                            '</div>' +
+			                            '<div class="span2">' +
+			                                '<h6 id="'+idpartcom+'_lastbuild" buildid="'+buildId+'">'+buildStatus+'</h6>' +
+			                                '<img id="'+idpartcom+'_lastbuildproc" style="display:none;width:30px;height:30px" src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/processing.gif"))%>" />'+
+			                            '</div>' +
+			                                <%
+			                                if(createArtifact!="Never"){
+			                                    print("'<div class=\"span2\" style=\"width:");
+			                                    if(artifactStoragePolicy=="Tagged"){
+			                                    	print("200px;");
+			                                    }else{
+			                                    	print("120px;");
+			                                    }
+
+			                                    print("\"><input type=\"checkbox\"' + isAutoBuildChecked  + 'id=\"autoBuild\" value=\"123\" onclick=\"setAutoBuildStatus(this,' + \"'\" +versionInfo.stage + \"'\" +',' + \"'\" + versionInfo.version + \"'\" + ') \"/><label for=\"autoBuild\" style=\"display:inline;padding:2px;\">&nbsp;Auto Build</label>'+");
+			                                    print("'<br/><input type=\"checkbox\"' + isAutoDeployedChecked + 'id=\"autoDeploy\" value=\"1234\" onclick=\"setAutoDeployStatus(this,' + \"'\" +versionInfo.stage + \"'\" +',' + \"'\" + versionInfo.version + \"'\" + ')\"/><label for=\"autoDeploy\" style=\"display:inline;padding:2px;\">&nbsp;Auto Deploy</label>'+");
+			                                    print("'<br/><button id=\"build\" style=\"margin-top:4px;\" class=\"btn\" type=\"button\"><i class=\"icon-start-build\"></i> Start Build</button>'+");
+			                                    var artifactStoragePolicy=getProperty("ApplicationDeployment.DeploymentStage.Development.DeploymentArtifact.TriggerBuild.ArtifactStoragePolicy");
+			                                    if(artifactStoragePolicy!="Latest"){
+			                                        print("\'<input placeholder=\"Label...\" style=\"width:60px;margin:1px 0 0 2px;\" type=\"text\" id=\"tag'+j+'\"/>' +");
+			                                    }
+			                                    print("'</div>' +");
+			                                }
+			                                %>
+
+			                            '<div class="span4">This version will be <strong>Deployed</strong> in <span id="stage" class="label label-info">'+application.stage+'</span>' ;
+
+
+                            domContent +=   '<div ><a style="display:block" id="'+idpartcom+'_try"><i class="icon-refresh"></i>Launch</a><div id="'+idpartcom+'_lastdeployedid">'+  deployedBuild + '</div><img  style="display:none;width:30px;height:30px" id="'+idpartcom+'_proc" src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/processing.gif"))%>"/></div>';
+                            domContent +='</div>'+
+				        					'<div class="span2" style=\"width:85px;\">' +
+				                            	'<button id="deploy" class="btn" type="button"><i class="icon-arrow-down"></i> Deploy</button>'+
+				                            '</div>' +
+				                        '</div>' +
+				                        '<div class="row-fluid"><hr /></div>';
+
+				            row = $(domContent);
+
+                            $("#deploy", row).click({stg:application.stage, v:versionInfo.version , k:application.key, st:versionInfo.appStatus , t:application.type}, function (e) {
+
+	                        	var policy;
+	                            var stages = $("#hiddenstagespolicy").children();
+	                            for (var k = 0; k < stages.length; k++) {
+	                                if (stages[k].name == e.data.stg) {
+	                                    policy = stages[k].value;
+	                                }
+	                            }
+	                            if (policy == "Latest") {
+	                                deployLatestArtifact(e.data.stg, e.data.v, e.data.t);
+	                            } else if (policy == "Tagged") {
+	                                displayTaggedArtifacts(e.data.stg, e.data.v, e.data.t);
+	                            }
+
+                            });
+
+	                        $("#build", row).click({stg:application.stage, v: versionInfo.version}, function(e){
+	                        	var idpartcom = application.key.replace(/\./g,'_')+'_'+e.data.v.replace(/\./g,'_');
+	                        	var tagElem=$(this).next();
+								var policy;
+	                            var stages = $("#hiddenstagespolicy").children();
+	                            for (var k = 0; k < stages.length; k++) {
+	                                if (stages[k].name == e.data.stg) {
+	                                    policy = stages[k].value;
+	                                }
+	                            }
+	                            doCreateArtifact(e.data.v, $("#stage").text(),policy,tagElem.val());
+	                            getLatestBuildSuccessInfo(application.key,e.data.v,e.data.stg,0);
+	                            $("#"+idpartcom+"_lastbuildproc").show();
+	                        });
+
+	                        $("#"+idpartcom+"_try", row).click({stg:application.stage, v:versionInfo.version , k:application.key ,  t:application.type}, function(e){
+	                        	var idpartcom = e.data.k.replace(/\./g,'_')+'_'+e.data.v.replace(/\./g,'_');
+	                        	$("#"+idpartcom+"_proc").show();
+	                        	$("#"+idpartcom+"_try").hide();
+	                        	setTimeout(function(){
+	                        		getMetaDataForAppVersion(e.data.k,e.data.v,e.data.stg,"started",e.data.t,true);
+	                            },5000);
+
+	                        });
+
+
+	                        $("#outerdiv").append(row);
+
+	                        $("#"+idpartcom+"_try").show();
+	                        $("#"+idpartcom+"_proc").hide();
+	                        $("#"+idpartcom+"_status").hide();
+
+
+                        }else{
+                            domContent ='<div class="row-fluid">' +
+                                            '<div class="span2">' +
+                                                '<h4>'+versionInfo.version+'</h4>' +
+                                            '</div>' +
+                                            '<div class="span2">' +
+                                                '<i class="build-na"></i>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="row-fluid"><hr /></div>';
+                            row = $(domContent);
+                        }
+                        if("trunk"==versionInfo.version){
+							$("#outerdivTrunk").append(row);
+						}else{
+							$("#outerdiv").append(row);
+						}
+
+                        $("#outerdiv").append(row);
+			  		}
+				}
+
+			},
+		  	function (jqXHR, textStatus, errorThrown) {
+
+		  	});
+
+
+        });
+		function afterDeployCall(key,version,stage,type){
+
+			var idpart = key.replace(/\./g,'_')+"_"+ version.replace(/\./g,'_') ;
+        	$("#"+idpart+"_try").hide();
+        	$("#"+idpart+"_status").hide();
+        	$("#"+idpart+"_proc").show();
+            setTimeout(function(){
+            	getMetaDataForAppVersion(key,version,stage,"started",type,false);
+            },12000);
+
+		}
+		
+		function getLatestBuildSuccessInfo(applicationKey, version, stage ,count){
+			
+	    	var idpart = applicationKey.replace(/\./g,'_')+'_'+version.replace(/\./g,'_');
+
+	    	jagg.post("../blocks/application/get/ajax/list.jag", {
+				action:"getLatestBuildSuccessInfo",
+				applicationKey:applicationKey,
+				version:version,
+				stage:stage
+	  		},
+            function (res) {
+	  			var resJSON = jQuery.parseJSON(res);
+	  			
+	  			var buildId = "" ;
+	  			if(resJSON.buildinfo != ""){
+	  				buildId = resJSON.buildinfo.replace("successful","").replace("failed","").replace("build","").trim();
+	  			}else{
+	  				$("#"+idpart+"_lastbuild").html("");
+	  			}
+	  	
+	  			if($("#"+idpart+"_lastbuild").attr("buildid")==buildId && count < 3 ){
+	  				setTimeout(function(){
+	  					getLatestBuildSuccessInfo(applicationKey, version, stage,(count+1));
+                    },15000);
+	  			}else{
+	  				$("#"+idpart+"_lastbuildproc").hide();
+	  				if(count < 3 ){
+	  					$("#"+idpart+"_lastbuild").attr("buildid",buildId);
+	  					$("#"+idpart+"_lastbuild").html(resJSON.buildinfo);
+	  					var msg =  resJSON.buildinfo + "[ Application version "+version +" ]" ;
+	  					jagg.message({content: msg, type:'info' });
+	  				}else{
+	  					var msg = "Application Build status is not recived yet. Please visit the build server." ;
+	  					jagg.message({content: msg, type:'info' });
+	  				}
+	  			}
+
+			},
+		  	function (jqXHR, textStatus, errorThrown) {
+		      	alert(textStatus);
+		  	});
+
+	     }
+		
+		
+		
+
+	    function getMetaDataForAppVersion(applicationKey, version, stage  , state,type,loadWeb){
+
+	    	var idpart = applicationKey.replace(/\./g,'_')+'_'+version.replace(/\./g,'_');
+	    	jagg.post("../blocks/application/get/ajax/list.jag", {
+				action:"getMetaDataForAppVersion",
+				applicationKey:applicationKey,
+				version:version,
+				stage:stage,
+				state:state,
+				type:type
+	  		},
+            function (res) {
+	  			var resJSON = jQuery.parseJSON(res);
+	  			var msg = "" ;
+
+	  			$("#"+idpart+"_try").show();
+            	$("#"+idpart+"_proc").hide();
+            	$("#"+idpart+"_status").hide();
+
+            	if(resJSON.deployedBuildId==null || resJSON.deployedBuildId==""){
+            		$("#"+idpart+"_lastdeployedid").text("");
+            	}else{
+            		$("#"+idpart+"_lastdeployedid").text('Build '+resJSON.deployedBuildId+' in Deployment');
+            	}
+
+
+	  			if(resJSON.appStatusMD=='started'){
+
+	  				$("#"+idpart+"_status").hide();
+
+	  				if(type=="war"){
+	  					if(loadWeb){
+	  						window.open(resJSON.baseURLMD +  resJSON.accessURLMD,"_blank");
+	  					}else{
+	  						 msg += 'Application is started successfully. ' ;
+                             msg += ' To launch the application click <a  target="_blank"  href="'+(resJSON.baseURLMD +  resJSON.accessURLMD)+'">here</a>' ;
+                             jagg.message({content: msg, type:'info' });
+	  					}
+	  				}else if(type=="jaxws"){
+	  					if(loadWeb){
+	  						window.open(resJSON.baseURLMD +  resJSON.accessURLMD,"_blank");
+	  					}else{
+	  						 msg += 'JAX-WS Application is started successfully. ' ;
+                             msg += ' To launch the application click <a  target="_blank"  href="'+(resJSON.baseURLMD +  resJSON.accessURLMD)+'">here</a>' ;
+                             jagg.message({content: msg, type:'info' });
+	  					}
+
+                    }else if(type=="jaxrs"){
+	  					if(loadWeb){
+	  						window.open(resJSON.baseURLMD +  resJSON.accessURLMD,"_blank");
+	  					}else{
+	  						 msg += 'JAX-RS Application is started successfully. ' ;
+                             msg += ' To launch the application click <a  target="_blank"  href="'+(resJSON.baseURLMD +  resJSON.accessURLMD)+'">here</a>' ;
+                             jagg.message({content: msg, type:'info' });
+	  					}
+
+
+	  				}else if(type=="car"){
+
+	  					var msg = 'Deployed Carbon Application contains these services.</br>' ;
+                    	for(var u in resJSON.accessURLMD){
+                    		var tmp = resJSON.baseURLMD + "services/t/" + applicationKey + "/"  + resJSON.accessURLMD[u]+ "?wsdl";
+                    		msg += resJSON.accessURLMD[u] + ' Service WSDL <a  target="_blank"  href="'+ tmp +'">Launch</a></br>' ;
+                    }
+
+    	  				jagg.message({content: msg, type:'info' });
+	  				}else if(type=="bpel" || type=='dbs'){
+
+                         var msg = 'Deployed Carbon Application contains these services.</br>' ;
+                          for(var u in resJSON.accessURLMD){
+                          var url= resJSON.accessURLMD[u];
+                          var protocol=url.split("://")[0];
+                          if(protocol=='https' || protocol=='http'){
+                          var tmp =  resJSON.accessURLMD[u]+ "?wsdl";
+                          msg += protocol + ' Service WSDL <a  target="_blank"  href="'+ tmp +'">Launch</a></br>' ;
+                          }
+                            }
+
+                          jagg.message({content: msg, type:'info' });
+                    }else if(type=="jaggery"){
+                                if(loadWeb){
+                                                                                window.open(resJSON.baseURLMD +  resJSON.accessURLMD,"_blank");
+                                                                        }else{
+                                                                                 msg += 'Application is started successfully. ' ;
+                                                      msg += ' To launch the application click <a  target="_blank"  href="'+(resJSON.baseURLMD +  resJSON.accessURLMD)+'">here</a>' ;
+                                                      jagg.message({content: msg, type:'info' });
+                                                                        }
+                                                                }
+
+	  			}else if(resJSON.appStatusMD=='stopped'){
+
+	  				msg += 'Application is already deployed but not in running state.' ;
+	  				msg += ' To get the application URL, click <a  target="_blank"  href="'+(resJSON.baseURLMD +  resJSON.accessURLMD)+'">here</a>' ;
+	  				jagg.message({content: msg, type:'warn' });
+
+	  			} else if(resJSON.appStatusMD=='faulty'){
+
+	  				msg += 'Deployment fail.' ;
+	  				jagg.message({content: msg, type:'error' });
+
+	  			} else if(resJSON.appStatusMD=='serverfaulty'){
+
+	  				msg += 'Deployment server not respond.' ;
+	  				jagg.message({content: msg, type:'error' });
+
+	  			}  else {
+
+	  				msg += 'Application is not deployed yet.' ;
+	  				jagg.message({content: msg, type:'error' });
+
+	  			}
+
+
+			},
+		  	function (jqXHR, textStatus, errorThrown) {
+		      	alert(textStatus);
+		  	});
+
+	     }
+         function goToBuildServer (url) {
+         	window.open(url, '_blank');
+         }
+     </script>
+
+    <input type="hidden" name="applicationKey" id="applicationKey" value="<%=applicationKey%>"/>
+    <input type="hidden" name="userName" id="userName" value="<%=userName%>"/>
+    <input type="hidden" name="hasBuildPermission" id="hasBuildPermission" value="<%=outputs.hasBuildPermission%>"/>
+    <input type="hidden" name="hasDeployPermission" id="hasDeployPermission" value="<%=outputs.hasDeployPermission%>"/>
+    <div class="container">
+           <div class="title-section">
+               <div class="row">
+                   <div class="span7">
+                       <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Build Status","pos":"titlebar" }); %>
+                   </div>
+                   <div class="span5">
+                       <div class="title-side-box">
+                             <button class="btn btn-primary" onclick="goToBuildServer('<%=baseURL%>');">
+	                            <i class="icon-build"></i>Goto Build Server
+	                         </button>
+                            <%if(getProperty(SHOW_SONAR_BTN) === 'true') { %>
+                             <button class="btn btn-primary" onclick="goToBuildServer('<%=getProperty("SonarURL")%>');">
+	                            <i class="icon-build"></i>Goto Sonar Server
+	                         </button>
+                            <%}%>
+                       </div>
+                   </div>
+               </div>
+           </div>
+    </div>
+
+    <!--START  content section-->
+    <div class="container content-container">
+        <div class="row">
+            <div class="span12 content-section shadow-up tab-content">
+
+    		    <div style="margin-left:40px;margin-bottom:40px;">
+                    <div style="display:none;">
+                        <div>Aborted - <span id="aborted"/></div>
+                        <div>Not Build - <span id="notbuild"/></div>
+                        <div>Unstable - <span id="unstable"/></div>
+                    </div>
+                    <h4>Builds history - Trunk</h4>
+		            <div id="buildHistory"  class="build-state-wrapper" style="margin:4px 0px 8px 0px;width:450px;height:250px;">
+		            <b>Please Wait...</b>
+		            </div>
+
+		            <ul>
+		            	<li>Successful - (S)</li>
+		            	<li>Failed - (F)</li>
+		            	<li>Aborted -(A)</li>
+		            </ul>
+
+				<div><b>Please refresh the page to see the latest build information</b></div>
+                </div>
+
+                <div class="content-data" style="margin-top:50px;">
+
+                    <div class="container-fluid" id="outerdivTrunk"></div>
+
+                    <div class="container-fluid" id="outerdiv">
+                        <div class="row-fluid">
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div><!-- End of span12 -->
+        </div><!-- End of row -->
+    </div>
+
+
+
+<% }); %>

@@ -1,0 +1,102 @@
+<% jagg.template("notificationfeed", function(inputs, outputs, jagg) { %>
+        <%
+        var tmpArr = ['in','out'];
+        var i;
+        for(i = 0;i<tmpArr.length;i++){
+        %>
+        <div class="notifications-<%=tmpArr[i]%>" id="notifications-<%=tmpArr[i]%>">
+            <div class="not-position">
+                <div class="not-title"><a class="pull-left notification-toggle-btn"><i class="icon-not-hide"></i></a> Notifications</div>
+                <div class="not-body"></div>
+            </div>
+        </div>
+        <% } %>
+
+        <a class="notifications-show-btn" id="notifications-show-btn"></a>
+        <script type="text/javascript">
+
+		$(document).ready(function(){
+			jagg.post("../blocks/events/list/ajax/list.jag", {
+            	action:"getevents",
+                applicationKey:$("#applicationKey").attr('value'),
+                userName:$("#userName").attr('value')
+            },
+            function (result) {
+				var parsedArray = jQuery.parseJSON(result);
+                var domContent;
+
+
+                for (var i = 0; i < parsedArray.length; i++) {
+                    var applicationId = parsedArray[i].applicationId;
+                    var event = parsedArray[i].event;
+                    var eventResult = parsedArray[i].eventResult;
+                    var output = "> " + event + " - " + eventResult;
+
+                    domContent = '<div><div>' + output + '</div></div>';
+
+                    var row = $(domContent);
+                    $(".not-body").append(row);
+                }
+            },
+            function (jqXHR, textStatus, errorThrown) {
+            	//jagg.message({content:'Error loading event stream', type:'error' });
+            });
+
+            var handleNotificationClick = function(){
+                if($('#notifications-in').is(":visible")){
+                    $('#notifications-in').hide('slow');
+                    $(this).css('background-image',"../images/hide-arrow.png");
+                }else{
+                    $('#notifications-in').show('slow');
+                    $(this).css('background-image',"../images/not-hide-arrow.png");
+                }
+            };
+
+            $('div.notifications-in a.notification-toggle-btn').click(handleNotificationClick);
+            $('#notifications-show-btn').click(handleNotificationClick);
+
+
+            $(window).resize(function(){
+                $('#notifications-in').removeAttr('style');
+                $('#notifications-out').removeAttr('style');
+            });
+
+			window.onload = startTime;    
+			function startTime() {
+				// Div will refresh in 3 minutes
+				setInterval("updateEvents();", 180000);
+			}
+
+		});
+
+     function updateEvents() {
+             $(".not-body").html("");
+
+             jagg.post("../blocks/events/list/ajax/list.jag", {
+             	 action:"getevents",
+                 applicationKey:$("#applicationKey").attr('value'),
+                 userName:$("#userName").attr('value')
+             },
+			 function (result) {
+	             var parsedArray = jQuery.parseJSON(result);
+	             var domContent;
+	             for (var i = 0; i < parsedArray.length; i++) {
+	                 var applicationId = parsedArray[i].applicationId;
+	                 var event = parsedArray[i].event;
+	                 var eventResult = parsedArray[i].eventResult;
+	                 var output = "> " + event + " - " + eventResult;
+	
+	                 domContent = '<div><div>' + output + '</div></div>';
+	
+	                 var row = $(domContent);
+	                 $(".not-body").append(row);
+	             }
+             },
+             function (jqXHR, textStatus, errorThrown) {
+                 //jagg.message({content:'Error loading build information', type:'error' });
+             });
+
+         };   
+
+        </script>
+<% }); %>

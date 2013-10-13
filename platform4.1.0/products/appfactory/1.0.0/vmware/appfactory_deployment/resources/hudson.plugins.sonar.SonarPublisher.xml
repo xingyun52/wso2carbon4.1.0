@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.sonar.SonarPublisher_-DescriptorImpl>
+  <helpRedirect/>
+  <installations>
+    <hudson.plugins.sonar.SonarInstallation>
+      <name>sonar_af</name>
+      <disabled>false</disabled>
+      <serverUrl>http://localhost:9000</serverUrl>
+      <serverPublicUrl>http://localhost:9000</serverPublicUrl>
+      <mojoVersion>2.0.1</mojoVersion>
+      <databaseUrl>jdbc:mysql://localhost:3306/sonar?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf8</databaseUrl>
+      <databaseDriver>com.mysql.jdbc.Driver</databaseDriver>
+      <databaseLogin>root</databaseLogin>
+      <databasePassword>cm9vdA==</databasePassword>
+      <additionalProperties></additionalProperties>
+      <triggers>
+        <skipScmCause>false</skipScmCause>
+        <skipUpstreamCause>false</skipUpstreamCause>
+        <envVar></envVar>
+      </triggers>
+      <sonarLogin>sonar</sonarLogin>
+      <sonarPassword>c29uYXI=</sonarPassword>
+    </hudson.plugins.sonar.SonarInstallation>
+  </installations>
+</hudson.plugins.sonar.SonarPublisher_-DescriptorImpl>

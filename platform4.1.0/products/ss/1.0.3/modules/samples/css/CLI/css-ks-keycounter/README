@@ -1,0 +1,53 @@
+Prerequisites
+
+Running Storage Server or local cassandra server along with maven build tool
+
+Hector Cassandra Sample
+------------------------------
+
+This sample is used to calculate the number of keys in a given column family which is located in a user defined keyspace.
+
+
+Build the project with Maven build too using following command
+
+	mvn clean install
+
+Build the project with dependency libraries using following maven build command
+
+	mvn clean assembly:assembly
+
+Execute the build jar which is located under target folder by passing command line arguments as follows.
+
+
+    java -jar target/KeyCounter-4.0.5-jar-with-dependencies.jar tenantName tenantPassword hostPool keyspace columnFamily
+
+    tenantName-Username of the tenant
+    tenantPassword-Password of the tenant
+    hostPool:Cassandra host pool each host and port separated by commas.
+    keyspace:Cassandra keyspace which contains the column family  where user need to get the key count
+    ColumnFamily:Column family name which user need to know the available key count
+
+    Eg:
+
+    Input:
+
+    java -jar target/KeyCounter-4.0.5-jar-with-dependencies.jar admin admin localhost:9160 test_keyspace test_columnFamily
+
+    Output:
+
+    eb21e794-c3f5-434e-94bd-b5db06dce2a1
+    ba680480-3c01-45e3-b1d2-412355f19303
+    eb8ff1a0-02cf-4a2c-862a-ab0bbb05fa88
+    7148dda1-3475-4c82-8edd-8fb50d4bb970
+    36848376-8805-490c-a935-4597e9bc2c47
+    19379b6a-4ff7-476c-810b-f92a5c96efba
+    2183cb2c-603d-4d71-9c90-aff0f84a6c8a
+    51b287f2-6390-4be3-a482-a9635edef6dd
+    af0d715d-385e-4d14-960c-0a74cfd39815
+    c8b98df3-83a7-45f0-b322-b6c2760c5e54
+    43db5627-1e5e-4950-a4ff-6a18c12ab64e
+    7d6c489e-16aa-4b86-b6d2-2404a099294b
+    a4547df4-9820-4f83-848e-84a6de5c347a
+    f6315840-8fec-4340-8ad5-d2cee3332e02
+    d2d058fc-de25-4a66-9547-002d38061ff8
+    Key count: 15

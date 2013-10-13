@@ -1,0 +1,428 @@
+<% jagg.template("index", function(inputs, outputs, jagg) { %>
+ 
+ 	<script type="text/javascript" charset="utf-8">
+ 	//[cdata[
+ 		var parsedArray=[];
+		var pages=new Array();// holds objects separated(as packets of 10 each) for each paginated view.
+		var pageItems=new Array();// used to pack 10 objects each, and to push into 'pages' array as a single block.
+	
+		var filterArray=[];
+		var lastViewedPage=0;
+		$(document).ready(function() {
+			
+			loadApplicationsList();
+			setInterval(function(){loadApplicationsList()},60000);// at an interval of 1 minute
+		  	
+		  	/* filtering the application array */		  	
+		  	$("#search").bind("keyup", function(){
+				if($(this).val()==null || $(this).val().length==0){
+					appendPageItems(lastViewedPage);
+				}else{
+					$("#applist tbody").html("");
+					$("#app-list-footer ul").html("");
+					var finder = $(this).val();
+					var typingPattern = new RegExp($(this).val(), "gi");
+					jQuery.grep(filterArray, function(element, index) {
+						var url = "<%=jagg.getAbsoluteUrl("/site/pages/application.jag")%>?applicationName=" + element.name +"&applicationKey=" + element.key;
+						
+						if (element.name.match(typingPattern) != null) {
+							var matcher = element.name.match(typingPattern);
+							
+							var row=$("<tr></tr>");
+							var cell = $("<td></td>");
+							var link = $("<a></a>");
+							link.attr("href", url);
+							// if application is pending, do not provide a link to access the application.
+							var isPendingApp =false;
+	                        if(element.name.search('(Pending...)')!=-1){
+	                            isPendingApp =true;
+	                        }
+
+							if (finder.length > 2) {
+								var pre = element.name.substr(0, element.name.indexOf(matcher));
+								var highlight = element.name.substr(element.name.indexOf(matcher), (finder.length));
+								var rest = element.name.substr(element.name.indexOf(matcher) + (finder.length), element.name.length);
+	
+								//console.info(pre+","+highlight+","+rest);
+	
+								var text = pre + "<b style=\"background-color:yellow;\">" + highlight + "</b>" + rest;
+	                            // if application is pending, do not provide a link to access the application.
+	                            if(isPendingApp){
+	                                link = text;
+	                            } else{
+								    link.html(text);
+	                            }
+							} else {
+							    // if application is pending, do not provide a link to access the application.
+							    if(isPendingApp){
+							        link = element.name;
+							    } else{
+								    link.text(element.name);
+							    }
+							}
+							cell.append(link);
+							row.append(cell);
+							$("#applist tbody").append(row);
+						}
+					});// enf of "jQuery.grep.."
+	
+					if ($("#applist tbody").children().length == 0) {
+						var cell = $("<td></td>").css('width', '100%');
+						cell.html("Sorry! <br/>No matches found!");
+						var row=$("<td></td>").append(cell);
+						$("#applist tbody").append(row);
+					}
+			        
+				}
+			});// end of $("#search").bind("keyup"..	
+// Function to get Event stream of user
+            jagg.post("../blocks/events/list/ajax/list.jag", {
+                        action:"getUserEvents",
+                        userName:$("#userName").attr('value')
+                    },
+                    function (result) {
+                        var parsedArray = jQuery.parseJSON(result);
+                        var domContent;
+                        for (var i = 0; i < parsedArray.length; i++) {
+                            var userId = parsedArray[i].userId;
+                            var event = parsedArray[i].event;
+                            var eventResult = parsedArray[i].eventResult;
+                            var output = "> " + event + " - " + eventResult;
+
+                            domContent = '<div><div>' + output + '</div></div>';
+
+                            var row = $(domContent);
+                            $("#eventbody").append(row);
+                        }
+                    },
+                    function (jqXHR, textStatus, errorThrown) {
+                        jagg.message({content:'Error loading user event stream', type:'error' });
+                    });
+		});
+
+window.onload = startInterval;
+         function startInterval() {
+             // Div will refresh in 3 minutes
+             setInterval("startTime();", 180000);
+         }
+
+         function startTime() {
+             $("#eventbody").html("");
+
+             jagg.post("../blocks/events/list/ajax/list.jag", {
+                         action:"getUserEvents",
+                         userName:$("#userName").attr('value')
+                     },
+                     function (result) {
+                         var parsedArray = jQuery.parseJSON(result);
+                         var domContent;
+
+                         for (var i = 0; i < parsedArray.length; i++) {
+                             var userId = parsedArray[i].userId;
+                             var event = parsedArray[i].event;
+                             var eventResult = parsedArray[i].eventResult;
+                             var output = "> " + event + " - " + eventResult;
+
+                             domContent = '<div><div>' + output + '</div></div>';
+
+                             var row = $(domContent);
+                             $("#eventbody").append(row);
+                         }
+                     },
+                     function (jqXHR, textStatus, errorThrown) {
+                         jagg.message({content:'Error loading user event stream', type:'error' });
+                     });
+
+         }
+		function NameComparator(a,b) {
+            return a.name.localeCompare(b.name);
+        }
+		function loadApplicationsList(){
+    		$('#noAppsSection').hide();
+            $('#haveAppsSectionA').show();
+            $('#haveAppsSectionB').show();
+		    $("#applist tbody").html("<tr><td>Loading...</td></tr>");
+		    jagg.post("../blocks/application/get/ajax/list.jag", { 
+				action:"getApplicationsOfUser",
+				userName:$("#userName").attr('value')
+	  		},
+		  	function (result) {
+		  	    $("#applist tbody").html("");
+		  	    resetApplicationsListUI();
+            	parsedArray = jQuery.parseJSON(result);
+            	parsedArray.sort(NameComparator);
+            	filterArray=parsedArray;// filtering purpose array
+		  		/* 
+	  		 * The below for loop logic will,
+	  		 * -iterates the parsedArray.
+	  		 * -packs 10 objects each to pageItems array.
+	  		 * in the end of each set of 10 objects,
+	  		 * -pushes pageItems array in to pages array.
+	  		 * -pageItems array will be recreated.
+	  		 * 
+	  		 * eg: 
+	  		 * parsedArray=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26];
+	  		 * to ->
+	  		 * pages=[[[1,2,3,4,5,6,7,8,9,10],[12,13,14,15,16,17,18,19,20]]
+	  		 */
+               // parsedArray = [];     ////////////////////////////////////////////Remove this after testing..
+		  		if(parsedArray!=null && parsedArray.length!=0){
+			  		for(var index=0;index<parsedArray.length;index++){
+						pageItems.push(parsedArray[index]);
+						if((index+1)%10==0){
+							pages.push(pageItems);			
+							pageItems=new Array();
+						}
+					}
+					/*
+				 * The below line will add the remainder of objects 
+				 * into pages array
+				 * eg:
+				 * pushes ...,[21,22,23,24,25,26] (above example)
+				 * to -> 
+				 * pages=[[[1,2,3,4,5,6,7,8,9,10],[12,13,14,15,16,17,18,19,20],[21,22,23,24,25,26]]
+				 */
+					if(parsedArray.length%10!=0){
+						pages.push(pageItems);
+					}//pages array is complete!
+			  		
+			  		/*initially appends the relavant html elements to the page, 
+		  		 * according to the records of pages[0]*/
+			  		appendPageItems(lastViewedPage);
+			  		$('#search').trigger('keyup');
+		  		}else{
+
+                    $('#noAppsSection').show();
+                    $('#haveAppsSectionA').hide();
+                    $('#haveAppsSectionB').hide();
+                }
+		  	},
+		  	function (jqXHR, textStatus, errorThrown) {
+		      	//add the error label in the grid
+		  	});
+		  	
+		  	
+		}//end of loadApplicationsList()
+		
+		function appendPageItems(pageNumber){
+		    $("#applist tbody").html("");
+		    var pageItems=pages[pageNumber];
+		    for(var i=0;i<pageItems.length;i++){
+			    var application = pageItems[i];
+			    var url="#";
+			    if(application.type!=null && application.type.length!=0){
+			    	url = "<%=jagg.getAbsoluteUrl("/site/pages/application.jag")%>?applicationName=" + application.name +"&applicationKey=" + application.key;
+			    }
+			    var anchor=$("<a></a>").attr("href",url).text(application.name);
+			    if(application.name.search('(Pending...)')!=-1){
+			          anchor = application.name;
+			    }
+			    var cell=$("<td></td>").append(anchor);
+			    var row=$("<tr></tr>").append(cell);
+			    $("#applist tbody").append(row);
+		    }
+
+		    $("#app-list-footer ul").html("");
+		    if(pages.length>1){
+			    setPaginations(pageNumber);
+		    }
+		    lastViewedPage=pageNumber;
+	    }//end of appendPageItems(pageNumber)
+			
+		function setPaginations(pageNumber){
+			if(pageNumber>0){
+                var liPrev = $('<li></li>');
+				var anchor=$("<a></a>").text(" << ");
+				anchor.attr("onclick","appendPageItems("+(pageNumber-1)+")");
+                $(liPrev).append(anchor);
+				$("#app-list-footer ul").append(liPrev);
+			}
+			var startPage=0;
+			var loopCount=10;
+			if(loopCount>pages.length){
+				loopCount=pages.length;
+			}
+			if((pageNumber+1)>5){	
+				if((pages.length-pageNumber)>5){
+					startPage=pageNumber-5;
+				}else{
+					startPage=pages.length-10;
+				}
+			}
+			for(var i=0;i<loopCount;i++){
+				var anchor;
+                var li = $('<li></li>');
+				var linkIndexParam=startPage+i;
+				if(pageNumber!=linkIndexParam){
+					anchor=$("<a></a>").text(linkIndexParam+1);
+					anchor.attr("onclick","appendPageItems("+linkIndexParam+")");
+				}else{
+					anchor=$("<a></a>").text(linkIndexParam+1);
+                    $(li).addClass('disabled');
+				}
+				li.append(anchor);
+				$("#app-list-footer ul").append(li);
+			}
+			if(pageNumber<(pages.length-1)){
+                var liNext = $('<li></li>');
+				var anchor=$("<a></a>").text(" >> ");
+				anchor.attr("onclick","appendPageItems("+(pageNumber+1)+")");
+                $(liNext).append(anchor);
+				$("#app-list-footer ul").append(liNext);
+			}
+		}//end of setPaginations(pageNumber)
+		
+		function resetApplicationsListUI(){
+		    parsedArray=[];
+	        pages=new Array();// holds objects separated(as packets of 10 each) for each paginated view.
+	        pageItems=new Array();// used to pack 10 objects each, and to push into 'pages' array as a single block.
+            filterArray=[];
+		}
+	//]]
+	</script>
+
+	<!--START breadcrumb section-->
+	<div class="container breadcrumb-section" style="height:30px;">
+    <%   if(outputs.hasViewTasksPermission){  %>
+        <div class="pull-right task-section">
+             <a  onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/mytasks.jag")%>'">
+                Tasks <i class="icon-notHaveTasks"></i>
+            </a>
+        </div>
+
+     <% } %>
+	</div>
+	<!--END breadcrumb section-->
+
+    <input type="hidden" name="userName" id="userName" value="<%=userName%>"/>
+
+    <!--START  content section-->
+    <%   if(outputs.hasCEODashboardPermission){  %>
+
+	<div class="container content-container-small wrapper">
+
+        <div class="row">
+            <div class="span12">
+                <div class="title-section">
+                    <h1 class="has-link-inside"><a  onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/dashboard.jag")%>'">CEO Dashboard</a></h1>
+                </div>
+                <div class="content-section">
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="span3"><a class="big-link"  onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/dashboard.jag")%>'"><img border="0" src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile('images/dashboard.png'))%>" /></a></div>
+                                    <div class="span9">
+                                        <p>Get an overall view about all applications. Number Of Users Per Application Range, Application Versions In Life-Cycle Stages, Build Status - Last 24 Hours etc..</p>
+                                        <div>
+                                            <a class="big-link"  onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/dashboard.jag")%>'">
+                                                <i class="icon-circle-arrow-right"></i> View Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+<div class="container">
+    <div class="title-section">
+        <div class="row">
+            <div class="span9"><h1>Applications</h1></div>
+            <div class="span3">
+                <div class="title-side-box" id="haveAppsSectionA">
+                    <button class="btn btn-primary" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/createapplication.jag")%>'">
+                    <i class="icon-newpro"></i>
+                    Add New Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="container content-container wrapper">
+        <div class="row">
+            <div class="span12 content-section">
+                <div class="content-data">
+
+
+
+
+
+                    <div class="container" id="haveAppsSectionB">
+                        <div class="row">
+                            <div class="span7">
+                                <table class="table table-bordered" id="applist">
+                                    <thead>
+                                        <tr>
+                                            <th>Application Name&nbsp;<input class="pull-right" id="search" type="text" placeholder="Filter by name"/></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody></tbody>
+                                </table>
+                                <div class="app-list-footer pagination" id="app-list-footer">
+                                        <ul></ul>
+                                </div>
+
+                            </div>
+                            <div class="span5">
+                                <h4>How to use App Factory</h4>
+                                <ul>
+                                    <li><a href="http://docs.wso2.org/wiki/display/AF100/User+Guide" target="_blank">User Guide</a></li>
+                                </ul>
+								<div>
+                                <!-- Auto Refreshing div to display user event stream -->
+                                	<!-- <h4>Event Stream</h4> -->
+                                	<span id="eventbody"></span>
+                            	</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="noAppsSection" style="display:none">
+                        <%
+                            var submitted = session.get("app.creation.submitted");
+                            if (submitted == "true") {
+                                print("<p>Application creation can take a few minutes or more. Please wait ... </p>");
+                            }
+                        %>
+                        <div class="hero-unit-sidekik" style="padding:10px 10px 20px 10px">
+                            <span>Get started by creating an application profile.</span>
+                            <button class="btn btn-primary pull-right" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/createapplication.jag")%>'">
+                                 <i class="icon-newpro"></i>
+                                 Add New Application
+                            </button>
+                        </div>
+
+                        <hr />
+
+
+                        <div style="margin-bottom:10px;margin-top:10px">
+                            <h4>Learn how to get started building applications with WSO2 App Factory</h4>
+
+                        </div>
+                        <ul>
+                             <li><a href="http://docs.wso2.org/wiki/display/AF100/User+Guide" target="_blank">User Guide</a></li>
+                        </ul>
+                        <!--                            Choose from the following getting started tutorials to learn how to deploy your first application:-->
+                        <!-- <ul>
+                            <li><a>Facebook</a></li>
+                            <li><a>Java, Spring or Play</a></li>
+                        </ul>-->
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="push"></div>
+    </div>
+ 
+<% }); %>

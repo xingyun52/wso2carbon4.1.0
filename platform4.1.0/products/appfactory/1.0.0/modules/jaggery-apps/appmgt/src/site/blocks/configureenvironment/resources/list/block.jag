@@ -1,0 +1,93 @@
+<%
+include('/jagg/constants.jag');
+include('/jagg/config_reader.jag');
+var log=new Log();
+jagg.block("configureenvironment/resources/list", {
+    initialize: function (data) {
+
+    },
+    getInputs: function () {
+        return {
+            "applicationKey": null
+        }
+    },
+
+    getOutputs: function (inputs) {
+        var permissionModule = jagg.module("permission");
+       var  mod = jagg.module("resources");
+       var dependencies={};
+        var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        var hasConfigureResourcePermissions = {};
+
+var tableModel={};
+
+        for (var i = 0; i < 1; i++) {
+
+            hasConfigureResourcePermissions[deploymentStages[i]] = permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_CONFIGURATION_RESOURCES_OF_STAGE + deploymentStages[i]);
+
+          //dependencies[deploymentStages[i]]= mod.getAllDependencies(inputs.applicationKey,deploymentStages[i]);
+
+		var stageValues=mod.getAllDependencies(inputs.applicationKey,deploymentStages[i]);
+		stageValues=(stageValues).dependencies;
+		//log.info(stageValues.dependencies+"act");
+		for(var index in stageValues){
+//log.info(stageValues[index]+"...stageValues");
+			var element=(stageValues[index]);
+			var name=element.name;
+			var description=element.description;
+			var value=element.value;
+			//log.info(deploymentStages[i]);
+			tableModel[name]={};
+			tableModel[name].name=name;
+			tableModel[name].description=description;
+			
+		}		
+	}
+
+
+
+        for (var i = 0; i < deploymentStages.length; i++) {
+
+            hasConfigureResourcePermissions[deploymentStages[i]] = permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_CONFIGURATION_RESOURCES_OF_STAGE + deploymentStages[i]);
+
+          //dependencies[deploymentStages[i]]= mod.getAllDependencies(inputs.applicationKey,deploymentStages[i]);
+
+		var stageValues=mod.getAllDependencies(inputs.applicationKey,deploymentStages[i]);
+		stageValues=(stageValues).dependencies;
+		//log.info(stageValues.dependencies+"act");
+		for(var index in stageValues){
+
+			var element=(stageValues[index]);
+			
+			var value=element.value;
+var name=element.name;
+
+			if(deploymentStages[i]=="Development"){
+				
+                                
+				tableModel[name].devValue=value;
+
+			}else if(deploymentStages[i]=="Testing"){
+                       
+				tableModel[name].testValue=value;
+			}else if(deploymentStages[i]=="Staging"){
+                       
+				tableModel[name].stageValue=value;
+			}else if(deploymentStages[i]=="Production"){
+                        
+				tableModel[name].prodValue=value;
+			}	
+		
+        }
+
+}
+	
+        return {
+            "hasConfigureResourcePermissions": hasConfigureResourcePermissions,
+            "dependencies":tableModel
+        };
+    }
+
+
+});
+%>

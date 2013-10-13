@@ -1,0 +1,251 @@
+<% jagg.template("repository/list", function(inputs, outputs, jagg) { %>
+
+ 	<%
+        var applicationName = request.getParameter("applicationName");
+ 		var applicationKey = request.getParameter("applicationKey");
+ 		var modApplication = jagg.module("application");
+ 		//var getRepoURL =  modApplication.getRepositoryURLsForAppVersions(applicationKey, "svn");
+ 	%>
+   
+    <% 
+		var appVersions = modApplication.getUserAccess(applicationKey, userName);
+		var parsedVersions = parse(appVersions);       
+        
+
+		if (parsedVersions.userHasAccess == true) {
+    %>
+		    <script type="text/javascript">
+		    	var MAX_BRANCH_NAME_LENGTH = 15;
+                var versionsArray = [];
+                var retiredVersionsArray = [];
+                var processIndicatorHTML='<img src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/processing.gif"))%>" id="processIndicator" style="width:22px;height:22px;"/>';
+                
+                function checkBranchNameLength(textBox){                	
+                	var textboxID = $(textBox).attr('id');
+                	var branchNameLength = ($("#" + textboxID.replace(/(:|\.)/g,'\\$1')).val()).length;
+                	if (branchNameLength == MAX_BRANCH_NAME_LENGTH)
+                	{
+                		$("#" + textboxID.replace(/(:|\.)/g,'\\$1') + "WarningMessage").show();
+                		return;
+                	}
+                	$("#" + textboxID.replace(/(:|\.)/g,'\\$1') + "WarningMessage").hide();
+                }
+                
+                function removeBranchNameLengthWarning(textBox){
+                	var textboxID = $(textBox).attr('id');
+                	$("#" + textboxID.replace(/(:|\.)/g,'\\$1') + "WarningMessage").hide();
+                }
+                
+                function getRetiredVersions() {
+                   jagg.post("../blocks/application/get/ajax/list.jag", { 
+						action:"getRetiredVersions",
+						userName:$("#userName").attr('value'),
+						applicationKey:$("#applicationKey").attr('value'),
+			  		},
+				  	function (result) {
+				  	   retiredVersionsArray = jQuery.parseJSON(result);
+				  	},
+					function (jqXHR, textStatus, errorThrown) {
+                       jagg.message({content:'Error occurred while retrieving retired version',type:'error' });
+					});
+				}
+                
+		        function VersionComparator(a,b) {
+                    return a.version.localeCompare(b.version);
+                }
+                
+				$(document).ready(function() {
+					$("#outerdivfortrunk").html(processIndicatorHTML);
+					getRetiredVersions();
+					jagg.post("../blocks/application/get/ajax/list.jag", { 
+						action:"getAppVersionsInStages",
+						userName:$("#userName").attr('value'),
+						applicationKey:$("#applicationKey").attr('value'),
+						isRoleBasedPermissionAllowed:false
+			  		},
+				  	function (result) {
+				  		var parsedArray = jQuery.parseJSON(result);
+                        var hasBranchingPermission= ($("#hasBranchingPermission").attr('value') === 'true');
+                        $("#outerdivfortrunk").html("");
+
+						for (var i = 0; i < parsedArray.length; i++) {
+				  			var application = parsedArray[i];
+				  			var versions = application.versions;
+				  			versions.sort(VersionComparator);
+                            
+				  			for (var j = 0; j < versions.length; j++) {
+				  				var versionInfo = versions[j];
+                                var repoCloneURL = versionInfo.repoURL;
+                                var repoBrowseURL = repoCloneURL;
+                                
+                                versionsArray.push(versionInfo.version);
+                                
+                                if( application.repositoryType == "git") {
+                                    repoBrowseURL = repoCloneURL.replace("/git/", "/summary/");
+                                }
+                                
+				  				if(versions[j].version == 'trunk') {
+				  					
+				  					var domContent;
+                                    if(hasBranchingPermission){
+				  					       domContent = '<div class="row-fluid">' +
+                            							'<div class="span3">'  +
+                                						'<h4>Trunk</h4>'	   +
+                                						'</div>'               +
+                            							'<div class="span9">'  +
+                                						'<strong>Repository clone/check-out URL: </strong><span style="color: #C0C0C0;">'+repoCloneURL+'</span><br><br>' +
+                                						'<strong>Repository browse URL: </strong><a href="'+repoBrowseURL+'" target="_blank">'+repoBrowseURL+'</a><br><br>' +
+                                						'<form class="form-search">' 														   +
+                                						'<input type="text" maxlength="15" onpaste="checkBranchNameLength(this);" onblur="removeBranchNameLengthWarning(this);" onKeydown="Javascript: if (event.keyCode==13) {event.preventDefault();} checkBranchNameLength(this);" class="input-medium search-query" id="' + application.stage + 'trunk" />&nbsp;&nbsp;'	   +                                    					
+                                						'<button type="button" class="btn btn-primary" onClick="doBranch(\'trunk\'' + 
+                                						', \'' + (application.stage + versionInfo.version) +  '\')"><i class="icon-new-branch"></i> Create New Branch</button> from trunk' +
+                                						'<label id="' + application.stage + 'trunkWarningMessage" style="display: none;" ><font color="red">Branch Name cannot exceed 15 characters</font></label>' +
+                                						'<div class="help-block">e.g. : 1.0.0 or 1.2.3</div> ' +
+                                						'</form>'			   +
+                                						'</div>'			   +
+                                						'</div>';
+                                     }else{
+                                             domContent = '<div class="row-fluid">' +
+                            							'<div class="span3">'  +
+                                						'<h4>Trunk</h4>'	   +
+                                						'</div>'               +
+                            							'<div class="span9">'  +
+                                						'<strong>Repository clone/check-out URL: </strong><span style="color: #C0C0C0;">'+repoCloneURL+'</span><br><br>' +
+                                                        '<strong>Repository browse URL: </strong><a href="'+repoBrowseURL+'" target="_blank">'+repoBrowseURL+'</a><br><br>' +
+                            							'</div>'			   +
+                            						 '</div>';
+                                       }
+				  					
+				 					var row = $(domContent);
+				 					$("#outerdivfortrunk").append(row);
+				  				}else {
+
+				  					var domContent;
+                                    if(hasBranchingPermission){		
+				  					       domContent = '<div class="row-fluid">' +
+                            							'<div class="span3">'  +
+                            							'<h4>' + versionInfo.version +'</h4>'	   +
+                            							'</div>'               +
+                            							'<div class="span9">'  +
+                            							'<strong>Repository clone/check-out URL: </strong><span style="color: #C0C0C0;">'+repoCloneURL+'</span><br><br>' +
+                            							'<strong>Repository browse URL: </strong><a href="'+repoBrowseURL+'" target="_blank">'+repoBrowseURL+'</a><br><br>' +
+                            							'<form class="form-search">' 														   +
+                            							'<input type="text" maxlength="15" onpaste="checkBranchNameLength(this);" onblur="removeBranchNameLengthWarning(this);" onKeydown="Javascript: if (event.keyCode==13) {event.preventDefault();} checkBranchNameLength(this);" class="input-medium search-query" id="' + application.stage + '' + versionInfo.version  + '" />&nbsp;&nbsp;'	   +
+                            							'<button type="button" class="btn btn-primary" onClick="doBranch(\'' + 
+                            							versionInfo.version + '\', \'' + (application.stage + versionInfo.version) +  '\')"><i class="icon-new-branch"></i> Create New Branch</button> from ' + versionInfo.version + ' branch' +
+                            							'<label id="' + application.stage + '' + versionInfo.version  + 'WarningMessage" style="display: none;" ><font color="red">Branch Name cannot exceed 15 characters</font></label>' +
+                            							'<div class="help-block">e.g. : 1.0.0 or 1.2.3</div> ' +
+                            							'</form>'			   +
+                            							'</div>'			   +
+                            							'</div>';
+                                     }else{
+                                          domContent = '<div class="row-fluid">' +
+                            							'<div class="span3">'  +
+                                						'<h4>' + versionInfo.version +'</h4>'	   +
+                            							'</div>'               +
+                            							'<div class="span9">'  +
+                                						'<strong>Repository clone/check-out URL: </strong><span style="color: #C0C0C0;">'+repoCloneURL+'</span><br><br>'             +
+                                                        '<strong>Repository browse URL: </strong><a href="'+repoBrowseURL+'" target="_blank">'+repoBrowseURL+'</a><br><br>' +
+                            							'</div>'			   +
+                            						 '</div>';
+                                     }
+                            		
+                            		var row = $(domContent);
+				 					$("#outerdiv").append(row);
+				 					var hrTag = '<div class="row-fluid"><hr /></div>';
+				  				    $("#outerdiv").append(hrTag);
+				  				}
+				  				
+				  			}
+						    
+						}	
+				  				                
+				  	},
+				  	function (jqXHR, textStatus, errorThrown) {
+				      	//add the error label in the grid
+				  	});
+				});
+		
+		
+				function doBranch(srcVersion, branchVersion) {
+				var pattern = /^(?:(\d+)\.)?(?:(\d+)\.)?(\*|\d+)$/;
+				var targetVersion = document.getElementById(branchVersion).value;
+                
+                if ($.inArray(targetVersion, versionsArray) > -1) {
+                    jagg.message({content:'Version <strong>' + targetVersion + '</strong> already exists!',type:'error' });
+                    return;
+                }
+                
+                if ($.inArray(targetVersion, retiredVersionsArray) > -1) {
+                    jagg.message({content:'Version <strong>' + targetVersion + '</strong> already retired!',type:'error' });
+                    return;
+                }
+				
+				if(pattern.test(targetVersion)){
+			    	jagg.post("../blocks/lifecycle/add/ajax/add.jag", { 
+						action:"invokeDoVersion",
+						applicationKey:$("#applicationKey").attr('value'),
+					    srcVersion:srcVersion,
+						targetVersion:document.getElementById(branchVersion).value
+				  	},
+				  	function (result) {
+				  		if(result != undefined){
+						jagg.message({content:'Successfully created the branch',type:'info',cbk:function(){
+            					window.location.reload(false);
+     						}
+						});                            
+				      	} 
+				  	},
+				  	function (jqXHR, textStatus, errorThrown) {
+                          			jagg.message({content:'Error occurred while creating branch',type:'error' });
+				});
+				  	
+				}else{
+					jagg.message({content:'Invalid branch version!',type:'error' });
+				}
+			    }
+		    </script>
+    
+    <%
+    	}else {
+    %>
+    		alert("User does not have permission");
+    <%
+    	}
+    %>
+
+    <!--START  content section-->
+    <input type="hidden" name="applicationKey" id="applicationKey" value="<%=applicationKey%>"/>
+    <input type="hidden" name="userName" id="userName" value="<%=userName%>"/>
+    <input type="hidden" name="hasBranchingPermission" id="hasBranchingPermission" value="<%=outputs.hasBranchingPermission%>"/>
+
+    <div class="container">
+        <div class="title-section">
+            <div class="row">
+                <div class="span12">
+                    <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Repository","pos":"titlebar" }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container content-container wrapper">
+        <div class="row">
+
+            <div class="span12 content-section shadow-up">
+                <div class="content-data">
+                    <div id="outerdivfortrunk"></div>
+                    <div style="clear:both"></div>
+                    <div id="outerdiv">
+                        <div class="row-fluid">
+                            <hr />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="push"></div>
+    </div>
+        
+<% }); %>

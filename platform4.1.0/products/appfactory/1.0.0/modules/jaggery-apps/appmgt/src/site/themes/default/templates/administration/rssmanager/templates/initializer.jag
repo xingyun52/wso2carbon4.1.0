@@ -1,0 +1,11 @@
+
+
+<%
+jagg.initializer("administration/rssmanager/templates", {
+
+    preInitialize:function () {
+
+    }
+});
+%>
+

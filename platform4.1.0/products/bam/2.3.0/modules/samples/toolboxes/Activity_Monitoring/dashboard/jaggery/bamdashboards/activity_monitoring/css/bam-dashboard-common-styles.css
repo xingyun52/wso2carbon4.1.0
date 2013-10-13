@@ -1,0 +1,128 @@
+iframe{
+    border: 1px solid #555555;
+}
+.gadget-small{
+    height:360px;
+    width: 100%;
+    padding: 0;
+
+}
+.row-fluid .span4{
+    width:48%;
+}
+.hero-unit{
+    padding: 0;	
+	background:none repeat scroll 0 0 #B5D7F7;
+
+}
+.single-column-gadget{
+    width: 100%;
+    min-height: 620px;
+    border: none;
+}
+.hero-unit .jqplot-table-legend{
+    color: #eee;
+}
+.ui-widget-content{
+    color: #ddd;
+}
+.topFilteringPanel{
+    text-align: left;
+    overflow: hidden;
+}
+a.wso2 {
+    background: url("../images/wso2.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    height: 17px;
+    width: 70px;
+}
+a.wso2:hover{
+    background-position: 0 -18px;
+}
+.wso2Logo_footer{
+    float: right;
+}
+.wso2copyRight_footer{float: left;}
+.plain{margin: 0!important;}
+.filter-btn{
+    width: 66px;
+    float: right;
+}
+.timely-dd-btns{
+    float: right;
+}
+.timelySwitch{}
+div.jqplot-table-legend-swatch{
+    border-style: solid;
+    border-width: 5px 6px;
+    height: 0;
+    width: 0;
+    outline: 1px solid #C4C4C4;
+}
+div.jqplot-table-legend-swatch-outline{
+    border: none;
+}
+.span3 select{
+    max-width: 180px;
+}
+.sorting_asc {
+    background: url("../images/sort_asc.png") no-repeat scroll right center #005C80!important;
+    color: #FFFFFF!important;
+}
+.sorting{
+	background:url("../images/sort_both.png") no-repeat scroll right center #005C80!important;
+    	color: #FFFFFF!important;
+}
+table.dataTable thead th{
+	background: #005C80;
+}
+.dataTable{
+	margin-top:10px;
+}
+.dataTables_length {
+    float: left;
+    height: 40px;
+    padding: 2px;
+    position: relative;
+}
+#entries{
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+#entries-table_info,#entries-table_paginate,#entry-table_info,#entry-table_paginate{
+	margin-top:10px;
+	font-size:0.7em;
+}
+.backImage {
+    padding: 2px 6px;
+    vertical-align: middle;
+}
+#entry-table,#entries-table,#entries-table_length,#entry-table_length{
+	font-size:0.7em;
+}
+#entries-table_filter,#entry-table_filter{
+	font-size:0.8em;
+}
+#entries h2{
+	color:#474747;
+	text-shadow:1px 1px 0 rgba(166, 154, 154, 0.64);
+	font-size:1.3em;
+}
+#entry b#activityIdDetailsHeader{
+	color:#474747;
+	text-shadow:1px 1px 0 rgba(166, 154, 154, 0.64);
+	font-size:0.9em;
+}
+table.dataTable td.details{
+	padding:0!important;
+}
+span#activityId{
+	font-weight:800;
+	color:#930000;
+}
+span.extendedValue {
+    color: #811A1A;
+    font-weight: 800;
+}
+
+
+

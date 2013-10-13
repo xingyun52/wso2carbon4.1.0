@@ -1,0 +1,28 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+var log=new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");    
+   if (action === "buildinfobyappid") {
+   		mod = jagg.module("build");
+		var applicationKey = request.getParameter("applicationKey");
+		
+        print(mod.getBuildInfoByApplicationId(applicationKey));
+   }else if (action === "jenkinsbuilds") {
+   		mod = jagg.module("build");
+		var applicationKey = request.getParameter("applicationKey");
+		
+        print(mod.getJenkinsBuilds(applicationKey));
+   }else if (action === "getAllJenkinsBuildsStats") {
+   		mod = jagg.module("build");
+        print(mod.getAllJenkinsBuildsStats());
+   }else {
+       throw new Error("No action specified"+action);
+   }
+
+}());
+%>

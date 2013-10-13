@@ -1,0 +1,18 @@
+<% jagg.template("menu/login", function(inputs, outputs, jagg) { %>
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="row">
+            <div class="span4 offset4">
+            <a class="brand" style="left: 50%;margin-left: -149px !important;position: absolute;"><img src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/logo.png"))%>"
+                                                                                       alt="API PROVIDER"></a>
+
+                <div class="nav-collapse" style="height:35px">
+                </div>
+                <!--/.nav-collapse -->
+             </div></div>
+        </div>
+    </div>
+</div>
+
+<%});%>

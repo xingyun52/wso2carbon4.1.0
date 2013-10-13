@@ -1,0 +1,227 @@
+<% jagg.template("item-add", function(inputs, outputs, jagg) { %>
+
+<div id="item-add">
+    <h2>Add New API</h2>
+    <div class="alert alert-error" id="addAPIError" style="display:none">
+                            <span id="addErrorSpan"></span>
+                        </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <form class="form-horizontal well" method="POST"
+              id="addAPIForm"
+              enctype="multipart/form-data" action="<%=site.context%>/site/blocks/item-add/ajax/add.jag">
+
+                <input type="hidden" name="action" id="addAPI" value="addAPI"/>
+
+                <div class="control-group">
+                    <label class="control-label" for="apiName">Name:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required validRegistryName noSpace" id="name" name="name" autofocus="autofocus"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="context">Context:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required contextExists" id="context" name="context" onchange="getContextValue()" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="version">Version:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input required" id="version" name="version" onchange="getContextValue()"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="description">Description:</label>
+                    <div class="controls">
+                        <textarea class="input-xlarge" id="description" name="description" rows="3"
+                                  style="margin-left: 0px; margin-right: 0px; width: 501px; "></textarea>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="apiThumb">Thumbnail Image:</label>
+                    <div class="controls">
+                        <input type="file" class="input-xlarge" id="apiThumb" name="apiThumb"/>
+                        <div class="help-block"><ul><li>Max Size 1 MB.</li><li>Recommended Image size: 100 x 100 pixels.</li></ul></div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="endpoint">Endpoint URL:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required" id="endpoint" name="endpoint"/>
+                        <input type="button" value="Test URI" onclick="checkURLValid($('#endpoint').val(),this)"/>
+                        <p class="help-block">Ex:http://appserver/services/echo</p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="endpoint">Sandbox URL:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="sandbox" name="sandbox"/>
+                        <input type="button" onclick="checkURLValid($('#sandbox').val(),this)" value="Test URI"/>
+                        <p class="help-block">Ex:http://test-appserver/services/echo</p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="wsdl">WSDL:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="wsdl" name="wsdl"/>
+                        <input type="button" onclick="checkURLValid($('#wsdl').val(),this,'wsdl')" value="Test URI"/>
+                        <p class="help-block">Ex:http://appserver/services/echo?wsdl</p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="wadl">WADL:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="wadl" name="wadl"/>
+                        <input type="button" onclick="checkURLValid($('#wadl').val(),this)" value="Test URI"/>
+                        <p class="help-block">Ex:http://example.com/service.wadl</p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="tags">Tags:</label>
+                    <div class="controls">
+                        <input type="text" class="typeahead input-xlarge" id="tags" name="tags" data-provide="typeahead" data-items="4"/>
+                        <p class="help-block">Comma separated list (Ex: tag1, tag2, tag3)</p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="tier">Tier Availability:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <select id="tier" class="selected" name="tier"  multiple="multiple">
+                        </select>
+                        <a class="icon-plus tierHelp" onclick="javascript:$('#tierPara').toggle()"></a>
+                        <p id="tierPara" class="tierPara" style="display:none;">Tiers govern the rate at which a subscriber can send requests to an API.
+                                                       An API can be exposed over one or more tiers and
+                                                       the subscribers can choose one of the allowed tiers when subscribing to an API.</p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="bizOwner">Business Owner:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge" id="bizOwner" name="bizOwner"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="bizOwnerMail">Business Owner Email:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge email" id="bizOwnerMail" name="bizOwnerMail"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="techOwner">Technical Owner:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge" id="techOwner" name="techOwner"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="techOwnerMail">Technical Owner Email:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge email" id="techOwnerMail" name="techOwnerMail"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                        <label class="control-label" for="resourceTableDiv">API Resources: </label>
+                        <div class="controls">
+                        <div class="resourceTableDiv" id="resourceTableDiv" style="">
+                            <table class="table table-bordered table-striped" id="resourceTable">
+                                <thead>
+                                <tr>
+                                    <th>URL Prefix</th>
+                                    <th>URL Patterns</th>
+                                    <th>Allowed HTTP Verbs</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr id="resourceRow">
+                                    <td><span id="contextForUrl">/{context}/{version}</span></td>
+                                    <td>
+                                        <input type="text" class="input" id="uriTemplate" name="resourceTemplate"/>
+                                    </td>
+                                    <td>
+                                          <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-get" name="resource-get" value="GET" /> GET
+                                          </label>
+                                          <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-put" name="resource-put" value="PUT" /> PUT
+                                          </label>
+                                          <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-post" name="resource-post" value="POST" /> POST
+                                          </label>
+                                           <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-delete" name="resource-delete" value="DELETE"> DELETE
+                                          </label>
+
+                                    </td>
+                                    <td id="buttons">
+                                        <a class="btn btn-primary even-width-button" id="resourceAddBtn" onClick="addResourcesToApi()">
+                                            <i class="icon-plus icon-white"></i> Add
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <tr id="item-0">
+                                      <td ><span id="contextForUrlDefault">/{context}/{version}</span></td>
+                                    <td>
+                                        <input type="text" class="input" id="uriTemplate" name="resourceTemplate" value="/*" disabled="disabled" />
+                                    </td>
+                                    <td>
+                                        <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-get" name="resource-get" disabled="disabled" value="GET" checked="true" /> GET
+                                        </label>
+                                        <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-put" name="resource-put" disabled="disabled" value="PUT" checked="true" /> PUT
+                                        </label>
+                                        <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-post" name="resource-post" disabled="disabled" value="POST" checked="true" /> POST
+                                        </label>
+                                        <label class="checkbox inline">
+                                            <input type="checkbox" id="resource-delete" name="resource-delete" disabled="disabled" value="DELETE" checked="true" /> DELETE
+                                        </label>
+
+                                    </td>
+                                    <td id="buttons">
+                                        <a class="btn btn-danger even-width-button" id="resourceDelBtn" onclick="deleteResource(0)">
+                                            <i class="icon-trash icon-white"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-error" id="resourceTableError" style="display:none">
+                            <span></span>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div id="stateActions" class="controls"></div>
+                    </div>
+                <div class="form-actions" style="display:none" id="saveMessage">
+                    <div class="btn loadingButton">Saving API. Please wait..</div>
+                </div>
+                <div class="form-actions" id="saveButtons">
+                    <input type="submit" id="addNewAPIButton" name="addNewAPIButton" class="btn btn-primary" value="Create"/>
+                    <input type="reset" class="btn btn-primary" value="Cancel" onclick="javascript:window.location.href='./'" />
+                </div>
+
+                <input type="hidden" name="resourceCount" id="resourceCount" value="0"/>
+                <input type="hidden" name="resourceMethod-0" id="resourceMethod-0" value="GET,PUT,POST,DELETE"/>
+                <input type="hidden" name="uriTemplate-0" id="uriTemplate-0" value="/*"/>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<% }); %>

@@ -1,0 +1,88 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+
+// used for logging
+var log = new Log();
+var modManager = jagg.module("manager");
+
+var createResource = function (applicationKey,stage, name, description, value){
+    var ws = require('ws');
+    var dependencyManager = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.1;
+    options.action = "urn:addDependency";
+    options["HTTPHeaders"] = [
+            { name : "Cookie", value :modManager.getAdminCookie() }
+        ];
+    var payload = '<ser:addDependency xmlns:ser="http://dependency.core.appfactory.carbon.wso2.org">' +
+                    '<ser:applicationKey>' + applicationKey + '</ser:applicationKey>' +
+                    '<ser:stage>' + stage + '</ser:stage>' +
+                    '<ser:name>' + name + '</ser:name>' +
+                    '<ser:description>' + description + '</ser:description>' +
+                    '<ser:value>' + value + '</ser:value> ' +
+                    '</ser:addDependency>';
+    var result;
+
+    try {
+        var serviceName ='AppFactoryDependencyManagementService';
+        var serverUrl = getProperty(APPFACTORY_SERVER_URL);
+
+        var endPoint = serverUrl + serviceName;
+
+        dependencyManager.open(options,endPoint, false);
+        dependencyManager.send(payload);
+        result = dependencyManager.responseE4X;
+
+
+        if(log.isDebugEnabled()){
+            log.debug("Invoking service endpoint:"+endPoint+" returned result:"+result);
+        }
+        //var resultNS=new Namespace(namespace);
+        //return output=result.resultNS::["result"].text();
+    } catch (e) {
+        log.error("Error while creating application "+ applicationKey + "\n"+e.message);
+        throw "Error while creating application "+ applicationKey;
+    }
+};
+updateResource = function (applicationKey,stage, name, description, value){
+    var ws = require('ws');
+    var dependencyManager = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.1;
+    options.action = "urn:updateDependency";
+    options["HTTPHeaders"] = [
+            { name : "Cookie", value :modManager.getAdminCookie() }
+        ];
+    var payload = '<ser:updateDependency xmlns:ser="http://dependency.core.appfactory.carbon.wso2.org">' +
+                    '<ser:applicationKey>' + applicationKey + '</ser:applicationKey>' +
+                    '<ser:stage>' + stage + '</ser:stage>' +
+                    '<ser:name>' + name + '</ser:name>' +
+                    '<ser:description>' + description + '</ser:description>' +
+                    '<ser:value>' + value + '</ser:value> ' +
+                    '</ser:updateDependency>';
+    var result;
+
+    try {
+        var serviceName ='AppFactoryDependencyManagementService';
+        var serverUrl = getProperty(APPFACTORY_SERVER_URL);
+
+        var endPoint = serverUrl + serviceName;
+
+        dependencyManager.open(options,endPoint, false);
+        dependencyManager.send(payload);
+        result = dependencyManager.responseE4X;
+
+        if(log.isDebugEnabled()){
+            log.debug("Invoking service endpoint:"+endPoint+" returned result:"+result);
+        }
+        //var resultNS=new Namespace(namespace);
+        //return output=result.resultNS::["result"].text();
+    } catch (e) {
+        log.error("Error while  updating resource"+e.message);
+        throw "Error while updating resource";
+    }
+};
+%>

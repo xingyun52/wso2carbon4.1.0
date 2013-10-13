@@ -1,0 +1,412 @@
+<% jagg.template("application/add", function(inputs, outputs, jagg) { %>
+
+<script type="text/javascript">
+	var MAX_APP_NAME_LENGTH = 20;
+    function validateApplicationKey() {
+        jagg.post("../blocks/application/add/ajax/add.jag", {
+    				action:"isApplicationKeyAvailable",
+    				applicationKey:$("#applicationKey").attr('value')
+    			},
+    			function (result) {
+
+    			    var status=jQuery.parseJSON(result);
+                        if(status.isAvailable=="true"){
+                            $("#keyDuplicateMsg").hide();
+    				    }else{
+    				        $('#keyDuplicateMsg').show();
+    				    }
+
+    			},//function(result)
+    			function (jqXHR, textStatus, errorThrown) {
+                    jagg.message({
+                           content:'Error while checking the availability of the application key',
+                                        						type:'info',
+                                        						cbk:function(){
+                                        							$("#appcreation").attr('disabled', false);
+                                        						}
+                        				        });
+    			}//end > function (jqXHR, textStatus, errorThrown)
+    			);//end > jag.post
+
+    }
+
+    function validateKeyAndCreateApplication() {
+    jagg.post("../blocks/application/add/ajax/add.jag", {
+    				action:"isApplicationKeyAvailable",
+    				applicationKey:$("#applicationKey").attr('value')
+    			},
+    			function (result) {
+
+    			    var status=jQuery.parseJSON(result);
+                        if(status.isAvailable=="true"){
+    				         createApplication();
+    			    	}else{
+    				        jagg.message({
+                    						content:'Please select different application key and retry',
+                    						type:'info',
+                    						cbk:function(){
+                    							$("#appcreation").attr('disabled', false);
+                    						}
+    				        });
+    				        }
+
+    			},//function(result)
+    			function (jqXHR, textStatus, errorThrown) {
+                    jagg.message({
+                           content:'Error while checking the availability of the application key',
+                                        						type:'info',
+                                        						cbk:function(){
+                                        							$("#appcreation").attr('disabled', false);
+                                        						}
+                        				        });
+    			}//end > function (jqXHR, textStatus, errorThrown)
+    			);//end > jag.post
+
+
+    }
+	function createApplication() {
+
+		//TODO check isApplicationKeyAlreadyTaken(applicationKey)
+
+		/* uncomment this when GitHub support is ready
+		var gitUserName=$("#gitUserName").val();
+		var selectedRepository=$("#repositoryType").val();
+
+		if(selectedRepository=="github" && (gitUserName==null || gitUserName.length==0)){
+			jagg.message({content:'Please save your github user name before creating an application',
+				type:'error',
+				cbk:function(){
+					$('.dropdown-toggle').trigger('click');
+					$('#enableGit').attr("checked","checked");
+        			$('#gitUserName').fadeIn().focus();
+        			$("#appcreation").attr('disabled', false);
+				}
+			});
+		}else{//of > if(selectedRepository=="github" && (gitUserName==null || gitUserName.length==0)){
+			createApplicationSubmit();
+		}//end > the else of > if(selectedRepository=="github" && (gitUserName==null || gitUserName.length==0)){
+		*/
+
+		createApplicationSubmit();
+	}//end > createApplication()
+
+	function createApplicationSubmit(){
+	    jagg.post("../blocks/application/add/ajax/add.jag", {
+			action:"createNewApplication",
+			applicationName:$("#applicationName").attr('value'),
+			applicationKey:$("#applicationKey").attr('value'),
+			applicationDescription:$("#applicationDescription").attr('value'),
+			applicationType:$("#applicationType").attr('value'),
+			repositoryType:$("#repositoryType").attr('value'),
+			userName:$("#userName").attr('value')
+		},
+		function (result) {
+			if(result != undefined) {
+				var repositoryPath = result.toString();
+                                var response=jQuery.parseJSON(result);
+				//TODO implement addApplicationToApp(applicationKey, applicationName, applicationDescription);
+
+               if(response.result==1.0){
+				jagg.message({
+					content:'Request has been submitted to create the application.',
+					type:'info',
+					cbk:function(){
+						window.location.replace("index.jag");
+					}
+				});
+                }else if(response.result==0.0){
+                                     jagg.message({
+                                        content:response.message,
+                                        type:'error',
+                                        cbk:function(){
+                                                $("#appcreation").attr('disabled', false);
+                                        }
+                                });
+
+                }
+			}else{//else of > if(result == undefined)
+				jagg.message({
+					content:'Error occurred while creating the application',
+					type:'error',
+					cbk:function(){
+						$("#appcreation").attr('disabled', false);
+					}
+				});
+			}//end > else of > if(result == undefined)
+		},//function(result)
+		function (jqXHR, textStatus, errorThrown) {
+			jagg.message({
+				content:'Error occurred while creating the application',
+				type:'error',
+				cbk:function(){
+					$("#appcreation").attr('disabled', false);
+				}
+			});
+		}//end > function (jqXHR, textStatus, errorThrown)
+		);//end > jag.post
+	}
+
+	function generateApplicationKey() {
+		var genKey = Math.floor(Math.random()*1000);
+		document.createAppForm.applicationKey.value = (document.createAppForm.applicationName.value).replace(/ /g,"").toLowerCase() + genKey;
+	}
+
+
+
+    $('#applicationName').focusout(function(event) {
+        alert('Focusssing out of application');
+        validateApplicationKey();
+    });
+
+    $('#applicationKey').focusout(function(event) {
+        alert('Focusssing out of key');
+        validateApplicationKey();
+    });
+
+    $(document).ready(function($){
+		$('#createAppForm').validate({
+			submitHandler: function(form) {
+				$("#appcreation").attr('disabled', true);
+				 validateKeyAndCreateApplication();
+		   	}
+		});
+
+		$('#applicationName').keyup(function(event) {
+            var msg = $(this).val();
+            msg = msg.replace(/ /g, "_");
+            msg = msg.replace(/[^\w\s]/gi,"_");
+            $('#applicationKey').val(msg);
+        });
+
+	    $('#applicationName').focusout(function(event) {
+	        validateApplicationKey();
+	    });
+
+	    $('#applicationKey').focusout(function(event) {
+	        validateApplicationKey();
+	    });
+
+      $('#applicationKey').keyup(function(event) {
+        var keyValue = $(this).val();
+
+        var patternForSpace = / /g;
+        var isSpace = patternForSpace.test(keyValue);
+
+        var patternForNonAlphaNumericChars = /[^\w\s]/gi;
+        var isInvalidChar = patternForNonAlphaNumericChars.test(keyValue);
+
+        if (isSpace == true || isInvalidChar == true) {
+            $('#keyInvalidCharMsg').show();
+        }
+        else {
+            $('#applicationKey').val(keyValue);
+            $('#keyInvalidCharMsg').hide();
+        }
+        validateApplicationKey();
+
+
+    });
+
+    });
+//]]
+
+    function checkAppNameLength(){
+    	var appNameLength = ($("#applicationName").val()).length;
+    	if (appNameLength == MAX_APP_NAME_LENGTH)
+    	{
+    		$("#nameLengthWarning").show();
+    		return;
+    	}
+    	$("#nameLengthWarning").hide();
+    }
+
+    function removeAppNameLengthWarning(){
+    	$("#nameLengthWarning").hide();
+    }
+
+</script>
+     <!--START breadcrumb section-->
+   <div class="container breadcrumb-section">
+        <div class="row">
+        <div class="span12">
+            <a href="<%=jagg.getAbsoluteUrl("/site/pages/index.jag")%>">Applications</a>
+                >
+                Add New Application
+            </div>
+        </div>
+   </div>
+
+    <!--END breadcrumb section-->
+     <div class="container">
+           <div class="title-section">
+               <div class="row">
+                   <div class="span9"><h3>Create New Application</h3></div>
+                   <div class="span3">
+                       <div class="title-side-box">
+
+                       </div>
+                   </div>
+               </div>
+           </div>
+    </div>
+
+    <!--START  content section-->
+    <div class="container content-container wrapper">
+        <div class="row">
+            <div class="span12 content-section">
+                <div class="content-data">
+					<br/><br/>
+
+                    <form class="form-horizontal" method='post' action='create_application_submit.jag' name="createAppForm" id="createAppForm">
+
+
+                        <div class="control-group">
+                            <label class="control-label" for="applicationName">Application Name<span class="requiredAstrix">*</span></label>
+
+                            <div class="controls">
+                                <input  type='text' maxlength="20" id='applicationName' name="applicationName" placeholder="Application Name" class="span6 required" onpaste="checkAppNameLength();" onKeyUp="checkAppNameLength();" onblur="removeAppNameLengthWarning();"/>
+                                <label class="error" id="nameLengthWarning" style="display:none">App Name Maximum length is reached.</label>
+                                <div class="help-block">The name of the application.</div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="applicationName">Application Key<span class="requiredAstrix">*</span></label>
+
+                            <div class="controls">
+                                <input  type='text' id='applicationKey' name="applicationKey" placeholder="Application Key" class="span6 required" />
+                                <label class="error" id="keyDuplicateMsg" style="display:none">Key is duplicated.</label>
+                                <label class="error" id="keyInvalidCharMsg" style="display:none">Key contains invalid
+                                characters.</label>
+                                <div class="help-block">Application key is a unique identifier. This has to be unique across all applications. An auto generated key is provided by default. You can also provide your own key.</div>
+                            </div>
+                        </div>
+
+
+                        <div class="control-group">
+                            <label class="control-label" for="applicationDescription">Description</label>
+
+                            <div class="controls">
+                                <textarea id='applicationDescription' style="width:97%"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="applicationType">Application Type<span class="requiredAstrix">*</span></label>
+
+                            <div class="controls">
+                                    <%
+                                    var applicationTypes=getProperties("ApplicationType");
+                                    if(applicationTypes==null || applicationTypes.length==0){
+                                        print('<span style="color:#ff0000">"Application Types" are not defined!</span>');
+                                    }else{
+                                        print('<select id="applicationType">');
+                                        for(var i=0;i<applicationTypes.length;i++){
+                                            var displayName=getProperty("ApplicationType."+applicationTypes[i]+".Property.DisplayName");
+                                            var applicationType=applicationTypes[i];
+                                            print('<option value="'+applicationType+'">'+displayName+'</option>');
+                                        }
+                                        print('</select>');
+                                    }
+                                   				                                            %>
+                                <div class="help-block">
+                                    Select the type of the application archive.
+                                    <ul>
+                                     <%
+                                        var applicationTypes=getProperties("ApplicationType");
+                                        if(applicationTypes==null || applicationTypes.length==0){
+                                            print('<span style="color:#ff0000">"Application Types" are not defined!</span>');
+                                        }else{
+
+                                            for(var i=0;i<applicationTypes.length;i++){
+                                                var description=getProperty("ApplicationType."+applicationTypes[i]+".Property.Description");
+                                                var applicationType=getProperty("ApplicationType."+applicationTypes[i]+".Property.DisplayName");
+                                                print('<li>'+applicationType+':'+description+'</li>');
+                                            }
+
+                                        }
+                                        %>
+
+                                        <!--li>car: Composite Application Archive file. ( <a target="_blank" href="http://wso2.org/project/carbon-studio/1.0.14/docs/testing_deploying_category.html#CarGen">Learn more about "car" files from here. </a> )</li-->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="control-group">
+                                                    <label class="control-label"
+                                                    for="repositoryType">Repository Type<span
+                                                    class="requiredAstrix">*</span></label>
+
+                                                    <div class="controls">
+                                                            <%
+				                                            var repositoryProviders=getProperties("RepositoryProviderConfig");
+				                                            if(repositoryProviders==null || repositoryProviders.length==0){
+				                                            	print('<span style="color:#ff0000">"Repository Providers" are not defined!</span>');
+				                                            }else{
+				                                            	print('<select id="repositoryType">');
+						                                        for(var i=0;i<repositoryProviders.length;i++){
+						                                        	var displayName=getProperty("RepositoryProviderConfig."+repositoryProviders[i]+".Property.DisplayName");
+						                                        	var repositoryProvider=getProperty("RepositoryProviderConfig."+repositoryProviders[i]+".Property.Provider");
+						                                        	print('<option value="'+repositoryProvider+'">'+displayName+'</option>');
+						                                        }
+						                                        print('</select>');
+				                                            }
+				                                            %>
+                                                            <div class="help-block">
+                                                                   Select a version control system.
+                                                                   <!--
+                                                                   <p  id="repositoryTypeClue">
+                                                                   If you do not have an account in GitHub, <a href="https://github.com/signup/free" target="_blank">register here</a>
+                                                                   &amp; please save your GitHub account user name, under your <b>App Factory</b> account.<br/>
+                                                                   You need to <a href="https://help.github.com/articles/generating-ssh-keys" target="_blank">
+                                                                   assign SSH keys</a> to your user account.<br/>
+                                                                   <b>Without keys you will not be able to clone or push code to Git repository</b>.
+                                                                   </p>
+                                                                   -->
+                                                            </div>
+                                                            <!--
+                                                            <script type="text/javascript">
+                                                            //[cdata[
+                                                            /*
+                                                            $(function(){
+                                                            	var repositoryTypeElement=$("#repositoryType");
+                                                            	if(repositoryTypeElement!=undefined){
+                                                            		toggleGitRepoClue(repositoryTypeElement);
+                                                            		repositoryTypeElement.bind("change",function(){
+                                                            			toggleGitRepoClue($(this));
+                                                            		});
+                                                            	}
+                                                            });
+                                                            function toggleGitRepoClue(uiElement){
+                                                            	var repositoryType=uiElement.val();
+                                                        		if(repositoryType!="github"){
+                                                        			$("#repositoryTypeClue").fadeOut();
+                                                        		}else{
+                                                        			$("#repositoryTypeClue").fadeIn();
+                                                        		}
+                                                            }
+                                                            */
+                                                            //]]
+                                                            </script>
+                                                            -->
+                                                    </div>
+                                                </div>
+
+                        <div class="control-group">
+                            <div class="controls">
+                                <input type='submit' name='Create Application' value='Create' class='btn btn-primary' id='appcreation'/>
+                                <input type="button" onclick="location.href='index.jag?'" value='Cancel'
+                                           class='btn'/>
+                            </div>
+                        </div>
+                        <input type="hidden" id="userName" value='<%= session.get("LOGGED_IN_USER") %>'/>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<% }); %>

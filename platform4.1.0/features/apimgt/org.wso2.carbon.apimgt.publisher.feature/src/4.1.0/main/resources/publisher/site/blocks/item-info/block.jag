@@ -1,0 +1,23 @@
+<%
+jagg.block("item-info", {
+
+    initializer:function (data) {
+
+    },
+
+    getInputs:function () {
+        return {
+            "api":null
+        }
+    },
+
+    getStaticBlocks:function() {
+        return [
+            "overview",
+            "item-edit",
+            "documentation"
+        ];
+    }
+
+});
+%>

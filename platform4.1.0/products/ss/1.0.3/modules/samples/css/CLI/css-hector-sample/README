@@ -1,0 +1,87 @@
+Prerequisites
+
+Running Storage Server or local cassandra server along with maven build tool
+Hector Cassandra Sample
+------------------------------
+
+This sample creates a keyspace with a column family and insert given number of row with random data.This sample is used to insert random data into user specified keyspace,column family and
+columns.
+
+Build the project with Maven build too using following command
+
+	mvn clean install
+
+Build the project with dependency libraries using following maven build command
+
+	mvn clean assembly:assembly
+
+Execute the program from the build jar which is located under target folder
+
+	java -jar target/target/HectorClient-4.0.5-jar-with-dependencies.jar
+
+
+------------------------------
+
+Output
+
+------------------------------
+
+User can specify cassandra host and the port of the cassandra server to get the connection. Leaving both of host and port cause to connect to the local cassandra server available in the
+user local machine.
+
+User need to specify the username and a password to authenticate to cassandra. If user using Storage Server user need to specify super tenant or the tenant username and the password.
+
+User can define non-existing keyspace and the column family along with set of columns.That user defined keyspace,column families
+and columns will be created in the cassandra database.
+
+User need to specify only the five column names only.Program take five column names which is separated by semi-colons.
+Finally user need to specify number of rows to be inserted in created keyspace.
+
+For example user input from the CLI.
+
+Host: localhost
+
+Port:9160
+
+Tenant Id: username@tenantdomain.com
+
+Tenant Password: userpassword
+
+Keyspace Name: Apache
+
+Column Family: WS
+
+Column Name List ( separated by colon) : Axis:Axiom:XML:WSS4J:Neethi
+
+Number of Row you need: 20
+
+Programme outputs the insert data and the data retrieved from the database in the CLI.
+
+Inserting Key 86cebc7a-c3ef-471e-b2bc-6baef1615c30To Column Family WS
+
+Column Name: Axis Value: f249506a-cd2f-481d-ac55-91dd389e9ea4
+
+Column Name: Axiom Value: 633187f9-5cb1-4be9-930e-357c92f72628
+
+Column Name: XML Value: 771cb98e-67e1-4aae-95c2-25b1c7810a3c
+
+Column Name: WSS4J Value: 51f9311d-d65f-421d-bcb1-98514d373696
+
+Column Name: Neethi Value: e1dd7d59-48cf-4b6e-9b91-aa821090e8de
+
+
+
+
+retrieving Key 8f131d21-c8b2-4c0b-a9a3-398c7e916c0fFrom Column Family WS
+
+Column: Axis Value : dc425e0f-bd4e-4b6e-badf-6ba4a5114816
+
+Column: Axiom Value : b8f1bc55-97e0-4f07-8a23-403cc92d6f9a
+
+Column: XML Value : e2cf9bfb-4291-44b7-ae57-a3002ead3792
+
+Column: WSS4J Value : 0b1c8d27-9269-4649-861a-4d95fc898ccf
+
+Column: Neethi Value : 3091a124-40d7-49f4-a8c8-8dd56dc885f9
+
+------------------------------

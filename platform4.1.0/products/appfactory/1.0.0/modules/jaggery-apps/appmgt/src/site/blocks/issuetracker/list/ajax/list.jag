@@ -1,0 +1,46 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+var log = new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+            
+ 	if (action === "getIssueTrackerInfo") {
+        mod = jagg.module("issuetracker");
+        var appKey=request.getParameter("applicationKey");
+        try {
+            print(mod.getIssueTrackerInfo(appKey));
+        } catch(e) {
+            throw "Error while retrieving issue information of application";
+        }
+    }else if (action === "getIssues") {
+        mod = jagg.module("issuetracker");
+        var appKey=request.getParameter("applicationKey");
+        try {
+            print(mod.getOpenIssues(appKey));
+        } catch(e) {
+            throw "Error while retrieving issues of application";
+        }
+    }else if (action === "getIssueCountsByStatus") {
+        mod = jagg.module("issuetracker");
+        try {
+            print(mod.getIssueCountsByStatus());
+        } catch (e) {
+            throw "Error while retrieving users of application";
+        }
+    }else if (action === "getIssueCountsByPriority") {
+        mod = jagg.module("issuetracker");
+        try {
+            print(mod.getIssueCountsByPriority());
+        } catch (e) {
+            throw "Error while retrieving users of application";
+        }
+    }else {
+	    throw new Error("No action specified");
+    }
+}());
+%>
+

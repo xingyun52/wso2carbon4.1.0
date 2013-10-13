@@ -1,0 +1,41 @@
+<bucket name="AllStocksAnalyzer" xmlns="http://wso2.org/carbon/cep">
+    <description>
+        This bucket analyzes stock quotes and Twitter feeds on the word count and
+        trigger an event if the last traded amount vary by 2 percent with regards
+        to the average traded price within past 2 minutes and the word count with
+        related to that symbol is greater than 10.
+    </description>
+    <engineProviderConfiguration engineProvider="SiddhiCEPRuntime">
+        <property name="siddhi.persistence.snapshot.time.interval.minutes">1</property>
+        <property name="siddhi.enable.distributed.processing">true</property>
+    </engineProviderConfiguration>
+    <input topic="AllStockQuotes" brokerName="activemqJmsBroker">
+        <mapMapping stream="allStockQuotes" queryEvnetType="Tuple">
+            <property name="symbol" inputName="symbol" type="java.lang.String"/>
+            <property name="price" inputName="price" type="java.lang.Double"/>
+        </mapMapping>
+    </input>
+    <query name="AllStocksQuery">
+        <expression >
+            from allStockQuotes#window.time(600000)
+            insert into fastMovingStockQuotes
+            symbol,price, avg(price) as averagePrice, sum(price) as sumPrice
+        </expression>
+        <output topic="AllStickStats" brokerName="localBroker">
+            <!--<mapMapping>-->
+            <!--<property name="symbol"/>-->
+            <!--<property name="price"/>-->
+            <!--<property name="volume"/>-->
+            <!--</mapMapping>-->
+            <xmlMapping>
+                <quotedata:StockQuoteDataEvent
+                        xmlns:quotedata="http://ws.cdyne.com/">
+                    <quotedata:StockSymbol>{symbol}</quotedata:StockSymbol>
+                    <quotedata:price>{price}</quotedata:price>
+                    <quotedata:averagePrice>{averagePrice}</quotedata:averagePrice>
+                    <quotedata:sumPrice>{sumPrice}</quotedata:sumPrice>
+                </quotedata:StockQuoteDataEvent>
+            </xmlMapping>
+        </output>
+    </query>
+</bucket>

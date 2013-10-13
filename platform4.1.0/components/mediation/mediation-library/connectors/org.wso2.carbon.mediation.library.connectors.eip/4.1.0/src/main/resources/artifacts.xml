@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<artifacts>
+    <artifact name="EIPConnector" package="org.wso2.carbon.mediation.library.connectors.eip" >
+        <dependency artifact="eipconnector_core" />
+        <dependency artifact="messageRouting" />
+        <dependency artifact="systemManagement" />
+        <description>wso2 sample connector library</description>
+    </artifact>
+</artifacts>

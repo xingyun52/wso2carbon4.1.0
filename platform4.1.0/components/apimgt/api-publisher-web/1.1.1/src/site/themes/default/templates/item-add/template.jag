@@ -1,0 +1,288 @@
+<% jagg.template("item-add", function(inputs, outputs, jagg) { %>
+
+<div id="item-add">
+    <h2><%=i18n.localize("addAPI")%></h2>
+    <div class="alert alert-error" id="addAPIError" style="display:none">
+                            <span id="addErrorSpan"></span>
+                        </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <form class="form-horizontal well" method="POST"
+              id="addAPIForm"
+              enctype="multipart/form-data" action="<%=site.context%>/site/blocks/item-add/ajax/add.jag">
+
+                <input type="hidden" name="action" id="addAPI" value="addAPI"/>
+
+                <div class="control-group">
+                    <label class="control-label" for="apiName"><%=i18n.localize("name")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required noSpace" id="name" name="name" autofocus="autofocus"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="context"><%=i18n.localize("context")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required contextExists" id="context" name="context" onchange="getContextValue()" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="version"><%=i18n.localize("version")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input required" id="version" name="version" onchange="getContextValue()"/>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="description"><%=i18n.localize("description")%>:</label>
+                    <div class="controls">
+                        <textarea class="input-xlarge" id="description" name="description" rows="3"
+                                  style="margin-left: 0px; margin-right: 0px; width: 501px; "></textarea>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+	                <label class="control-label" for="visibility"><%=i18n.localize("visibility")%>:<span class="requiredAstrix">*</span></label>
+	                <div class="controls">
+		                <select class="select required" id="visibility" name="visibility" onchange="showHideRoles()">
+			                <option value="public"><%=i18n.localize("public")%></option>
+			                <option value="restricted"><%=i18n.localize("restricted")%></option>
+		                </select>
+                        <a class="icon-plus tierHelp" style="margin-top:-1px;" onclick="javascript:$('#rolePara').toggle()"></a>
+                        <p id="rolePara" class="rolePara" style="display:none;">
+                            <%=i18n.localize("roleHelpMsg")%></p>
+	                </div>
+	            </div>
+	            
+	            <div class="control-group">
+	                <label class="control-label" for="roles" id="rolesLabel" name="rolesLabel" style="display: none;">
+	                	<%=i18n.localize("roles")%>:<span class="requiredAstrix">*</span>
+	                </label>
+	                <div class="controls">
+	                    <input type="text" class="input required" id="roles" name="roles" style="display: none;"/>
+                        <p class="help-block" id="rolesHelp" style="display: none;"><%=i18n.localize("rolesHelpMsg")%></p>
+	                </div>
+	            </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="apiThumb"><%=i18n.localize("thumbnail")%>:</label>
+                    <div class="controls">
+                        <input type="file" class="input-xlarge" id="apiThumb" name="apiThumb"/>
+                        <div class="help-block"><ul><li><%=i18n.localize("imgHelpMsg")%></li><li>
+<%=i18n.localize("imgHelpMsg2")%></li></ul></div>
+                    </div>
+                </div>
+
+				<div class="control-group">
+                    <label class="control-label" for="endpointType"><%=i18n.localize("endpointType")%>:<span class="requiredAstrix">*</span></label>
+                      <div class="controls"> 
+                       <select class="select required" id="endpointType" name="endpointType" onchange="showUTProductionURL()">
+			                <option value="nonsecured"><%=i18n.localize("nonsecured")%></option>
+			                <option value="secured"><%=i18n.localize("secured")%></option>
+		                </select>                                
+                                   
+                     </div>
+                </div>
+                <div class="control-group" id="credentials" style="display:none;">
+                    <label class="control-label" for="credentials"><%=i18n.localize("credentials")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-small" id="epUsername" name="epUsername" placeholder="Username">
+                        <input type="password" class="input-small" id="epPassword" name="epPassword" placeholder="Password">
+                    </div>
+                </div>
+
+                
+                <div class="control-group">
+                    <label class="control-label" for="endpoint"><%=i18n.localize("endpoint")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge required" id="endpoint" name="endpoint"/>
+                        <input type="button" value="<%=i18n.localize("testURI")%>" onclick="checkURLValid($('#endpoint').val(),this)"/>
+                        <p class="help-block"><%=i18n.localize("endpointHelpMsg")%></p>
+                    </div>
+                </div>
+                
+
+                
+                <div class="control-group">
+                    <label class="control-label" for="endpoint"><%=i18n.localize("sandbox")%>:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="sandbox" name="sandbox"/>
+                        <input type="button" onclick="checkURLValid($('#sandbox').val(),this)" value="<%=i18n.localize("testURI")%>"/>
+                        <p class="help-block"><%=i18n.localize("sandboxHelpMsg")%></p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="wsdl"><%=i18n.localize("wsdl")%>:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="wsdl" name="wsdl"/>
+                        <input type="button" onclick="checkURLValid($('#wsdl').val(),this,'wsdl')" value="<%=i18n.localize("testURI")%>"/>
+                        <p class="help-block"><%=i18n.localize("wsdlHelpMsg")%></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="wadl"><%=i18n.localize("wadl")%>:</label>
+                    <div class="controls">
+                        <input type="text" class="input-xlarge" id="wadl" name="wadl"/>
+                        <input type="button" onclick="checkURLValid($('#wadl').val(),this)" value="<%=i18n.localize("testURI")%>"/>
+                        <p class="help-block"><%=i18n.localize("wadlHelpMsg")%></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="tags"><%=i18n.localize("tags")%>:</label>
+                    <div class="controls">
+                        <input type="text" class="typeahead input-xlarge" id="tags" name="tags" data-provide="typeahead" data-items="4"/>
+                        <p class="help-block"><%=i18n.localize("tagsHelpMsg")%></p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="tier"><%=i18n.localize("tier")%>:<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <select id="tier" class="selected" name="tier"  multiple="multiple">
+                        </select>
+                        <a class="icon-plus tierHelp" onclick="javascript:$('#tierPara').toggle()"></a>
+                        <p id="tierPara" class="tierPara" style="display:none;">
+                        <%=i18n.localize("tierHelpMsg")%></p>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="bizOwner"><%=i18n.localize("busiOwner")%>:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge" id="bizOwner" name="bizOwner"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="bizOwnerMail"><%=i18n.localize("busiOwnerMail")%>:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge email" id="bizOwnerMail" name="bizOwnerMail"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="techOwner"><%=i18n.localize("techOwner")%>:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge" id="techOwner" name="techOwner"/>
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="techOwnerMail"><%=i18n.localize("techOwnerMail")%>:</label>
+                    <div class="controls">
+                         <input type="text" class="input-xlarge email" id="techOwnerMail" name="techOwnerMail"/>
+                    </div>
+                </div>
+
+
+                <div class="control-group">
+                    <label class="control-label" for="techOwnerMail"><%=i18n.localize("resources")%>:</label>
+                    <div class="controls">
+                         <div class="resourceTableDiv" id="resourceTableDiv" style="">
+                            <div style="padding-bottom:10px;"><a onclick="addResourcesToApi()"><i class="icon-plus-sign"></i> <%=i18n.localize("addNewResource")%></a></div>
+                            <table class="table table-bordered table-striped" id="resourceTable">
+                                <thead>
+                                <tr>
+                                    <th><%=i18n.localize("urlPrefix")%></th>
+                                    <th><%=i18n.localize("urlPattern")%></th>
+                                    <th style="width:50px;"><%=i18n.localize("httpVerb")%></th>
+                                    <th  style="width:120px;"><%=i18n.localize("authType")%></th>
+                                    <th style="width:20px;"><%=i18n.localize("action")%></th>
+                                </tr>
+
+                                </thead>
+                                <tbody>
+
+                                <tr id="resourceRow" style="display:none;">
+                                    <td><span class="contextForUrl">/{context}/{version}</span></td>
+                                    <td>
+                                        <input type="text" class="input resourceTemplate" style="width:95%" name="resourceTemplate"/>
+                                    </td>
+                                    <td>
+
+
+                                                          <label class="checkbox ">
+                                                            <input type="checkbox" id="resource-get" name="resource-get"  class="resource-get" value="GET" /> <%=i18n.localize("get")%>
+                                                          </label>
+
+
+                                                          <label class="checkbox ">
+                                                              <input type="checkbox" id="resource-post" name="resource-post"  class="resource-post" value="POST" /> <%=i18n.localize("post")%>
+                                                          </label>
+
+                                                          <label class="checkbox ">
+                                                          <input type="checkbox" id="resource-put" name="resource-put"  class="resource-put" value="PUT" /> <%=i18n.localize("put")%>
+                                                          </label>
+
+                                                          <label class="checkbox ">
+                                                              <input type="checkbox" id="resource-delete" name="resource-delete"  class="resource-delete" value="DELETE"> <%=i18n.localize("delete")%>
+                                                          </label>
+
+
+                                                          <label class="checkbox ">
+                                                              <input type="checkbox" id="resource-options" name="resource-options"  class="resource-options" value="OPTIONS"> <%=i18n.localize("options")%>
+                                                          </label>
+
+
+
+
+                                    </td>
+                                   
+                                    <td>
+                                        <select style="width:100%" class="getAuthType"><option><%=i18n.localize("none")%></option><option><%=i18n.localize("application")%></option><option><%=i18n.localize("applicationUser")%></option><option selected="selected"><%=i18n.localize("application&applicationUser")%></option></select>
+                                        <select style="width:100%" class="postAuthType"><option><%=i18n.localize("none")%></option><option><%=i18n.localize("application")%></option><option><%=i18n.localize("applicationUser")%></option><option selected="selected"><%=i18n.localize("application&applicationUser")%></option></select>
+                                        <select style="width:100%" class="putAuthType"><option><%=i18n.localize("none")%></option><option><%=i18n.localize("application")%></option><option><%=i18n.localize("applicationUser")%></option><option selected="selected"><%=i18n.localize("application&applicationUser")%></option></select>
+                                        <select style="width:100%" class="deleteAuthType"><option><%=i18n.localize("none")%></option><option><%=i18n.localize("application")%></option><option><%=i18n.localize("applicationUser")%></option><option selected="selected"><%=i18n.localize("application&applicationUser")%></option></select>
+                                        <select style="width:100%" class="optionsAuthType"><option><%=i18n.localize("none")%></option><option><%=i18n.localize("application")%></option><option><%=i18n.localize("applicationUser")%></option><option selected="selected"><%=i18n.localize("application&applicationUser")%></option></option></select>
+
+                                    </td>
+                                    <td>
+                                         <button type="button" disabled="disabled" class='even-width-button btn downButton' onclick="moveMe(this)"><i class="icon-chevron-down"></i> <%=i18n.localize("moveDown")%></button><button onclick="moveMe(this)" type="button" disabled="disabled" class='even-width-button btn upButton'><i class="icon-chevron-up"></i>  <%=i18n.localize("moveUp")%></button>
+                                        <button type="button" class="btn btn-danger even-width-button deleteButton" id="resourceDelBtn" onclick="deleteResource(this)">
+                                            <i class="icon-trash icon-white"></i><%=i18n.localize("deleteMethod")%>
+                                        </button>
+                                    </td>
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-error" id="resourceTableError" style="display:none">
+                        <div id="stateActions" class="controls"></div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="control-group">
+                    <div class="controls">
+
+                            <span></span>
+                        </div>
+                        </div>
+                    <br/>
+
+                   
+                    </div>
+                <div class="form-actions" style="display:none" id="saveMessage">
+                    <div class="btn loadingButton">Saving API. Please wait..</div>
+                </div>
+                <div class="form-actions" id="saveButtons">
+                    <input type="submit" id="addNewAPIButton" name="addNewAPIButton" class="btn btn-primary" value="<%=i18n.localize("create")%>"/>
+                    <input type="reset" class="btn btn-primary" value="<%=i18n.localize("cancel")%>" onclick="javascript:window.location.href='./'" />
+                </div>
+
+                <input type="hidden" name="resourceCount" id="resourceCount" value="0"/>
+                <div id="hiddenFormElements" name="hiddenFormElements">
+                    <input id="resourceMethod-0" type="hidden" name="resourceMethod-0" value="GET,POST,PUT,DELETE,OPTIONS">
+                    <input id="resourceMethodAuthType-0" type="hidden" name="resourceMethodAuthType-0" value="Application & Application User,Application & Application User,Application & Application User,Application & Application User,Application & Application User">
+                    <input type="hidden" name="uriTemplate-0" id="uriTemplate-0" value="/*"/>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<% }); %>

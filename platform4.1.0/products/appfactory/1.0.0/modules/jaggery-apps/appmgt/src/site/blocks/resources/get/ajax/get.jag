@@ -1,0 +1,38 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "getAllDependencies") {
+     var  mod = jagg.module("resources");
+     var dependencies={};
+     var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+     var applicationKey = request.getParameter("applicationKey");
+      var permissionModule = jagg.module("permission");
+
+        try {
+         for (var i = 0; i < deploymentStages.length; i++) {
+           var hasPermissionToStage= permissionModule.isUserAccessGranted(applicationKey,PERMISSION_CONFIGURATION_RESOURCES_OF_STAGE+deploymentStages[i]);
+           if(hasPermissionToStage){
+            dependencies[deploymentStages[i]]= mod.getAllDependencies(applicationKey,deploymentStages[i]);
+            }
+            }
+
+            if (dependencies != null) {
+                print(dependencies);
+            } else {
+                throw "Error while getting the resources of application";
+            }
+        } catch(e) {
+            throw "Error while getting dependent resources "+e.toString();
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

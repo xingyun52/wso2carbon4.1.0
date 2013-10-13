@@ -1,0 +1,115 @@
+<% jagg.template("breadcumb", function(inputs, outputs, jagg) { %>
+            <%
+                var reqUrl = request.getRequestURI();
+                var listUrl=jagg.getAbsoluteUrl("/site/pages/index.jag");
+                var listMappedUrl=jagg.getMappedUrl("/site/pages/index.jag");
+                var infoUrl=jagg.getAbsoluteUrl("/site/pages/item-info.jag");
+                var infoMappedUrl=jagg.getMappedUrl("/site/pages/item-info.jag");
+                var addUrl=jagg.getAbsoluteUrl("/site/pages/add.jag");
+                var addMappedUrl=jagg.getMappedUrl("/site/pages/add.jag");
+                var subsUrl=jagg.getAbsoluteUrl("/site/pages/subscriptions.jag");
+                var subsMappedUrl=jagg.getMappedUrl("/site/pages/subscriptions.jag");
+                var userUrl=jagg.getAbsoluteUrl("/site/pages/user.jag");
+                var userMappedUrl=jagg.getMappedUrl("/site/pages/user.jag");
+                var statsUrl=jagg.getAbsoluteUrl("/site/pages/statistics.jag");
+                var statsMappedUrl=jagg.getMappedUrl("/site/pages/statistics.jag");
+                var allStatsUrl=jagg.getAbsoluteUrl("/site/pages/all-statistics.jag");
+                var allStatsMappedUrl=jagg.getMappedUrl("/site/pages/all-statistics.jag");
+            %>
+            <ul class="breadcrumb">
+                <% if(reqUrl.indexOf(listUrl)>=0 ||reqUrl.indexOf(listMappedUrl)>=0||reqUrl.equals(site.context+"/")){%>
+                    <li>
+                    APIs <span class="divider">/</span>
+                    </li>
+                    <li>
+                        <a href="<%=listMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=listMappedUrl%>',e:event})">All</a>
+                    </li>
+                <% } %>
+                <% if(reqUrl.indexOf(infoUrl)>=0||reqUrl.indexOf(infoMappedUrl)>=0){%>
+                <li>
+                    APIs <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=listMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=listMappedUrl%>',e:event})">All</a>
+                </li>
+                <li>
+                    <span class="divider">/</span>
+                </li>
+                <li>
+                    <%
+                        var apiUrl = infoMappedUrl + "?name=" + request.getParameter("name") + "&version=" + request.getParameter("version")+ "&provider=" + request.getParameter("provider");
+                    %>
+                    <a href="<%=apiUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=apiUrl%>',e:event})"><%=request.getParameter("name")%>-<%=request.getParameter("version")%></a>
+                </li>
+                <% } %>
+
+
+                <% if(reqUrl.indexOf(addUrl)>=0||reqUrl.indexOf(addMappedUrl)>=0){%>
+                <li>
+                    APIs
+                </li>
+                <li>
+                    <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=addMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=addMappedUrl%>',e:event})">Add New API</a>
+                </li>
+                <% } %>
+
+                <% if(reqUrl.indexOf(allStatsUrl)>=0||reqUrl.indexOf(allStatsMappedUrl)>=0){%>
+                <li>
+                    APIs
+                </li>
+                <li>
+                    <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=allStatsMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=allStatsMappedUrl%>',e:event})">All Statistics</a>
+                </li>
+                <% } %>
+
+
+
+                <% if(reqUrl.indexOf(userUrl)>=0||reqUrl.indexOf(userMappedUrl)>=0){%>
+
+                <li>
+                    APIs <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=listMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=listMappedUrl%>',e:event})">All</a>
+                </li>
+                <li>
+                    <span class="divider">/</span>
+                </li>
+                <li>
+                    <%
+                    var userTmpUrl = userMappedUrl + "?uname=" + request.getParameter("uname");
+                    %>
+                    <a href="<%=userTmpUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=userTmpUrl%>',e:event})">User - <%=request.getParameter("uname")%></a>
+                </li>
+                <% } %>
+
+
+                <% if(reqUrl.indexOf(subsUrl)>=0||reqUrl.indexOf(subsMappedUrl)>=0){%>
+                <li>
+                    My APIs <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=subsMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=subsMappedUrl%>',e:event})">Users-Keys</a>
+                </li>
+                <% } %>
+
+
+                <% if(reqUrl.indexOf(statsUrl)>=0||reqUrl.indexOf(statsMappedUrl)>=0){%>
+                <li>
+                    My APIs<span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="<%=statsMappedUrl%>" onclick="jagg.sessionAwareJS({redirect:'<%=statsMappedUrl%>',e:event})">Statistics</a>
+                </li>
+                <% } %>
+            </ul>
+
+
+
+<% }); %>

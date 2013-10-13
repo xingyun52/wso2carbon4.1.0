@@ -1,0 +1,31 @@
+<%
+include('/jagg/constants.jag');
+include('/jagg/config_reader.jag');
+jagg.block("administration/datasource/list", {
+    initialize: function (data) {
+
+    },
+    getInputs: function () {
+        return {
+            "applicationKey": null
+        }
+    },
+
+    getOutputs: function (inputs) {
+        var permissionModule = jagg.module("permission");
+        var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        var hasDataSourceUpdatePermissions = {};
+        for (var i = 0; i < deploymentStages.length; i++) {
+            hasDataSourceUpdatePermissions[deploymentStages[i]] = permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_DATASOURCE_UPDATE_OF_STAGE + deploymentStages[i]);
+        }
+        var hasDataSourceCreatePermission = permissionModule.isUserAccessGranted(inputs.applicationKey, PERMISSION_DATASOURCE_CREATE);
+
+        return {
+            "hasDataSourceCreatePermission": hasDataSourceCreatePermission,
+            "hasDataSourceUpdatePermissions": hasDataSourceUpdatePermissions,
+            "deploymentStages":deploymentStages
+        };
+    }
+
+});
+%>

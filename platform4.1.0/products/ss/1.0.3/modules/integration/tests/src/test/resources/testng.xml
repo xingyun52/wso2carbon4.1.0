@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="SsTestSuite">
+    <test name="Test - SS">
+        <classes>
+            <class name="org.wso2.carbon.ss.cassandra.test.KeyspaceManagementSuperTenantTestCase"/>
+            <class name="org.wso2.carbon.ss.cassandra.test.KeyspaceManagementTenantAdminTestCase"/>
+            <!--<class name="org.wso2.carbon.ss.rss.test.RSSMgtTestCase"/>-->
+        </classes>
+    </test>
+</suite>

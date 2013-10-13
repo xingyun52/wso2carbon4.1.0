@@ -1,0 +1,91 @@
+<% jagg.template("datasource/get", function(inputs, outputs, jagg) {
+    var applicationKey = request.getParameter("applicationKey");
+    var applicationName = request.getParameter("applicationName");
+    var datasources = outputs.datasources;
+%>
+<script xmlns="http://www.w3.org/1999/html">
+    function tabShowHide(obj) {
+        var toShow = $(obj).attr('data-value');
+        $('.tag-content').hide();
+        $('#' + toShow).show();
+    }
+</script>
+
+ <div class="container">
+    <div class="title-section">
+        <div class="row">
+            <div class="span12">
+                <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"DataSources","pos":"titlebar" }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <div class="container content-container wrapper">
+
+     <div class="row">
+            <div class="span12 content-section shadow-up">
+                <div class="content-data">
+                    <div class="container-fluid">
+
+                        <div id="devCloud" class="tag-content">
+                            <div class="row-fluid">
+                                <div class="span12">
+
+
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th class="span1">Name</th>
+                                                <th class="span3">Description</th>
+                                                <th class="span1">Type</th>
+                                                <th class="span3">DriverClass Name</th>
+                                                <th class="span4">URL</th>
+                                            </tr>
+
+
+                                            <%
+                                            for(var stageName in datasources){
+                                                if(datasources[stageName] != "" || datasources[stageName]!= null){
+                                                for(var i=0; i<datasources[stageName].length; i++){
+                                                    var ds=datasources[stageName][i];
+							                        if(ds.name!=null){
+                                            %>
+
+                                             <tr><td><%=ds.name%></td><td><%=ds.description%></td><td><%=ds.type%></td><td><%=ds.driverClassName%></td>
+                                              <td>
+                                              <% for(var stage in datasources){
+                                                      %>
+                                                        <%=stage%> : <%=datasources[stage][i].url%>   <br>
+
+                                                      <%
+                                                    }
+                                              %>
+                                               </td>
+
+                                             </tr>
+
+                                            <%
+                                                    }  }}}
+                                            %>
+                                        </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+		                                                            
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+
+<script type="text/javascript>
+jagg.post("../blocks/datasource/get/block.jag", {
+				applicationKey:'<%=applicationKey%>',
+			  });             
+</script>
+<% }); %>

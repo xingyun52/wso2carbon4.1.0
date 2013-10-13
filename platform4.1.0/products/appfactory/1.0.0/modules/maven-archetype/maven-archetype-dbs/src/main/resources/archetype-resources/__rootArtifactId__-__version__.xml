@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><serviceGroup name="${artifactId}-${version}" hashValue="b74f1b269a0056668a9372182033856c" successfullyAdded="true">
+    <service name="${artifactId}-${version}" serviceDocumentation="" exposedAllTransports="false" serviceDeployedTime="1363343762367" successfullyAdded="true" utEnabled="true">
+        <operation name="OP1">
+            <module name="wso2statistics" version="4.2" type="engagedModules"/>
+            <module name="POXSecurityModule" version="4.5" type="engagedModules"/>
+        </operation>
+        <bindings>
+            <binding name="${artifactId}-${version}SOAP12Binding">
+                <operation name="OP1"/>
+                <policyUUID>UTOverTransport</policyUUID>
+            </binding>
+            <binding name="${artifactId}-${version}HttpBinding">
+                <operation name="OP1"/>
+                <policyUUID>UTOverTransport</policyUUID>
+            </binding>
+            <binding name="${artifactId}-${version}SOAP11Binding">
+                <operation name="OP1"/>
+                <policyUUID>UTOverTransport</policyUUID>
+            </binding>
+        </bindings>
+        <policies>
+            <policy policyType="9">
+                <policyUUID>UTOverTransport</policyUUID>
+                <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="UTOverTransport">
+                    <wsp:ExactlyOne>
+                        <wsp:All>
+                            <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                <wsp:Policy>
+                                    <sp:TransportToken>
+                                        <wsp:Policy>
+                                            <sp:HttpsToken RequireClientCertificate="false"/>
+                                        </wsp:Policy>
+                                    </sp:TransportToken>
+                                    <sp:AlgorithmSuite>
+                                        <wsp:Policy>
+                                            <sp:Basic256/>
+                                        </wsp:Policy>
+                                    </sp:AlgorithmSuite>
+                                    <sp:Layout>
+                                        <wsp:Policy>
+                                            <sp:Lax/>
+                                        </wsp:Policy>
+                                    </sp:Layout>
+                                    <sp:IncludeTimestamp/>
+                                </wsp:Policy>
+                            </sp:TransportBinding>
+                            <sp:SignedSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                <wsp:Policy>
+                                    <sp:UsernameToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient"/>
+                                </wsp:Policy>
+                            </sp:SignedSupportingTokens>
+                        </wsp:All>
+                    </wsp:ExactlyOne>
+                    <rampart:RampartConfig xmlns:rampart="http://ws.apache.org/rampart/policy">
+                        <rampart:encryptionUser>useReqSigCert</rampart:encryptionUser>
+                        <rampart:timestampPrecisionInMilliseconds>true</rampart:timestampPrecisionInMilliseconds>
+                        <rampart:timestampTTL>300</rampart:timestampTTL>
+                        <rampart:timestampMaxSkew>300</rampart:timestampMaxSkew>
+                        <rampart:timestampStrict>false</rampart:timestampStrict>
+                        <rampart:tokenStoreClass>org.wso2.carbon.security.util.SecurityTokenStore</rampart:tokenStoreClass>
+                        <rampart:nonceLifeTime>300</rampart:nonceLifeTime>
+                    </rampart:RampartConfig>
+                </wsp:Policy>
+            </policy>
+        </policies>
+        <module name="wso2statistics" version="4.2" type="engagedModules"/>
+        <module name="POXSecurityModule" version="4.5" type="engagedModules"/>
+        <parameter name="serviceType">data_service</parameter>
+        <association destinationPath="/repository/transports/https/listener" type="exposedTransports"/>
+        <module name="rampart" version="1.61-wso2v8" type="engagedModules"/>
+    </service>
+</serviceGroup>

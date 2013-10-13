@@ -1,0 +1,17 @@
+{
+    "theme" : {
+        "base" : "default",
+        "subtheme" : "modern"
+    },
+    "context" : "/publisher"
+    ,
+    "ssoConfiguration" : {
+        "enabled" : "false",
+        "issuer" : "API_PUBLISHER",
+        "identityProviderURL" : "",
+        "keyStorePassword" : "",
+        "identityAlias" : "",
+        "keyStoreName" : ""
+    }
+
+}

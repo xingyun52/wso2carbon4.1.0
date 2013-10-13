@@ -1,0 +1,43 @@
+{
+          "confirm": {
+            "delete": "Confirm Delete",
+            "deleteMsg": "Are you sure you want to delete the file" ,
+            "revoke": "Revoke Access Token" ,
+            "revokeMsg": "Successfully revoke the access token : ",
+            "ok": "OK"
+
+
+        },
+        "titles":{
+          "responseTimeGraph":"Response Time (Across all versions)",
+          "lastAccessTimeGraph":"Last access time (Across all versions)"
+        },
+        "resultMsgs":{
+            "noDocs":"No documentation associated with the API"
+
+        },
+        "errorMsgs":{
+            "invalidDocUrl":"Invalid Document Url Format.",
+            "inlineContent":"Sorry. The content of this document cannot be loaded.",
+            "apiResource":"Sorry. This row can not be deleted. AtLeast one resource entry has to be available." ,
+            "uniqueUrlPattern":"URL Pattern has to be unique. ",
+            "emptyUrlPattern":"URL Pattern can't be empty. ",
+            "emptyVerb":"At least one HTTP Verb has to be checked for a resource. ",
+            "duplicateUrlPattern":"has duplicated entries. ",
+            "noData":"No Data Found ... ",
+            "checkBAMConnectivity":" No data found. Check BAM server connectivity... ",
+            "unavailableData":"Data unavailable",
+            "login":"Unable to log you in!"
+        },
+        "validationMsgs":{
+            "context": "Duplicate context value.",
+            "tier": "Select a value for the tier.",
+            "name": "Name contains one or more illegal characters ",
+            "noSpace": "Name contains white spaces.",
+            "invalid": " Invalid",
+            "valid": "Valid",
+            "testUri": "Test URI",
+            "validating": "Validating.."
+        }
+
+}

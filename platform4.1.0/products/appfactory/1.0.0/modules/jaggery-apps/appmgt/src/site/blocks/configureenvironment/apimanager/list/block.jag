@@ -1,0 +1,22 @@
+<%
+include('/jagg/constants.jag');
+jagg.block("configureenvironment/apimanager/list", {
+    initialize:function (data) {
+
+    },
+    getInputs:function () {
+        return {
+            "applicationKey":null
+        }
+    },
+
+    getOutputs:function (inputs) {
+       var hasConfigureAPIManagerPermission = jagg.module("permission").isUserAccessGranted(inputs.applicationKey,PERMISSION_CONFIGURATION_API_MANAGER);
+       return {
+            "hasConfigureAPIManagerPermission":hasConfigureAPIManagerPermission,
+       };
+    }
+
+
+});
+%>

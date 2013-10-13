@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="appfactory">
+  <fileSets>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>.</directory>
+    </fileSet>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>src</directory>
+      <includes>
+        <include>pom.xml</include>
+      </includes>
+    </fileSet>
+   <fileSet filtered="true" encoding="UTF-8">
+      <directory>src</directory>
+      <includes>
+        <include>main/java/demo/hw/client/Client.java</include>
+		<include>main/java/demo/hw/server/HelloWorld.java</include>
+		<include>main/java/demo/hw/server/HelloWorldImpl.java</include>
+		<include>main/java/demo/hw/server/IntegerUserMap.java</include>
+		<include>main/java/demo/hw/server/IntegerUserMapAdapter.java</include>
+		<include>main/java/demo/hw/server/Server.java</include>
+		<include>main/java/demo/hw/server/User.java</include>
+		<include>main/java/demo/hw/server/UserAdapter.java</include>
+		<include>main/java/demo/hw/server/UserImpl.java</include>
+		<include>main/webapp/servicelist.css</include>
+		<include>main/webapp/WEB-INF/cxf-servlet.xml</include>
+		<include>main/webapp/WEB-INF/web.xml</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>

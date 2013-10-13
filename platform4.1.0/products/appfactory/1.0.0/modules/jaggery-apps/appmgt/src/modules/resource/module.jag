@@ -1,0 +1,21 @@
+<%
+jagg.module("resource", {
+
+    createResource:function () {
+        return jagg.require(jagg.getModulesDir() + "resource/add/add.jag").createResource.apply(this, arguments);
+    },
+    
+    getResource:function () {
+        return jagg.require(jagg.getModulesDir() + "resource/get/list.jag").getResource.apply(this, arguments);
+    },
+    
+    resourceExists:function () {
+        return jagg.require(jagg.getModulesDir() + "resource/get/list.jag").resourceExists.apply(this, arguments);
+    },
+    
+    putResource:function () {
+        return jagg.require(jagg.getModulesDir() + "resource/update/update.jag").putResource.apply(this, arguments);
+    }
+
+});
+%>

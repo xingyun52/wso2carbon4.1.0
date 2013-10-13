@@ -1,0 +1,56 @@
+<%
+include("/jagg/jagg.jag");
+var site = require("/site/conf/site.json");
+
+(function () {
+
+    var result, api, title, mod, links,
+            name = request.getParameter("name"),
+            version = request.getParameter("version"),
+            provider = request.getParameter("provider"),
+            user = jagg.getUser();
+
+    result = jagg.module("api").getAPIDescription({
+        name:name,
+        version:version,
+        provider:provider
+    }, site.defaultUser.username);
+    api = result.api;
+
+    title = "API Store - " + api.name;
+
+    jagg.render({
+        "name":"page/base",
+        "inputs":{
+            "title":title,
+            "pagePath":"/site/pages/item-info.jag",
+            "body":[
+                {
+                    "name":"layout/base",
+                    "inputs":{
+                        "title":api.name,
+                        "top":{
+                            "name":"search/api-search",
+                            "inputs":null
+                        },
+                        "left":{
+                            "name":"api/provider-apis",
+                            "inputs":{
+                                     "providerId":api.provider,
+                                     "currentApi":api.name
+                                     }
+                        },
+                        "middle":{
+                            "name":"api/api-info",
+                            "inputs":{
+                                     "api":api
+                                     }
+                        },
+                        "right":null
+                    }
+                }
+            ]
+        }
+    });
+}());
+%>

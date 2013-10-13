@@ -1,0 +1,26 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+   if(action == "getevents") {
+       mod = jagg.module("events");
+       var applicationKey = request.getParameter("applicationKey");
+       var userName = request.getParameter("userName");
+
+       print(mod.getEvents(applicationKey,userName));
+   }else if(action == "getUserEvents") {
+       mod = jagg.module("events");
+       var userName = request.getParameter("userName");
+
+       print(mod.getUserEvents(userName));
+   }else {
+       throw new Error("No action specified");
+   }
+
+}());
+%>

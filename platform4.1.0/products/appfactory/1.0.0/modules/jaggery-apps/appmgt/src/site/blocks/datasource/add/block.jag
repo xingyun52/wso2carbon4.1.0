@@ -1,0 +1,7 @@
+<%
+jagg.block("datasource/add", {
+    initialize:function (data) {
+
+    }
+});
+%>

@@ -1,0 +1,7 @@
+{
+    "theme" : {
+        "base" : "default",
+        "subtheme" : "modern"
+    },
+    "context" : "/publisher"
+}

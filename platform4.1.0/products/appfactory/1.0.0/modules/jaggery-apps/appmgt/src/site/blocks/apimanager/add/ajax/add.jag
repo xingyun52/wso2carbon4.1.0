@@ -1,0 +1,29 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "createApplication") {
+    	mod = jagg.module("apimanager");
+    	var applicationKey = request.getParameter("applicationKey");
+ //   	jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION.CONFIGURATION.API.MANAGER);
+        try {
+            result = mod.createApplication(applicationKey);
+            if (result != null) {
+                return result;
+            } else {
+                throw "Error while creating the application";
+            }
+        } catch(e) {
+            throw "Error while creating an application";
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

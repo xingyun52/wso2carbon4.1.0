@@ -1,0 +1,90 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://service.build.jenkins.appfactory.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2500="http://service.build.jenkins.appfactory.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.build.jenkins.appfactory.carbon.wso2.org">
+    <wsdl:documentation>JenkinsCIBuildStatusReceiverService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.build.jenkins.appfactory.carbon.wso2.org/xsd">
+            <xs:complexType name="BuildStatusBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="artifactType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="buildId" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="buildSuccessful" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="logMsg" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2501="http://service.build.jenkins.appfactory.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.build.jenkins.appfactory.carbon.wso2.org">
+            <xs:import namespace="http://service.build.jenkins.appfactory.carbon.wso2.org/xsd" />
+            <xs:element name="onBuildCompletion">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="buildStatus" nillable="true" type="ax2500:BuildStatusBean" />
+                        <xs:element minOccurs="0" name="data" nillable="true" type="xs:base64Binary" />
+                        <xs:element minOccurs="0" name="fileName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="onBuildCompletionRequest">
+        <wsdl:part name="parameters" element="ns:onBuildCompletion" />
+    </wsdl:message>
+    <wsdl:portType name="JenkinsCIBuildStatusReceiverServicePortType">
+        <wsdl:operation name="onBuildCompletion">
+            <wsdl:input message="ns:onBuildCompletionRequest" wsaw:Action="urn:onBuildCompletion" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="JenkinsCIBuildStatusReceiverServiceSoap11Binding" type="ns:JenkinsCIBuildStatusReceiverServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="onBuildCompletion">
+            <soap:operation soapAction="urn:onBuildCompletion" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="JenkinsCIBuildStatusReceiverServiceSoap12Binding" type="ns:JenkinsCIBuildStatusReceiverServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="onBuildCompletion">
+            <soap12:operation soapAction="urn:onBuildCompletion" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="JenkinsCIBuildStatusReceiverServiceHttpBinding" type="ns:JenkinsCIBuildStatusReceiverServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="onBuildCompletion">
+            <http:operation location="onBuildCompletion" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="JenkinsCIBuildStatusReceiverService">
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpsSoap11Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap11Binding">
+            <soap:address location="https://172.16.233.1:9445/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceLocalSoap11Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap11Binding">
+            <soap:address location="local:///services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceLocalSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpSoap11Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap11Binding">
+            <soap:address location="http://172.16.233.1:9765/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpsSoap12Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap12Binding">
+            <soap12:address location="https://172.16.233.1:9445/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceLocalSoap12Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap12Binding">
+            <soap12:address location="local:///services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceLocalSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpSoap12Endpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceSoap12Binding">
+            <soap12:address location="http://172.16.233.1:9765/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpEndpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceHttpBinding">
+            <http:address location="http://172.16.233.1:9765/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpEndpoint/" />
+        </wsdl:port>
+        <wsdl:port name="JenkinsCIBuildStatusReceiverServiceHttpsEndpoint" binding="ns:JenkinsCIBuildStatusReceiverServiceHttpBinding">
+            <http:address location="https://172.16.233.1:9445/services/JenkinsCIBuildStatusReceiverService.JenkinsCIBuildStatusReceiverServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+ ~ Copyright (c) 2009-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-features</artifactId>
+        <version>4.1.0</version>
+	<relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.is</groupId>
+    <artifactId>is-composite-feature-parent</artifactId>
+    <version>4.1.0</version>
+    <packaging>pom</packaging>
+    <name>WSO2 Carbon - IS Composite Features Aggregator Module</name>
+    <url>http://wso2.org</url>
+
+    <modules>
+	<module>is-mandatory/4.1.0</module>
+	<module>identity-core/4.1.0</module>
+	<module>identity-mgt/4.1.0</module>
+	<module>identity-provider/4.1.0</module>
+	<module>oauth/4.1.0</module>
+	<module>passive-sts/4.1.0</module>
+	<module>relying-party/4.1.0</module>
+	<module>scim/4.1.0</module>
+	<module>sso-saml/4.1.0</module>
+	<module>user-profiles/4.1.0</module>
+	<module>xacml/4.1.0</module>
+	<module>registry/4.1.0</module>
+	<module>directory-server/4.1.0</module>
+	<module>cloud-identity/4.1.0</module>
+	<module>self-registration/4.1.0</module>	
+	<module>authenticators/4.1.0</module>
+	<module>claim-mgt/4.1.0</module>
+	<module>remote-usermgt/4.1.0</module>
+    </modules>
+</project>
+

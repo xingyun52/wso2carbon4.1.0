@@ -1,0 +1,15 @@
+<% jagg.template("api/listing", function(inputs, outputs, jagg) { %>
+<%
+    var tagWiseMode = site.tagWiseMode;
+    var tag = request.getParameter("tag");
+    if(tagWiseMode == "true"){
+        if(tag !=null){
+            jagg.includeBlock("api/api-listing-all");
+        }else{
+            jagg.includeBlock("api/api-listing-tag-wise");
+        }
+    }else{
+        jagg.includeBlock("api/api-listing-all");
+    }
+%>
+<% }); %>

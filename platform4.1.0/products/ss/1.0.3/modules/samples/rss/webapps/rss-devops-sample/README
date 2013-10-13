@@ -1,0 +1,59 @@
+Prerequisites
+
+Running mysql server and a Application server
+
+RSS web application sample
+------------------------------
+
+This web application display the main operations which database user can perform on a database.
+
+User need to create a database in mysql.
+
+After creating the mysql database, user need to execute the customer.sql script which is available in the
+resource directory of the project to create the tables and insert data to work with the application.
+
+Go to the web.xml file located in WEB-INF folder in the project
+
+User need to specify the backend database configurations in the web.xml file.
+
+User need to specify the driverClass,dbUrl(Database url),dbUser(Database user) and dbPassword(Database user password)
+
+Eg.
+<web-app>
+    <display-name>StratosLive RSS Sample</display-name>
+    <context-param>
+        <param-name>driverClass</param-name>
+        <param-value>com.mysql.jdbc.Driver</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbUrl</param-name>
+        <param-value>jdbc:mysql://localhost:3306/test</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbUser</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbPassword</param-name>
+        <param-value>root</param-value>
+    </context-param>
+</web-app>
+
+Note:Database url need to specify upto a created database such as "test" in above example
+
+
+Build the project with Maven build tool using following command
+
+	mvn clean install
+
+Go to the Application Server and deploy the web application in Application  Server using the war archive file
+located in the target of RSS web application sample.
+
+Then try the web application.
+
+
+
+
+
+
+

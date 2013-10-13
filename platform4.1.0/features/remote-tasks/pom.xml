@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-features</artifactId>
+        <version>4.1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <name>WSO2 Carbon - Remote Tasks Aggregate Feature</name>
+    <artifactId>remote-tasks-feature</artifactId>
+    <packaging>pom</packaging>
+    <url>http://wso2.org</url>
+    
+    <modules>
+        <module>org.wso2.carbon.remote-tasks.server.feature/4.1.0</module>
+        <module>org.wso2.carbon.remote-tasks.ui.feature/4.1.0</module>
+        <module>org.wso2.carbon.remote-tasks.feature/4.1.0</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.remotetasks.core</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.remotetasks.common</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.remotetasks.ui</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

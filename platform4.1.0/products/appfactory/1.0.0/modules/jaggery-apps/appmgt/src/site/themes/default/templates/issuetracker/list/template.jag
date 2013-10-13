@@ -1,0 +1,122 @@
+<% jagg.template("issuetracker/list", function(inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+%>
+<script type="text/javascript">
+//[cdata[
+    $(function(){
+	    updateIssueTracker("<%=applicationKey%>");
+	});
+	
+	function reportIssue() {
+        window.open('<%=outputs.newIssueUrl%>', '_blank');
+    }
+    function updateIssueTracker(appKey){
+        $("#trackerStatus").html('<img src="<%=jagg.getAbsoluteUrl(jagg.getThemeFile("images/processing.gif"))%>" style="width:22px;height:22px;"/>');
+        $("#issueTracker").hide();
+        var issueSet={};
+
+	    jagg.post("../blocks/issuetracker/list/ajax/list.jag", {
+        	action:"getIssueTrackerInfo",
+        	applicationKey:appKey
+	    },function (result) {
+	        $("#trackerStatus").html("");
+	        issueSet= jQuery.parseJSON(result);
+
+	        $("div.issueTracker-box1 div.issueTracker-content div.open").text("Open - "+issueSet.bug.open);
+	        $("div.issueTracker-box1 div.issueTracker-content div.in-progress").text("In Progress - "+issueSet.bug.inProgress);
+	        $("div.issueTracker-box1 div.issueTracker-content div.total-sep").text("Total - "+issueSet.bug.total);
+	        
+	        $("div.issueTracker-box2 div.issueTracker-content div.open").text("Open - "+issueSet.feature.open);
+	        $("div.issueTracker-box2 div.issueTracker-content div.in-progress").text("In Progress - "+issueSet.feature.inProgress);
+	        $("div.issueTracker-box2 div.issueTracker-content div.total-sep").text("Total - "+issueSet.feature.total);
+	        
+	        $("div.issueTracker-box3 div.issueTracker-content div.open").text("Open - "+issueSet.support.open);
+	        $("div.issueTracker-box3 div.issueTracker-content div.in-progress").text("In Progress - "+issueSet.support.inProgress);
+	        $("div.issueTracker-box3 div.issueTracker-content div.total-sep").text("Total - "+issueSet.support.total);
+	        
+	        $("#issueTracker").fadeIn();
+	        $("#trackerStatus").html("");
+	    },function (jqXHR, textStatus, errorThrown) {
+	        $("#issueTracker").fadeIn();
+	        $("#trackerStatus").html("");
+		    jagg.message({content:'Error occured while retrieving Issue Tracker information!',type:'error' });
+	    });
+	}
+//]]
+</script>
+
+    <input type="hidden" name="applicationKey" id="applicationKey" value="<%=applicationKey%>"/>
+    <input type="hidden" name="userName" id="userName" value="<%=userName%>"/>
+	<div class="container">
+       <div class="title-section">
+           <div class="row">
+               <div class="span12">
+                  <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Track Issues","pos":"titlebar" }); %>
+              </div>
+           </div>
+       </div>
+    </div>
+	<!--START  content section-->
+    <div class="container content-container wrapper">
+        <div class="content-section shadow-up tab-content">
+            <div class="content-data">
+                <div class="container-fluid">
+                    <div class="row">
+                        <strong>Report Issue :</strong>
+                        <a target="_blank" href="<%=outputs.newIssueUrl%>"><%=outputs.newIssueUrl%></a> 
+                        <br/><br/>
+                    	<div class="app-home-box" style="padding-bottom: 14px;width:530px;">
+	                        <h2>Summary</h2>
+	                        <span id="trackerStatus" style="color:#D16666"></span>
+	                        <div class="build-state-wrapper" id="issueTracker">
+	                            <div class="issueTracker-box issueTracker-box1 theBug" style="margin-left: 8px;">
+	                                <div class="issueTracker-head">
+	                                    Bug
+	                                </div>
+	                                <div class="issueTracker-content">
+	                                    <div class="open"></div>
+	                                    <div class="in-progress"></div>
+	                                    <div class="total-sep"></div>
+	                                </div>
+	                            </div>
+	
+	                            <div class="issueTracker-box issueTracker-box2" style="margin-left: 187px;">
+	                                <div class="issueTracker-head">
+	                                    Feature
+	                                </div>
+	                                <div class="issueTracker-content">
+	                                    <div class="open"></div>
+	                                    <div class="in-progress"></div>
+	                                    <div class="total-sep"></div>
+	                                </div>
+	                            </div>
+	
+	                            <div class="issueTracker-box issueTracker-box3" style="margin-left: 366px;">
+	                                <div class="issueTracker-head">
+	                                    Support
+	                                </div>
+	                                <div class="issueTracker-content">
+	                                     <div class="open"></div>
+	                                    <div class="in-progress"></div>
+	                                    <div class="total-sep"></div>
+	                                </div>
+	                            </div>
+								
+								<br style="clear: both"/>
+	                            <div class="chart-all-ran">
+	                            </div>
+	                        </div>
+	                        <div class="row-fluid"></div>
+	                    </div>
+                    </div>
+				</div>
+        	</div>
+    	</div>
+         <div class="push"></div>
+    </div><!--END  content section-->
+    <div class="clearfix"></div>
+
+        
+<% }); %>

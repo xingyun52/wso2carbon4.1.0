@@ -1,0 +1,48 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+var log = new Log();
+
+var downloadLogFile = function (applicationKey, stage) {
+
+    var ws = require("ws");
+    var applicationMgtService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:getLogs";
+
+    var payload ='<p:getLogs xmlns:p="http://org.apache.axis2/xsd"><xs:type xmlns:xs="http://org.apache.axis2/xsd"></xs:type><xs:keyword xmlns:xs="http://org.apache.axis2/xsd"></xs:keyword><xs:domain xmlns:xs="http://org.apache.axis2/xsd"></xs:domain><xs:serverKey xmlns:xs="http://org.apache.axis2/xsd"></xs:serverKey></p:getLogs>';
+    var cloudEndpoint= getProperty('ApplicationDeployment.DeploymentStage.'+stage+'.DeploymentServerURL');
+    try {  
+         var logViewerEndpoint = cloudEndpoint + "LogViewer";
+         applicationMgtService.open(options, logViewerEndpoint, false, getProperty(ADMIN_USERNAME)+'@'+applicationKey, getProperty(ADMIN_PASSWORD));
+
+        applicationMgtService.send(payload);
+        result = applicationMgtService.responseE4X;
+        var logEvents=result.*::["return"];
+        //message is comming in reverse order
+        for(var i=logEvents.length()-1;i>=0;i--){
+        var logEvent="";
+        var entry=logEvents[i];
+        var serverName=entry.*::serverName;
+        var logTime=entry.*::logTime;
+        var logger=entry.*::logger;
+        var message=entry.*::message;
+        var priority=entry.*::priority;
+        var stacktrace=entry.*::stacktrace;
+        //recreate log line
+        logEvent="["+serverName+"]"+"["+logTime+"]"+"["+logger+"]"+message+"\n"+stacktrace;
+        //print it
+        print(logEvent);
+          }
+       log.info("Log download from "+ stage + " server is successful");
+       //return empty string othervice the returned value is appended to log file
+       return "";
+    } catch (e) {
+        log.error('Error occured while downloading the logs');
+        throw "Error while retrieving logs in "+stage+" "+e.toString();
+    }
+};
+%>

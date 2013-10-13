@@ -1,0 +1,184 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+var log=new Log();
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+   if (action == "newKey") {
+   		var applicationKey = request.getParameter("newKey");
+   	
+   	    var path = APPLICATIONS + newKey;
+        try {
+            return resourceExists(path);
+        } catch (e) {
+            log.error("Error while accessing registry resource \n"+e.message);
+            throw "Error while accessing registry resource";
+        }
+   }else if(action == "getUniqueAppVersions") {
+   		var applicationKey = request.getParameter("applicationKey");
+   	
+        var appInfos = new Array();
+        var stages = getProperties('ApplicationDeployment.DeploymentStage');
+		for(var i=0; i<stages.length;i++){
+		    var stage = stages[i];
+		    var appVersions = getAppVersionsInStage(stage, applicationKey);
+		    if(appVersions != null) {
+		    	appInfos = appInfos.concat(appVersions);
+		    } 
+		}
+		
+		var uniqueVersions = new Array();
+		for (var i = 0; i<appInfos.length; i++ ) {
+		    var versions = appInfos[i].versions;
+		    for (var j = 0; j<versions.length; j++ ) {
+		        var version = versions[j];
+		    	if (uniqueVersions.indexOf(version) == -1) {
+		        	uniqueVersions.push(version);
+		    	}
+		    }
+		}
+		return uniqueVersions;
+   }else if(action == "initAppVersion") {
+   	   	var applicationKey = request.getParameter("applicationKey");
+   	   	
+   	   	var versionNo=0;
+
+    	var stages = getProperties('ApplicationDeployment.DeploymentStage');
+    	for(var i=0; i<stages.length;i++){
+        	var stage = stages[i];
+          	for(var j=0; j<3;j++){
+          		try {
+                     var resource = createResource();
+                 } catch (e) {
+                     log.error("Error while creating registry resource \n"+e.message);
+                     throw new Error("Error while creating registry resource");
+                 }
+                 var version = 'Version '+versionNo;
+                 var path = APPLICATIONS+APPLICATION_STAGES +stage+'/'+ applicationKey+'/'+version;
+                 try {
+
+                 if( resourceExists(path)!='true'){
+                     putResource(path, resource);
+                     versionNo=versionNo+1;
+                     }
+                 } catch (e) {
+                     log.error("Error while storing resource \n"+e.message);
+                     throw new Error("Error while storing registry resource");
+                 }
+            }
+       }
+   }else if(action == "containsApplication") {
+   		var existingApplications = request.getParameter("existingApplications");
+   		var newApplication = request.getParameter("newApplication");
+   		
+   	    var applicationAlreadyExist = false;
+        var applicationArray = existingApplications.split(",");
+        for (var i = 0; i <= applicationArray.length - 1; ++i) {
+            log.debug("existing application : new application "+ applicationArray[i] +" "+newApplication)
+            if(applicationArray[i] == newApplication) {
+                applicationAlreadyExist = true;
+                log.debug("new application already exist in existing application list");
+                break;
+            }
+        }
+        return applicationAlreadyExist;
+   }else if(action == "getAppCountInStage") {
+   	    mod = jagg.module("application");
+        var applicationKey = request.getParameter("applicationKey");
+        var userName = request.getParameter("userName");
+       
+        return getAppCountInStage(applicationKey, userName);
+   }else if(action == "getApplicationsOfUser") {
+   		mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+        var loadedApplications=[];
+        loadedApplications=parse(mod.getAllAppsOfUser(userName));
+        var pendingApplications=[];
+        
+		if(session.get("pendingApplications")!=null){
+		    pendingApplications=session.get("pendingApplications");
+			var applicationKey = request.getParameter("applicationKey");
+			for(var exAppIndex in loadedApplications){
+				var exApp=loadedApplications[exAppIndex];
+				for(var appIndex in pendingApplications){
+					var appContainer=pendingApplications[appIndex];
+					if(appContainer.userName==userName){
+						if(exApp.key==appContainer.app.key){
+							pendingApplications.splice(appContainer,1);
+						}
+					}
+				}
+			}
+			for(var pendingAppIndex in pendingApplications){
+				loadedApplications.push(pendingApplications[pendingAppIndex].app);
+			}
+			session.put("pendingApplications",pendingApplications);
+		}
+		print(loadedApplications);
+   }else if(action == "getAllAppVersionsInStage") {
+   		mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+        var stageName = request.getParameter("stageName");
+
+        print(mod.getAllAppVersionsInStage(stageName, userName));
+   }else if(action == "getAppVersionsInStage") {
+   		mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+        var stageName = request.getParameter("stageName");
+        var applicationKey = request.getParameter("applicationKey");
+
+        print(mod.getAppVersionsInStage(stageName, applicationKey, userName));
+   }else if(action == "getAllAppVersionsInStages") {
+   		mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+
+        print(mod.getAllAppVersionsInStages(userName));
+   }else if(action == "getAppVersionsInStages") {
+   		mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+        var applicationKey = request.getParameter("applicationKey");
+        var isRoleBasedPermissionAllowed = request.getParameter("isRoleBasedPermissionAllowed");
+        var metaDataNeed = request.getParameter("metaDataNeed");
+        var buildable = request.getParameter("buildable");
+        print(mod.getAppVersionsInStages(applicationKey, userName,metaDataNeed,buildable,isRoleBasedPermissionAllowed));
+   }else if(action == "getAppVersionsInStagesWithMetaData") {
+       mod = jagg.module("application");
+       var userName = request.getParameter("userName");
+       var applicationKey = request.getParameter("applicationKey");
+       var metaDataNeed = request.getParameter("metaDataNeed");
+       var buildable = request.getParameter("buildable");
+       print(mod.getAppVersionsInStages(applicationKey, userName,metaDataNeed,buildable));
+   }else if(action == "getMetaDataForAppVersion") {
+       mod = jagg.module("application");
+       var version = request.getParameter("version");
+       var applicationKey = request.getParameter("applicationKey");
+       var stage = request.getParameter("stage");
+       var state = request.getParameter("state");
+       var type = request.getParameter("type");
+       print(mod.getMetaDataForApplicationState(applicationKey, version, stage  , state,type));
+   }else if(action == "getAppInfo") {
+       mod = jagg.module("application");
+       var applicationKey = request.getParameter("applicationKey");
+
+       print(mod.getAppInfo(applicationKey));
+   } else if (action == "getRetiredVersions") { 
+        mod = jagg.module("application");
+        var userName = request.getParameter("userName");
+        var applicationKey = request.getParameter("applicationKey");
+        print(mod.getRetiredVersions(applicationKey, userName));
+   } else if (action == "getLatestBuildSuccessInfo") { 
+       mod = jagg.module("application");
+       var applicationKey = request.getParameter("applicationKey");
+       var version = request.getParameter("version");
+       var stage = request.getParameter("stage");
+       print(mod.getLatestBuildSuccessInfo(applicationKey,version,stage));
+  }else {
+       throw new Error("No action specified");
+   }
+
+}());
+%>

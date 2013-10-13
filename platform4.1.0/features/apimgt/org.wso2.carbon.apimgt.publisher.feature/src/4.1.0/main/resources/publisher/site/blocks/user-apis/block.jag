@@ -1,0 +1,18 @@
+<%
+jagg.block("user-apis", {
+    initializer:function (data) {
+
+    },
+    getInputs:function () {
+        return {
+            "apis":null
+        }
+    },
+
+    getStaticBlocks:function() {
+        return [
+            "search/api-search"
+        ];
+    }
+});
+%>

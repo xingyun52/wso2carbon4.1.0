@@ -1,0 +1,163 @@
+
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+
+var log= new Log();
+
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "createDatabase") {
+        mod = jagg.module("rssmanager");
+            var applicationKey = request.getParameter("applicationKey");
+            var databaseName = request.getParameter("databaseName");
+            var databaseServerInstanceName = request.getParameter("databaseServerInstanceName");
+	        log.info("Modules databaseServerInstanceName "+databaseServerInstanceName);
+        try {
+            mod.createDatabase(applicationKey,databaseName,databaseServerInstanceName);
+        } catch(e) {
+            throw "Error while creating the database";
+        }
+    }else if(action == "getDatabases"){   
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+         
+          try {
+            result = mod.getDatabases(applicationKey); 
+            print(result);
+
+        } catch(e) {
+            throw "Error while getting the database";
+        }
+
+    }else if(action == "getRSSinstances"){
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+
+          try {
+            result = mod.getRSSinstances(applicationKey);
+            print(result);
+
+        } catch(e) {
+            throw "Error while reading the rssInstances";
+        }
+
+    }else if(action == "getAttachedUsers"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var dbname = request.getParameter("dbname");
+          var rssInstance = request.getParameter("rssInstance");
+
+          try {
+            result = mod.getAttachedUsers(applicationKey, dbname, rssInstance);
+            print(result);
+
+        } catch(e) {
+            throw "Error while reading the database";
+        }
+
+    }else if(action == "attachNewUser"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var dbname = request.getParameter("databaseName");
+          var rssInstance = request.getParameter("dbServerInstanceName");
+          var users = request.getParameter("users");
+          var templates = request.getParameter("templates");
+
+          try {
+            mod.attachNewUser(applicationKey,rssInstance, dbname, users, templates);
+
+        } catch(e) {
+            throw "Error while reading the database";
+        }
+
+    }else if(action == "detachUser"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var dbname = request.getParameter("databaseName");
+          var rssInstance = request.getParameter("dbServerInstanceName");
+          var username = request.getParameter("username");
+
+          try {
+            mod.detachUser(applicationKey,rssInstance, dbname, username);
+
+        } catch(e) {
+            throw "Error while reading the database";
+        }
+
+    }else if(action == "getUserPrivileges"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var dbname = request.getParameter("dbname");
+          var rssInstance = request.getParameter("rssInstanceName");
+          var username = request.getParameter("username");
+
+          try {
+           result = mod.getUserPrivileges(applicationKey,rssInstance, dbname, username);
+           print(result);
+        } catch(e) {
+            throw "Error while reading permissions";
+        }
+
+    } else if(action == "editUserPermissions"){
+
+       mod = jagg.module("rssmanager");
+          var applicationKey = request.getParameter("applicationKey");
+          var dbname = request.getParameter("databaseName");
+          var rssInstance = request.getParameter("rssInstanceName");
+          var username = request.getParameter("username");
+          var password = request.getParameter("password");
+          var alterPriv=createValue(request.getParameter("alterPriv"));
+          var alterRoutinePriv=createValue(request.getParameter("alterRoutinePriv"));
+          var createPriv=createValue(request.getParameter("createPriv"));
+          var createRoutinePriv=createValue(request.getParameter("createRoutinePriv"));
+          var createTmpTablePriv=createValue(request.getParameter("createTmpTablePriv"));
+          var createViewPriv=createValue(request.getParameter("createViewPriv"));
+          var deletePriv=createValue(request.getParameter("deletePriv"));
+          var dropPriv=createValue(request.getParameter("dropPriv"));
+          var eventPriv=createValue(request.getParameter("eventPriv"));
+          var executePriv=createValue(request.getParameter("executePriv"));
+          var grantPriv=createValue(request.getParameter("grantPriv"));
+          var indexPriv=createValue(request.getParameter("indexPriv"));
+          var insertPriv=createValue(request.getParameter("insertPriv"));
+          var lockTablesPriv=createValue(request.getParameter("lockTablesPriv"));
+          var referencesPriv=createValue(request.getParameter("referencesPriv"));
+          var selectPriv=createValue(request.getParameter("selectPriv"));
+          var showViewPriv=createValue(request.getParameter("showViewPriv"));
+          var triggerPriv=createValue(request.getParameter("triggerPriv"));
+          var updatePriv=createValue(request.getParameter("updatePriv"));
+
+          try {
+            mod.editUserPermissions(applicationKey,dbname,rssInstance,username,password,alterPriv,alterRoutinePriv, createPriv,createRoutinePriv, createTmpTablePriv, createViewPriv,deletePriv,dropPriv,eventPriv,executePriv,grantPriv,indexPriv,insertPriv,lockTablesPriv,referencesPriv,selectPriv,showViewPriv,triggerPriv,updatePriv);
+
+        } catch(e) {
+            throw "Error while reading permissions";
+        }
+
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+
+
+function createValue(value){
+
+   if(value=='true'){
+       value="Y";
+   }else{
+       value="N";
+   }
+  return value;
+
+}
+%>

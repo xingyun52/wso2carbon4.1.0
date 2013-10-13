@@ -1,0 +1,133 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+var modManager = jagg.module("manager");
+var log=new Log();
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "createNewApplicationBPEL") {
+    	mod = jagg.module("application");
+        var applicationName = request.getParameter("applicationName");
+        var applicationKey = request.getParameter("applicationKey");
+        var applicationDescription = request.getParameter("applicationDescription");
+        var applicationType = request.getParameter("applicationType");
+        var repositoryType = request.getParameter("repositoryType");
+        var userName = request.getParameter("userName");
+       if(jagg.module("permission").isUserAccessGrantedForPlatform(PERMISSION_APPLICATION_CREATE)){
+        try {
+            result = mod.createApplicationBPEL(applicationName, applicationKey,
+            applicationDescription, applicationType,repositoryType, userName);
+            if (result != null) {
+                return result;
+            } else {
+                throw "Error while creating the application";
+            }
+        } catch(e) {
+            throw "Error while creating the application";
+        }
+        }else{
+             throw "User do not have permission to create application";
+        }
+
+    }else if (action == "createNewApplication") {
+        mod = jagg.module("application");
+        var applicationName = request.getParameter("applicationName");
+        var applicationKey = request.getParameter("applicationKey");
+        var applicationDescription = request.getParameter("applicationDescription");
+        var applicationType = request.getParameter("applicationType");
+        var repositoryType = request.getParameter("repositoryType");
+        var userName = request.getParameter("userName");
+        var response={};
+        if(jagg.module("permission").isUserAccessGrantedForPlatform(PERMISSION_APPLICATION_CREATE)){
+        try {
+            var repositoryProviders=getProperties('RepositoryProviderConfig');
+
+            var message="Repository type ".concat(repositoryType).concat(" is not Configured!");            
+            response.message=message;
+            response.result=0;
+            if(getProperties('ApplicationType.'+applicationType+'.Property.DisplayName').length!=0){
+            	//adds to session in 'Pending state', until the application is created.
+				var pendingApplications=[];
+				if(session.get("pendingApplications")!=null){
+					pendingApplications=session.get("pendingApplications");
+				}
+				
+				var appContainer={};
+				appContainer.userName=userName;
+				
+				var thisApplication={};
+				thisApplication.key=applicationKey;
+				thisApplication.name=applicationName+" (Pending...)";
+				thisApplication.repositoryType="";
+			    thisApplication.description="";
+			    thisApplication.type="";
+			    thisApplication.roles="";
+			    		    
+			    appContainer.app=thisApplication;
+			    
+				pendingApplications.push(appContainer);
+				
+				session.put("pendingApplications",pendingApplications);
+				//adds to session in 'Pending state', until the application is created.
+				
+                for(var provider in repositoryProviders){
+                    if(repositoryType==repositoryProviders[provider]){
+                        result = mod.createApplication(applicationName, applicationKey,
+                        applicationDescription, applicationType,repositoryType, userName);
+                        message="Application was created under Repository type ".concat(repositoryType);
+                        response.message=message;
+                        response.result=1;
+                    }
+                }
+            }else{
+                message="Application type ".concat(applicationType).concat(" is not Supported!");            
+                response.message=message;
+                response.result=0;
+            }
+            
+            print(response);
+        } catch(e) {
+            throw "Error while creating the application";
+        }
+          }else{
+
+                      response.result=0;
+                      response.message="You don't have permission to create application";
+                      print(response);
+                }
+    }else if (action == "createApplicationRepository") {
+        var applicationKey = request.getParameter("applicationKey");
+ //       jagg.module("permission").checkUserActionPermission(applicationKey,PERMISSION.REPOSITORY.CREATE);
+        try {
+            result = createRepository(applicationKey);
+            if (result != null) {
+                var repoLink = null;
+                repoLink = result.split("<ns:return>")[1].split("</ns:return>")[0];
+                return repoLink;
+            } else {
+                throw "Error while creating repository";
+            }
+        } catch(e) {
+            throw "Error while creating repository";
+        }
+    }else if (action == "isApplicationKeyAvailable") {
+             var applicationKey = request.getParameter("applicationKey");
+             mod = jagg.module("application");
+             try {
+             var status= mod.isApplicationKeyAvailable(applicationKey);
+             print(status);
+
+             } catch(e) {
+                 throw "Error while creating repository";
+             }
+         } else {
+             throw new Error("No action specified");
+         }
+}());
+%>

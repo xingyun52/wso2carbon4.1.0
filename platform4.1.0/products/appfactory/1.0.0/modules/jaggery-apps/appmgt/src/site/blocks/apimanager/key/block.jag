@@ -1,0 +1,9 @@
+<%
+jagg.block("apimanager/key", {
+    initialize:function (data) {
+
+    }
+
+
+});
+%>

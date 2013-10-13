@@ -1,0 +1,39 @@
+<% jagg.template("user/login", function(inputs, outputs, jagg) { %>
+<%
+        if(request.isSecure()){
+
+            if(jagg.getUser() != null){
+                response.sendRedirect('index.jag');
+            }
+%>
+<div class="container content-section login-container">
+    <div class="row">
+        <div class="span4 offset4">
+            <div class="alert alert-error" id="loginError" style="display:none">
+                <span id="loginErrorSpan"></span>
+            </div>
+            <form class="well" action="index.jag" id="loginForm">
+                <label>Username:<span class="requiredAstrix">*</span></label>
+                <input type="text" class="span3" id="username" autofocus="autofocus" validation="required"  />
+
+                <label>Password:<span class="requiredAstrix">*</span></label>
+                <input type="password" class="span3" id="pass" />
+
+                <div>
+                    <input type="button" class="btn btn-primary" onclick="login()"  value="Login" id="loginButton" />
+                    <input type="reset" class="btn" value="Reset" />
+                </div>
+            </form>
+        </div>
+        <!--/span-->
+        <div class="span4"></div>
+    </div>
+    <!--/row-->
+</div>
+<% } else {
+        var mod,httpsUrl;
+        mod = jagg.module("manager");
+        httpsUrl= mod.getHTTPsURL();
+        response.sendRedirect(httpsUrl+site.context);
+} %>
+<%});%>

@@ -1,0 +1,24 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+(function () {
+    var mod, obj, result,
+    action = request.getParameter("action"),
+    site = require("/site/conf/site.json");
+    var log = new Log();
+	if (action == "get") {
+   	   	mod = jagg.module("eta");
+		var applicationId = request.getParameter("applicationKey");
+		var stage = request.getParameter("stage");
+		var version = request.getParameter("version");
+		var user = request.getParameter("user");
+				
+		result = mod.get(applicationId, stage, version, user);
+		print(result);
+	} else {
+       throw new Error("Invalid action specified");
+    }
+
+}());
+%>

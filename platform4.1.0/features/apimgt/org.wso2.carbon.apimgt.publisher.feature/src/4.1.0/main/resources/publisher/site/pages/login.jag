@@ -1,0 +1,60 @@
+<%
+include("/jagg/jagg.jag");
+var site = require("/site/conf/site.json");
+
+(function () {
+    jagg.render({
+        "name":"page/base",
+        "inputs":{
+            "title":"API Publisher- Login",
+            "header":{
+                "name":"menu/login"
+            },
+            "body":[
+                {
+                    "name":"layout/base",
+                    "inputs":{
+                        "top":null,
+                        "left":null,
+                        "middle":{
+                            "name":"user/login"
+                        },
+                        "right":null,
+                        "bottom":null
+                    }
+                }
+            ],"footer":[
+                {
+                    "name":"footer"
+                }
+            ]
+        }
+    });
+}());
+
+
+%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

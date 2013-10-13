@@ -1,0 +1,9 @@
+<suite name="TestngListners" parallel="false">
+    <parameter name="useDefaultListeners" value="false"/>
+    <listeners>
+        <listener class-name="org.wso2.carbon.automation.core.PlatformTestManager"/>
+        <listener class-name="org.wso2.carbon.automation.core.PlatformReportManager"/>
+        <listener class-name="org.wso2.carbon.automation.core.PlatformExecutionManager"/>
+        <listener class-name="org.wso2.carbon.automation.core.PlatformSuiteManager"/>
+    </listeners>
+</suite>

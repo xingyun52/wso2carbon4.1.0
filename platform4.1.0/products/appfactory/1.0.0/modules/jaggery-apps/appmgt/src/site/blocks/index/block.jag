@@ -1,0 +1,21 @@
+<%
+include('/jagg/constants.jag');
+jagg.block("index", {
+    initialize:function (data) {
+
+    },
+    getInputs:function () {
+
+    },
+
+    getOutputs:function (inputs) {
+       var hasCEODashboardPermission = jagg.module("permission").isUserAccessGrantedForPlatform(PERMISSION_CEO_DASHBOARD);
+       var hasViewTasksPermission = jagg.module("permission").isUserAccessGrantedForPlatform(PERMISSION_TASKS_VIEW);
+       return {
+            "hasCEODashboardPermission":hasCEODashboardPermission,
+            "hasViewTasksPermission":hasViewTasksPermission
+       };
+    }
+
+});
+%>

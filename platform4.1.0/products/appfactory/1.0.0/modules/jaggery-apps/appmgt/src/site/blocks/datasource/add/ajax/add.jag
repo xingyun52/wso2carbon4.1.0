@@ -1,0 +1,60 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+(function () {
+    var mod, obj, result,
+            action = request.getParameter("action"),
+            site = require("/site/conf/site.json");
+
+    if (action == "createDatasource") {
+    	mod = jagg.module("manager");
+	    var applicationKey = request.getParameter("applicationKey");
+	    var datasourceName = request.getParameter("datasourceName");
+	    var stage = request.getParameter("stage");
+	    var url = request.getParameter("url");
+	    var datasourceDescription = request.getParameter("datasourceDescription");
+	    var driverName=request.getParameter("driverName");
+        var dbUsername= request.getParameter("dbUsername");
+        var dbPassword= request.getParameter("dbPassword");
+	   
+        try {
+            print(mod.createDataSource(applicationKey,stage,datasourceName,url,driverName,dbUsername,dbPassword,datasourceDescription));
+        } catch(e) {
+            throw "Error while creating the datasource";
+        }
+    } else   if (action == "deleteDatasource") {
+    	mod = jagg.module("manager");
+	    var applicationKey = request.getParameter("applicationKey");
+	    var datasourceName = request.getParameter("datasourceName");
+	    var stage = request.getParameter("stage");   
+        try {
+            print(mod.deleteDatasource(applicationKey, stage, datasourceName));
+        } catch(e) {
+            throw "Error while deleting the datasource";
+        }
+    }  else   if (action == "editDatasource") {
+
+    	mod = jagg.module("manager");
+        var applicationKey = request.getParameter("applicationKey");
+        	    var datasourceName = request.getParameter("datasourceName");
+        	    var stage = request.getParameter("stage");
+        	    var url = request.getParameter("url");
+        	    var datasourceDescription = request.getParameter("datasourceDescription");
+        	    var driverName=request.getParameter("driverName");
+                var dbUsername= request.getParameter("dbUsername");
+                var dbPassword= request.getParameter("dbPassword");
+
+
+        try {
+            mod.deleteDatasource(applicationKey, stage, datasourceName);
+            print(mod.createDataSource(applicationKey,stage,datasourceName,url,driverName,dbUsername,dbPassword,datasourceDescription));
+        } catch(e) {
+            throw "Error while deleting the datasource";
+        }
+    } else {
+        throw new Error("No action specified");
+    }
+}());
+%>

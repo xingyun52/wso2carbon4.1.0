@@ -1,0 +1,508 @@
+<% jagg.template("configureenvironment/environments/list", function(inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+    var hasConfigureDbAdministrationPermission= outputs.hasConfigureDbAdministrationPermission;
+    var hasConfigureAPIManagerPermission= outputs.hasConfigureAPIManagerPermission;
+    var hasConfigureResourcePermission= outputs.hasConfigureResourcePermission;
+    var hasDataSourceCreatePermission= outputs.hasDataSourceCreatePermission;
+    var hasDataSourceModifyPermission= outputs.hasDataSourceModifyPermission;
+    var datasources = outputs.datasources;
+    var log = new Log();
+    log.info(hasDataSourceModifyPermission);
+    log.info(hasDataSourceCreatePermission);
+%>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+
+
+       jagg.post("../blocks/rssmanager/users/ajax/list.jag", {
+                                action:"getDatabaseUsers",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+            
+                        if(result != undefined){
+
+             var contentHeader= '<table class="table table-bordered">'+
+                                '<tr>'+
+			 '<th>Database Environment</th>'+  
+                        '<th>User</th>'+
+                       
+                    '</tr>';      
+                 var parsedArray = jQuery.parseJSON(result);
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+                      var rssInstanceName = parsedArray[i].rssInstanceName;
+                    var row='<tr>'+
+                            '<td>'+rssInstanceName+'</td>'+
+                        '<td>'+name+'</td>'+
+                    
+                       
+                        '</tr>';
+                  contentHeader += row;
+                }
+                contentHeader += '</table>';
+                if(parsedArray.length > 0){
+                    $('#table').html(contentHeader);
+                }else{
+                    $('#table').html('No users created yet..');
+                }
+   }
+                                                  }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading templates',type:'error' });
+          });
+
+          jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                action:"getRSSinstances",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+          
+                        if(result != undefined){
+
+                 var parsedArray = jQuery.parseJSON(result);
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+
+                    var row='<option>'+name+'</option>';
+                    $("#rssInstances").append(row);
+                }
+          
+               }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+          });
+
+  jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                action:"getTemplates",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+            
+                        if(result != undefined){
+
+             var contentHeader= '<table class="table table-bordered">'+
+                                '<tr>'+
+
+                        '<th>Roles</th>'+
+
+                    '</tr>';       
+                 
+                 var parsedArray = jQuery.parseJSON(result);
+              
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+                    
+                    var row='<tr>'+
+                        '<td width="25%">'+name+'</td>'+
+                        '</tr>';
+                 	  contentHeader += row;
+                }
+                contentHeader += '</table>';
+                if(parsedArray.length > 0){
+                    $('#table2').html(contentHeader);
+                }else{
+                    $('#table2').html('No templates created yet..');
+                }
+
+   }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading templates',type:'error' });
+          });
+
+  jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                action:"getDatabases",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+
+			if (result != undefined) {
+                var contentHeader = '<table class="table table-bordered">' +
+                        '<tr>' +
+			    '<th>Database Environment</th>' +
+                        '<th>Database Name</th>' +
+                        '<th>Database URL</th>' +
+                       
+                        '</tr>';
+                var parsedArray = jQuery.parseJSON(result);
+                for (var i = 0; i < parsedArray.length; i++) {
+                    var name = parsedArray[i].name;
+                    var rssInstanceName = parsedArray[i].rssInstanceName;
+                    var url = parsedArray[i].url;
+
+                    var row = '<tr>' +
+                              '<td>' + rssInstanceName + '</td>' +
+                            '<td>' + name + '</td>' +
+                            '<td style="color:blue;">' + url + '</td>' +
+                           
+                            '</tr>';
+                    contentHeader += row;
+                }
+                contentHeader += '</table>';
+                if(parsedArray.length > 0){
+                    $('#table3').html(contentHeader);
+                }else{
+                    $('#table3').html('No databases created yet..');
+                }
+
+            }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                 
+          });
+      
+      jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                action:"getRSSinstances",
+                                applicationKey:$("#applicationKey").attr('value')
+    }, function (result) {
+            
+                        if(result != undefined){
+
+                 var parsedArray = jQuery.parseJSON(result);
+                for(var i = 0; i < parsedArray.length; i++) {
+                      var name = parsedArray[i].name;
+
+                    var row='<option>'+name+'</option>';
+                    $("#rssInstances").append(row);
+                }
+          
+               }
+          }, 
+           function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+          });
+      jagg.post("../blocks/resources/get/ajax/get.jag", {
+    	  action:"getAllDependencies",
+    	  applicationKey:$("#applicationKey").attr('value')
+      }, 
+      function (result) {
+
+    	  if(result != undefined){
+    		  var isProperties = false;
+    		  result=jQuery.parseJSON(result);
+    		  console.log("Result :"+result) 
+    		  var shown=true;
+    		  for(var stage in result){
+    			  console.log((result[stage]));
+    			  var depsInStage=(result[stage]).dependencies;    			  
+    			  if(shown){
+    				  for(var deps in depsInStage){
+    					  $("#properties_th").show();
+    					  isProperties = true;
+    					  shown=false;
+    					  var dep=(depsInStage[deps]);
+    					  console.log(dep.value)
+    					  var object=(depsInStage[deps]);
+
+    					  var tr=$("<tr></tr>");
+    					  var cell1=$("<td></td>").text(object.name);
+    					  var cell2=$("<td></td>").text(object.description);
+
+    					  var values='';
+    					  for(var stage2 in result){
+    						  var depsInStage2=(result[stage2]).dependencies;
+    						  var object=depsInStage2[deps];
+    						  values=values+stage2+":"+object.value+"<br/>";
+    					  }
+    					  var cell3=$("<td></td>").html(values);
+    					  tr.append(cell1).append(cell2).append(cell3);
+    					  $("#properties_tb").append(tr);
+    				  }
+
+    			  }
+    			  if (!isProperties){
+    				  $("#properties_th").html("No properties created yet ...");
+    				  $("#properties_th").show();
+    			  }
+    		  }
+    	  }
+      }, 
+      function (jqXHR, textStatus, errorThrown) {
+    	  jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+      });
+       
+   });
+
+function tabShowHide(obj) {
+        var toShow = $(obj).attr('data-value');
+        $('.tag-content').hide();
+        $('#' + toShow).show();
+    }
+   
+</script>
+
+<input type="hidden" name="applicationKey" id="applicationKey" value="<%=applicationKey%>"/>
+<input type="hidden" name="userName" id="userName" value="<%=userName%>"/>
+<div class="container">
+       <div class="title-section">
+           <div class="row">
+               <div class="span12">
+                   <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Configure Resources","pos":"titlebar" }); %>
+               </div>
+           </div>
+       </div>
+</div>
+
+<!--START  content section-->
+<div class="container content-container wrapper">
+    <div class="row">
+        <div class="span12 content-section shadow-up">
+            <div class="content-data">
+                <div class="container-fluid">
+                        <% if(hasConfigureDbAdministrationPermission){ %>
+                      <div class="row-fluid">
+                        <div class="span2">
+                            <h5>Database Configurations</h5>
+                        </div>
+
+                       <div class="span10">
+                         
+                            <button class="btn need-space-bottom special-button-sizer" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/listUsers.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                               <i class="icon-db-user"></i>
+                               Manage Database Users
+                            </button>
+		            
+			    <div id="table"></div>
+                        </div>
+                    </div>  
+	
+		   <div class="row-fluid">
+                        <div class="span2">
+                        </div>
+                       <div class="span10">
+                             <hr />
+                            <button class="btn need-space-bottom special-button-sizer" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/listTemplates.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                                 <i class="icon-privilege-template"></i>
+                               Manage Database Roles
+                            </button>
+			    <div id="table2"></div>
+                        </div>
+                    </div>
+		     
+                 
+                    
+                    <div class="row-fluid">
+                        <div class="span2">
+                        </div>
+                        <div class="span10">
+                            <hr />
+                            <button class="btn need-space-bottom special-button-sizer" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/listdatabases.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                                <i class="icon-dbs"></i>
+                               Manage Databases
+                            </button>
+			    <div id="table3"></div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid">
+                        <hr />
+                    </div>
+
+
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <h5>Data Sources</h5>
+                        </div>
+                        <div class="span10">
+                             <% if(hasDataSourceCreatePermission){ %>
+                            <button class="btn need-space-bottom special-button-sizer" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/dbadministration.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                                <i class="icon-db-admin"></i>
+                                 Create DataSources
+                            </button>
+                                <% } %>
+                                 <% if(hasDataSourceModifyPermission){ %>
+                                 <style>
+                                 .hiddenEditMode{
+                                    margin:5px;
+                                    padding:5px;
+                                    border:solid 1px #ccc;
+                                    background:#efefef;
+                                 }
+                                 </style>
+                                 <script>
+                                     function saveMyDataSource(btn){
+                                         var newURL = $('.newURL',$(btn).parent()).val();
+                                         var username = $('.username',$(btn).parent()).val();
+                                         var password = $('.password',$(btn).parent()).val();
+                                         var datasourceName = $('.datasourceName',$(btn).parent()).val();
+                                         var driverName = $('.driverName',$(btn).parent()).val();
+                                         var stage = $('.stage',$(btn).parent()).val();
+                                         var description = $('.description',$(btn).parent()).val();
+                                         var applicationKey = $('#applicationKey').val();
+
+
+	        jagg.syncPost("../blocks/datasource/add/ajax/add.jag", {
+		    		action:"editDatasource",
+		    		applicationKey:applicationKey,
+		    		datasourceName:datasourceName,
+		    		datasourceDescription:description,
+		    		stage:stage,
+		    		url:newURL,
+		    		driverName:driverName,
+		    		dbUsername:username,
+		    		dbPassword:password
+		      },
+		      function (result) {
+			     if(result) {
+
+			        $(btn).parent().prev().prev().val(newURL);  //Setting the old url value to new one
+                                         //Now save the dam thing
+                    $(btn).parent().hide();                     //Hiding the edit pane
+                                         $(btn).parent().prev().show();              //Show the edit button
+                                 jagg.message({content:'Datasource has been updated.',type:'info' });
+                                 $(btn).parent().prev().prev().html(newURL);
+                             } else {
+                                jagg.message({content:'Error occurred while updating datasource.',type:'error' });
+                            }
+
+
+		      },
+		      function (jqXHR, textStatus, errorThrown) {
+                  jagg.message({content:'Error occurred while creating datasource',type:'error' });
+		    });
+
+                                     }
+                                     function toggleEditMode(editBtn){
+                                         $('.hiddenEditMode',$(editBtn).parent()).show('fast');
+                                         $(editBtn).hide();                             //Hide the button
+                                         $(editBtn).next().show('fast');                //Show the edit pane
+
+
+                                     }
+                                     function toggleEditModeWithCancel(cancel){
+                                         $(cancel).parent().hide();                  //Hide the edit plane
+                                         $(cancel).parent().prev().show();           //Show the edit button
+                                     }
+                                 </script>
+				<table class="table table-bordered">
+				                                            <%
+                                                            var shown = false;
+				                                            for(var stageName in datasources){
+                                                                if(!shown){
+                                                                    shown = true;
+
+				                                                if(datasources[stageName] != "" || datasources[stageName]!= null){
+				                                                	if(datasources[stageName].length == 0){
+				                                                		%><div>No Data Sources created yet...</div><%
+				                                                	}
+					                                                for(var i=0; i<datasources[stageName].length; i++){
+					                                                	var ds=datasources[stageName][i];
+					                                                	if(ds.name!=null){
+					                                                		if(i == 0){
+							                                                	%>
+							                                                	<tr>
+								                                                	<th class="span1">Name</th>
+								                                                	<th class="span3">Description</th>
+								                                                	<th class="span1">Type</th>
+								                                                	<th class="span2">DriverClass Name</th>
+								                                                	<th class="span4">URL</th>
+							                                                	</tr>
+							                                                	<%
+							                                                }
+				                                            %>
+
+				                                             <tr><td><%=ds.name%></td><td><%=ds.description%></td><td><%=ds.type%></td><td><%=ds.driverClassName%></td>
+				                                              <td>
+				                                              <% for(var stage in datasources){
+                                                                            if(datasources[stage][i]!=null){
+				                                                      %>
+                                                                        <div>
+                                                                            <strong><%=stage%> :</strong><span style="color:blue;" class="urlView"> <%=datasources[stage][i].url%></span>
+                                                                            <a onclick="toggleEditMode(this)"><i class="icon-edit"></i></a>
+                                                                            <div class="hiddenEditMode" style="display:none">
+                                                                                <label>Url</label>
+                                                                                <input class="newURL" type="text" value="<%=datasources[stage][i].url%>" />
+                                                                                <br>
+                                                                                <label>Username</label>
+                                                                                <input class="username" type="text" />
+                                                                                <label>Password</label>
+                                                                                <input class="password" type="password" />
+                                                                                <input type="hidden" class="datasourceName" value="<%=ds.name%>"/>
+                                                                                <input type="hidden" class="description" value="<%=ds.description%>"/>
+                                                                                <input type="hidden" class="stage" value="<%=stage%>"/>
+                                                                                <input type="hidden" class="driverName" value="<%=ds.driverClassName%>"/>
+                                                                                <div>
+	                                                                                <button class="btn btn-primary" onclick="saveMyDataSource(this)">Save</button>
+	                                                                                <button class="btn" onclick="toggleEditModeWithCancel(this)">Cancel</button>
+	                                                                            </div>
+                                                                            </div>
+
+                                                                        </div>
+				                                                      <%
+                                                                            }
+				                                                    }
+				                                              %>
+				                                               </td>
+
+				                                             </tr>
+
+				                                            <%
+				                                                    }  }}} }
+				                                            %>
+				                                        </table>
+				                                         <% } %>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="row-fluid">
+                        <hr />
+                    </div>
+                    <% } %>
+
+                        <% if(hasConfigureAPIManagerPermission){ %>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <h5>APIs</h5>
+                        </div>
+                        <div class="span10">
+                          
+                            <button class="btn need-space-bottom special-button-sizer" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/apimanager.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                                <i class="icon-api-mgr"></i>
+                                 Subscribe to API
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <hr />
+                    </div>
+                           <% } %>
+
+                        <% if(hasConfigureResourcePermission){ %>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <h5>Properties</h5>
+                        </div>
+                        <div class="span10">
+                            <table  class="table table-bordered">
+                               <thead id="properties_th" style="display:none;">
+                                               <tr><th>Name</th><th>Description</th><th>Value</th></tr>
+                                       </thead>
+                                       <tbody id="properties_tb"></tbody>
+                               </table>                           
+                            <button class="btn" onclick="location.href='<%=jagg.getAbsoluteUrl("/site/pages/resources.jag")%>?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'">
+                                <i class="icon-resources"></i>
+                                Add Properties
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <hr />
+                    </div>
+                           <% } %>
+
+		  
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="push"></div>
+</div>
+<div class="clearfix"></div>
+        
+<% }); %>

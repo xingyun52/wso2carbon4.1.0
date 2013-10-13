@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.mgt.identity.carbon.wso2.org" xmlns:ax2279="http://beans.mgt.identity.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2280="http://dto.mgt.identity.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2277="http://mgt.identity.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.mgt.identity.carbon.wso2.org"> 
+    <wsdl:documentation>IdentityManagementAdminService</wsdl:documentation> 
+    <wsdl:types> 
+        <xs:schema xmlns:ax2282="http://beans.mgt.identity.carbon.wso2.org/xsd" xmlns:ax2283="http://dto.mgt.identity.carbon.wso2.org/xsd" xmlns:ax2278="http://mgt.identity.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.mgt.identity.carbon.wso2.org"> 
+            <xs:import namespace="http://mgt.identity.carbon.wso2.org/xsd"/> 
+            <xs:import namespace="http://beans.mgt.identity.carbon.wso2.org/xsd"/> 
+            <xs:import namespace="http://dto.mgt.identity.carbon.wso2.org/xsd"/> 
+            <xs:element name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="IdentityMgtException" nillable="true" type="ax2278:IdentityMgtException"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="setChallengeQuestionsOfUser"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="userMgtBean" nillable="true" type="ax2279:UserMgtBean"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="setChallengeQuestions"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="challengeQuestionDTOs" nillable="true" type="ax2280:ChallengeQuestionDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getChallengeQuestionsOfUser"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element minOccurs="0" name="userMgtBean" nillable="true" type="ax2279:UserMgtBean"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getChallengeQuestionsOfUserResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2280:UserChallengesDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllPromotedUserChallenge"> 
+                <xs:complexType> 
+                    <xs:sequence/> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllPromotedUserChallengeResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2280:UserChallengesSetDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllChallengeQuestions"> 
+                <xs:complexType> 
+                    <xs:sequence/> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="getAllChallengeQuestionsResponse"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2280:ChallengeQuestionDTO"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+        </xs:schema> 
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://dto.mgt.identity.carbon.wso2.org/xsd"> 
+            <xs:complexType name="UserChallengesDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="answer" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="order" type="xs:int"/> 
+                    <xs:element minOccurs="0" name="primary" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="question" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="UserEvidenceDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="claimUri" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="claimValue" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="ChallengeQuestionDTO"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="order" type="xs:int"/> 
+                    <xs:element minOccurs="0" name="promoteQuestion" type="xs:boolean"/> 
+                    <xs:element minOccurs="0" name="question" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="questionSetId" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+            <xs:complexType name="UserChallengesSetDTO"> 
+                <xs:sequence> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="challengesDTOs" nillable="true" type="ax2280:UserChallengesDTO"/> 
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+        </xs:schema> 
+        <xs:schema xmlns:ax2281="http://dto.mgt.identity.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.mgt.identity.carbon.wso2.org/xsd"> 
+            <xs:import namespace="http://dto.mgt.identity.carbon.wso2.org/xsd"/> 
+            <xs:complexType name="UserMgtBean"> 
+                <xs:sequence> 
+                    <xs:element minOccurs="0" name="email" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="recoveryType" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="secretKey" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="userChallenges" nillable="true" type="ax2280:UserChallengesDTO"/> 
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="userEvidenceDTOs" nillable="true" type="ax2280:UserEvidenceDTO"/> 
+                    <xs:element minOccurs="0" name="userId" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="userKey" nillable="true" type="xs:string"/> 
+                    <xs:element minOccurs="0" name="userPassword" nillable="true" type="xs:string"/> 
+                </xs:sequence> 
+            </xs:complexType> 
+        </xs:schema> 
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://mgt.identity.carbon.wso2.org/xsd"> 
+            <xs:complexType name="IdentityMgtException"> 
+                <xs:sequence/> 
+            </xs:complexType> 
+        </xs:schema> 
+    </wsdl:types> 
+    <wsdl:message name="getAllChallengeQuestionsRequest"> 
+        <wsdl:part name="parameters" element="ns:getAllChallengeQuestions"/> 
+    </wsdl:message> 
+    <wsdl:message name="getAllChallengeQuestionsResponse"> 
+        <wsdl:part name="parameters" element="ns:getAllChallengeQuestionsResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="IdentityManagementAdminServiceIdentityMgtException"> 
+        <wsdl:part name="parameters" element="ns:IdentityManagementAdminServiceIdentityMgtException"/> 
+    </wsdl:message> 
+    <wsdl:message name="getChallengeQuestionsOfUserRequest"> 
+        <wsdl:part name="parameters" element="ns:getChallengeQuestionsOfUser"/> 
+    </wsdl:message> 
+    <wsdl:message name="getChallengeQuestionsOfUserResponse"> 
+        <wsdl:part name="parameters" element="ns:getChallengeQuestionsOfUserResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="setChallengeQuestionsOfUserRequest"> 
+        <wsdl:part name="parameters" element="ns:setChallengeQuestionsOfUser"/> 
+    </wsdl:message> 
+    <wsdl:message name="setChallengeQuestionsOfUserResponse"/> 
+    <wsdl:message name="getAllPromotedUserChallengeRequest"> 
+        <wsdl:part name="parameters" element="ns:getAllPromotedUserChallenge"/> 
+    </wsdl:message> 
+    <wsdl:message name="getAllPromotedUserChallengeResponse"> 
+        <wsdl:part name="parameters" element="ns:getAllPromotedUserChallengeResponse"/> 
+    </wsdl:message> 
+    <wsdl:message name="setChallengeQuestionsRequest"> 
+        <wsdl:part name="parameters" element="ns:setChallengeQuestions"/> 
+    </wsdl:message> 
+    <wsdl:portType name="IdentityManagementAdminServicePortType"> 
+        <wsdl:operation name="getAllChallengeQuestions"> 
+            <wsdl:input message="ns:getAllChallengeQuestionsRequest" wsaw:Action="urn:getAllChallengeQuestions"/> 
+            <wsdl:output message="ns:getAllChallengeQuestionsResponse" wsaw:Action="urn:getAllChallengeQuestionsResponse"/> 
+            <wsdl:fault message="ns:IdentityManagementAdminServiceIdentityMgtException" name="IdentityManagementAdminServiceIdentityMgtException" wsaw:Action="urn:getAllChallengeQuestionsIdentityManagementAdminServiceIdentityMgtException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getChallengeQuestionsOfUser"> 
+            <wsdl:input message="ns:getChallengeQuestionsOfUserRequest" wsaw:Action="urn:getChallengeQuestionsOfUser"/> 
+            <wsdl:output message="ns:getChallengeQuestionsOfUserResponse" wsaw:Action="urn:getChallengeQuestionsOfUserResponse"/> 
+            <wsdl:fault message="ns:IdentityManagementAdminServiceIdentityMgtException" name="IdentityManagementAdminServiceIdentityMgtException" wsaw:Action="urn:getChallengeQuestionsOfUserIdentityManagementAdminServiceIdentityMgtException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestionsOfUser"> 
+            <wsdl:input message="ns:setChallengeQuestionsOfUserRequest" wsaw:Action="urn:setChallengeQuestionsOfUser"/> 
+            <wsdl:output message="ns:setChallengeQuestionsOfUserResponse" wsaw:Action="urn:setChallengeQuestionsOfUserResponse"/> 
+            <wsdl:fault message="ns:IdentityManagementAdminServiceIdentityMgtException" name="IdentityManagementAdminServiceIdentityMgtException" wsaw:Action="urn:setChallengeQuestionsOfUserIdentityManagementAdminServiceIdentityMgtException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPromotedUserChallenge"> 
+            <wsdl:input message="ns:getAllPromotedUserChallengeRequest" wsaw:Action="urn:getAllPromotedUserChallenge"/> 
+            <wsdl:output message="ns:getAllPromotedUserChallengeResponse" wsaw:Action="urn:getAllPromotedUserChallengeResponse"/> 
+            <wsdl:fault message="ns:IdentityManagementAdminServiceIdentityMgtException" name="IdentityManagementAdminServiceIdentityMgtException" wsaw:Action="urn:getAllPromotedUserChallengeIdentityManagementAdminServiceIdentityMgtException"/> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestions"> 
+            <wsdl:input message="ns:setChallengeQuestionsRequest" wsaw:Action="urn:setChallengeQuestions"/> 
+            <wsdl:fault message="ns:IdentityManagementAdminServiceIdentityMgtException" name="IdentityManagementAdminServiceIdentityMgtException" wsaw:Action="urn:setChallengeQuestionsIdentityManagementAdminServiceIdentityMgtException"/> 
+        </wsdl:operation> 
+    </wsdl:portType> 
+    <wsdl:binding name="IdentityManagementAdminServiceSoap11Binding" type="ns:IdentityManagementAdminServicePortType"> 
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/> 
+        <wsdl:operation name="getChallengeQuestionsOfUser"> 
+            <soap:operation soapAction="urn:getChallengeQuestionsOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllChallengeQuestions"> 
+            <soap:operation soapAction="urn:getAllChallengeQuestions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestionsOfUser"> 
+            <soap:operation soapAction="urn:setChallengeQuestionsOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPromotedUserChallenge"> 
+            <soap:operation soapAction="urn:getAllPromotedUserChallenge" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestions"> 
+            <soap:operation soapAction="urn:setChallengeQuestions" style="document"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:binding name="IdentityManagementAdminServiceSoap12Binding" type="ns:IdentityManagementAdminServicePortType"> 
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/> 
+        <wsdl:operation name="getChallengeQuestionsOfUser"> 
+            <soap12:operation soapAction="urn:getChallengeQuestionsOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap12:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllChallengeQuestions"> 
+            <soap12:operation soapAction="urn:getAllChallengeQuestions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap12:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestionsOfUser"> 
+            <soap12:operation soapAction="urn:setChallengeQuestionsOfUser" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap12:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPromotedUserChallenge"> 
+            <soap12:operation soapAction="urn:getAllPromotedUserChallenge" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap12:body use="literal"/> 
+            </wsdl:output> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap12:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestions"> 
+            <soap12:operation soapAction="urn:setChallengeQuestions" style="document"/> 
+            <wsdl:input> 
+                <soap12:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:fault name="IdentityManagementAdminServiceIdentityMgtException"> 
+                <soap12:fault use="literal" name="IdentityManagementAdminServiceIdentityMgtException"/> 
+            </wsdl:fault> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:binding name="IdentityManagementAdminServiceHttpBinding" type="ns:IdentityManagementAdminServicePortType"> 
+        <http:binding verb="POST"/> 
+        <wsdl:operation name="getChallengeQuestionsOfUser"> 
+            <http:operation location="getChallengeQuestionsOfUser"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllChallengeQuestions"> 
+            <http:operation location="getAllChallengeQuestions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestionsOfUser"> 
+            <http:operation location="setChallengeQuestionsOfUser"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="getAllPromotedUserChallenge"> 
+            <http:operation location="getAllPromotedUserChallenge"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
+        <wsdl:operation name="setChallengeQuestions"> 
+            <http:operation location="setChallengeQuestions"/> 
+            <wsdl:input> 
+                <mime:content type="text/xml" part="parameters"/> 
+            </wsdl:input> 
+        </wsdl:operation> 
+    </wsdl:binding> 
+    <wsdl:service name="IdentityManagementAdminService"> 
+        <wsdl:port name="IdentityManagementAdminServiceHttpsSoap11Endpoint" binding="ns:IdentityManagementAdminServiceSoap11Binding"> 
+            <soap:address location="https://localhost:9443/services/IdentityManagementAdminService.IdentityManagementAdminServiceHttpsSoap11Endpoint/"/> 
+        </wsdl:port> 
+        <wsdl:port name="IdentityManagementAdminServiceHttpsSoap12Endpoint" binding="ns:IdentityManagementAdminServiceSoap12Binding"> 
+            <soap12:address location="https://localhost:9443/services/IdentityManagementAdminService.IdentityManagementAdminServiceHttpsSoap12Endpoint/"/> 
+        </wsdl:port> 
+        <wsdl:port name="IdentityManagementAdminServiceHttpsEndpoint" binding="ns:IdentityManagementAdminServiceHttpBinding"> 
+            <http:address location="https://localhost:9443/services/IdentityManagementAdminService.IdentityManagementAdminServiceHttpsEndpoint/"/> 
+        </wsdl:port> 
+    </wsdl:service> 
+</wsdl:definitions>

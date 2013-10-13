@@ -1,0 +1,655 @@
+<% jagg.template("administration/rssmanager/list", function (inputs, outputs, jagg) { %>
+<%
+    var applicationName = request.getParameter("applicationName");
+    var applicationKey = request.getParameter("applicationKey");
+    %>
+
+    <script type="text/javascript">
+
+     $(document).ready(function(){
+         $('#table').html('<div>Loading please wait...</div><div class="progress progress-striped active">'+
+                            '<div class="bar" style="width: 100%;"></div>'+
+                            '</div>');
+           jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"getDatabases",
+                                    applicationKey:$("#applicationKey").attr('value')
+        }, function (result) {
+
+                if (result != undefined) {
+                    var contentHeader = '<table class="table table-bordered">' +
+                            '<tr>' +
+
+                            '<th>Database Name</th>' +
+                            '<th>Database Environment</th>' +
+                            '<th>Database URL</th>' +
+                            '<th>Actions</th>' +
+
+                            '</tr>';
+                    var parsedArray = jQuery.parseJSON(result);
+                    for (var i = 0; i < parsedArray.length; i++) {
+                        var name = parsedArray[i].name;
+                        var rssInstanceName = parsedArray[i].rssInstanceName;
+                        var url = parsedArray[i].url;
+
+                        var row = '<tr>' +
+                                '<td>' + name + '</td>' +
+                                '<td>' + rssInstanceName + '</td>' +
+                                '<td style="color: blue;">' + url + '</td>' +
+                                '<td><a href="#" onclick="dropDatabase(' + "'" + name + "'" + ',' + "'" + rssInstanceName + "'" + ')">Drop</a>' +
+                                '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="manage(' + "'" + name + "'" + ',' + "'" + rssInstanceName + "'" + ')">Manage</a>' + '</td>' +
+                                '</tr>';
+                        contentHeader += row;
+                    }
+                    contentHeader += '</table>';
+                    if(parsedArray.length > 0){
+                        $('#table').html(contentHeader);
+                    }else{
+                        $('#table').html('<div class="alert alert-info">No databases created yet..</div>');
+                    }
+
+                }
+              },
+               function (jqXHR, textStatus, errorThrown) {
+
+              });
+
+          jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"getRSSinstances",
+                                    applicationKey:$("#applicationKey").attr('value')
+        }, function (result) {
+
+                            if(result != undefined){
+
+                     var parsedArray = jQuery.parseJSON(result);
+                    for(var i = 0; i < parsedArray.length; i++) {
+                          var name = parsedArray[i].name;
+
+                        var row='<option>'+name+'</option>';
+                        $("#rssInstances").append(row);
+                    }
+
+                   }
+              },
+               function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while reading rssInstances',type:'error' });
+              });
+
+
+
+
+       });
+
+    var inheriteddatabaseName, inheritedrssInstanceName, inheritedusername;
+
+       function dropDatabase(name,rssInstanceName){
+
+            jagg.post("../blocks/rssmanager/drop/ajax/drop.jag", {
+                                    action:"dropDatabase",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    databaseName:name,
+                                    rssInstanceName:rssInstanceName
+
+                        },  function (result) {
+                                                document.location.reload(true);
+                                               // jagg.message({content:'Database has been created',type:'info' });
+                                              },
+                                              function (jqXHR, textStatus, errorThrown) {
+
+                                            });
+       }
+       function createDatabase(){
+
+                    jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"createDatabase",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    databaseName:$("#databaseName").attr('value'),
+                                    databaseServerInstanceName:$('#rssInstances').val()
+
+                     },
+                          function (result) {
+                            document.location.reload(true);
+                           // jagg.message({content:'Database has been created',type:'info' });
+                          },
+                          function (jqXHR, textStatus, errorThrown) {
+
+                        });
+
+        }
+
+      function manage(name,rssInstanceName){
+
+             var ele= document.getElementById("displayPage");
+             ele.style.display = "none";
+             var ele2= document.getElementById("managePage");
+             ele2.style.display = "inline";
+             var rssInstance= document.getElementById("newDatabaseServerInstanceName");
+             rssInstance.value = rssInstanceName;
+             rssInstance.readOnly=true;
+             var newDatabaseName= document.getElementById("newDatabaseName");
+             newDatabaseName.value = name;
+             newDatabaseName.readOnly=true;
+
+            jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"getAttachedUsers",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    dbname:name,
+                                    rssInstance:rssInstanceName
+        }, function (result) {
+
+                            if(result != undefined){
+
+                 var contentHeader= '<table class="table table-bordered">'+
+                                    '<tr>'+
+
+                            '<th>User Name</th>'+
+                            '<th>Actions</th>'+
+
+                        '</tr>';
+                     var parsedArray = jQuery.parseJSON(result);
+                    for(var i = 0; i < parsedArray.length; i++) {
+                          var username = parsedArray[i].name;
+
+                        var row='<tr>'+
+                            '<td width="25%">'+username+'</td>'+
+                            '<td width="75%">'+
+                                          '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="editUser('+"'"+rssInstanceName+"','"+name+"','"+username+"'"+')">Edit Privileges</a>'+
+                                          '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="detach('+"'"+rssInstanceName+"','"+name+"','"+username+"'"+')">Detach</a>' +'</td>'+
+                            '</tr>';
+    contentHeader += row;
+                    }
+                   contentHeader += '</table>';
+                    if(parsedArray.length > 0){
+                        $('#usersList').html(contentHeader);
+                    }else{
+                        $('#usersList').html('No Users attached yet..');
+                    }
+
+
+
+                         }
+              },
+               function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while creating database',type:'error' });
+              });
+
+
+             jagg.post("../blocks/rssmanager/templates/ajax/list.jag", {
+                                    action:"getTemplates",
+                                    applicationKey:$("#applicationKey").attr('value')
+        }, function (result) {
+
+                            if(result != undefined){
+
+                     var parsedArray = jQuery.parseJSON(result);
+
+                    for(var i = 0; i < parsedArray.length; i++) {
+                          var name = parsedArray[i].name;
+
+                          var row='<option>'+name+'</option>';
+                        $("#templates").append(row);
+
+                    }
+
+       }
+              },
+          function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while reading templates',type:'error' });
+              });
+
+         jagg.post("../blocks/rssmanager/users/ajax/list.jag", {
+                                    action:"getAvailableUsersToAttachToDatabase",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    dbServerInstanceName:$("#newDatabaseServerInstanceName").attr('value'),
+                                    databaseName:$("#newDatabaseName").attr('value')
+        }, function (result) {
+
+                            if(result != undefined){
+                     var parsedArray = jQuery.parseJSON(result);
+
+                    for(var i = 0; i < parsedArray.length; i++) {
+                          var name = parsedArray[i];
+                          var row='<option>'+name+'</option>';
+                          $("#users").append(row);
+
+                    }
+                    var contentFooter= '</table>';
+       }
+                                                      },
+               function (jqXHR, textStatus, errorThrown) {
+                      jagg.message({content:'Error occurred while reading templates',type:'error' });
+              });
+
+
+      }
+
+      function attachNewUser(){
+              jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"attachNewUser",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    dbServerInstanceName:$("#newDatabaseServerInstanceName").attr('value'),
+                                    databaseName:$("#newDatabaseName").attr('value'),
+                                    users :$("#users").attr('value'),
+                                    templates :$("#templates").attr('value')
+
+                                  },
+                                                            function (result) {
+                                                              document.location.reload(true);
+                                                             // jagg.message({content:'Database has been created',type:'info' });
+                                                            },
+                                                            function (jqXHR, textStatus, errorThrown) {
+
+                                                          });
+
+    }
+
+    function detach(rssInstanceName, name, username){
+
+             jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"detachUser",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    dbServerInstanceName:rssInstanceName,
+                                    databaseName:name,
+                                    username :username
+
+                                    },
+                                                              function (result) {
+                                                                document.location.reload(true);
+                                                               // jagg.message({content:'Database has been created',type:'info' });
+                                                              },
+                                                              function (jqXHR, textStatus, errorThrown) {
+
+                                                            });
+
+
+    }
+
+
+    function editUser(rssInstanceName,dbname,username){
+             var ele= document.getElementById("managePage");
+             ele.style.display = "none";
+             var ele2= document.getElementById("editPrivilegePage");
+             ele2.style.display = "inline";
+             var userName= document.getElementById("UserName");
+             userName.value = username;
+             userName.readOnly=true;
+
+
+    inheriteddatabaseName = dbname;
+    inheritedrssInstanceName = rssInstanceName;
+    inheritedusername = username;
+
+     jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"getUserPrivileges",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    dbname:dbname,
+                                    rssInstanceName:rssInstanceName,
+                                    username:username
+        }, function (result) {
+
+                            if(result != undefined){
+                           var parsedArray = jQuery.parseJSON(result);
+
+                           document.getElementById("editselectPriv").checked = setValue(parsedArray[0].selectPriv);
+                           document.getElementById("editinsertPriv").checked = setValue(parsedArray[0].insertPriv);
+                           document.getElementById("editupdatePriv").checked = setValue(parsedArray[0].updatePriv);
+                           document.getElementById("editdeletePriv").checked = setValue(parsedArray[0].deletePriv);
+                           document.getElementById("editcreatePriv").checked = setValue(parsedArray[0].createPriv);
+                           document.getElementById("editdropPriv").checked = setValue(parsedArray[0].dropPriv);
+                           document.getElementById("editgrantPriv").checked = setValue(parsedArray[0].grantPriv);
+                           document.getElementById("editreferencesPriv").checked = setValue(parsedArray[0].referencesPriv);
+                           document.getElementById("editindexPriv").checked = setValue(parsedArray[0].indexPriv);
+                           document.getElementById("editalterPriv").checked = setValue(parsedArray[0].alterPriv);
+                           document.getElementById("editcreateTmpTablePriv").checked = setValue(parsedArray[0].createTmpTablePriv);
+                           document.getElementById("editlockTablesPriv").checked = setValue(parsedArray[0].lockTablesPriv);
+                           document.getElementById("editcreateViewPriv").checked = setValue(parsedArray[0].createViewPriv);
+                           document.getElementById("editshowViewPriv").checked = setValue(parsedArray[0].showViewPriv);
+                           document.getElementById("editcreateRoutinePriv").checked = setValue(parsedArray[0].createRoutinePriv);
+                           document.getElementById("editalterRoutinePriv").checked = setValue(parsedArray[0].alterRoutinePriv);
+                           document.getElementById("editexecutePriv").checked = setValue(parsedArray[0].executePriv);
+                           document.getElementById("editeventPriv").checked = setValue(parsedArray[0].eventPriv);
+                           document.getElementById("edittriggerPriv").checked = setValue(parsedArray[0].triggerPriv);
+                       }
+              },
+               function (jqXHR, textStatus, errorThrown) {
+
+                      jagg.message({content:'Error occurred while reading templates',type:'error' });
+              });
+
+    }
+
+    function setValue(value){
+
+      if(value == 'Y'){
+
+        return true;
+      }else if (value == 'N'){
+
+        return false;
+      }
+    }
+
+    function editUserPermission(){
+
+     var alterPriv=(document.getElementById("editalterPriv"));
+     var alterRoutinePriv=(document.getElementById("editalterRoutinePriv"));
+     var createPriv=(document.getElementById("editcreatePriv"));
+     var createRoutinePriv=(document.getElementById("editcreateRoutinePriv"));
+     var createTmpTablePriv=(document.getElementById("editcreateTmpTablePriv"));
+     var createViewPriv=(document.getElementById("editcreateViewPriv"));
+     var deletePriv=(document.getElementById("editdeletePriv"));
+     var dropPriv=(document.getElementById("editdropPriv"));
+     var eventPriv=(document.getElementById("editeventPriv"));
+     var executePriv=(document.getElementById("editexecutePriv"));
+     var grantPriv=(document.getElementById("editgrantPriv"));
+     var indexPriv=(document.getElementById("editindexPriv"));
+     var insertPriv=(document.getElementById("editinsertPriv"));
+     var lockTablesPriv=(document.getElementById("editlockTablesPriv"));
+     var referencesPriv=(document.getElementById("editreferencesPriv"));
+     var selectPriv=(document.getElementById("editselectPriv"));
+     var showViewPriv=(document.getElementById("editshowViewPriv"));
+     var triggerPriv=(document.getElementById("edittriggerPriv"));
+     var updatePriv=(document.getElementById("editupdatePriv"));
+
+    jagg.post("../blocks/rssmanager/add/ajax/add.jag", {
+                                    action:"editUserPermissions",
+                                    applicationKey:$("#applicationKey").attr('value'),
+                                    databaseName:inheriteddatabaseName,
+                           rssInstanceName:inheritedrssInstanceName,
+                     username:inheritedusername,
+                    password:$("#userpassword").attr('value'),
+                                    alterPriv:alterPriv.checked,
+                                    alterRoutinePriv:alterRoutinePriv.checked,
+                                    createPriv:createPriv.checked,
+                                    createRoutinePriv:createRoutinePriv.checked,
+                                    createTmpTablePriv:createTmpTablePriv.checked,
+                                    createViewPriv:createViewPriv.checked,
+                                    deletePriv:deletePriv.checked,
+                                    dropPriv:dropPriv.checked,
+                                    eventPriv:eventPriv.checked,
+                                    executePriv:executePriv.checked,
+                                    grantPriv:grantPriv.checked,
+                                    indexPriv:indexPriv.checked,
+                                    insertPriv:insertPriv.checked,
+                                    lockTablesPriv:lockTablesPriv.checked,
+                                    referencesPriv:referencesPriv.checked,
+                                    selectPriv:selectPriv.checked,
+                                    showViewPriv:showViewPriv.checked,
+                                    triggerPriv:triggerPriv.checked,
+                                    updatePriv:updatePriv.checked
+       }                  ,
+                                          function (result) {
+                                            document.location.reload(true);
+                                           // jagg.message({content:'Database has been created',type:'info' });
+                                          },
+                                          function (jqXHR, textStatus, errorThrown) {
+
+                                        });
+
+
+    }
+
+    function validateDBName(){
+		var dbname = $("#databaseName").val();
+		var validation = false;
+		if(dbname == ""){
+			$("#dbname_empty_warning").show();
+		} else{
+			validation = true;
+			$("#dbname_empty_warning").hide();
+		}
+		return validation;
+	}
+    
+    </script>
+
+
+    <div class="container">
+        <div class="title-section">
+            <div class="row">
+                <div class="span12">
+                    <% jagg.includeBlock("breadcrumb", {"applicationName":applicationName,"applicationKey" :applicationKey,"pageName":"Manage Databases","pos":"titlebar" }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--START  content section-->
+    <div class="container content-container wrapper">
+    <div class="row">
+
+    <div class="span12 content-section shadow-up tab-content">
+    <div class="content-data">
+    <div class="container-fluid">
+
+
+    <!--Second Database-->
+
+    <div class="row-fluid">
+
+
+    <form id='displayPage'  method='post' class="form-horizontal">
+
+        <div class="row-fluid">
+            <div class="span12">
+                <div id="table"></div>
+            </div>
+        </div>
+
+
+        <div class="row-fluid">
+            <div class="span3">
+                <h4>Create New Database</h4>
+                <div class=""></div>
+            </div>
+            <div class="span9">
+                <div class="control-group">
+                    <label class="control-label" for="databaseName">Database  Name<span class="requiredAstrix">*</span></label>
+                    <div class="controls">
+                        <input type="text" id='databaseName' onKeyUp="validateDBName();" />
+                    </div>
+                    <div  class="controls">
+	                   <label id="dbname_empty_warning" style="display: none;"><font color='red'>Database name cannot be empty</font></label>
+	               </div>
+
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="rssInstances">Database Environment<span class="requiredAstrix">*</span></label>
+
+                    <div class="controls">
+                         <select id='rssInstances'>
+                         </select>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id='applicationKey' value='<%=request.getParameter("applicationKey")
+    %>' />
+
+
+        <div class="row-fluid">
+            <div class="span3">
+
+                <div class=""></div>
+            </div>
+            <div class="span9">
+
+                <div class="control-group">
+                    <div class="controls">
+                        <input type='button' name='Submit' value='Save' onclick="if(validateDBName()){createDatabase();}"
+                               class='btn btn-primary'/>
+                        <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'" value='Cancel' class='btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+
+
+<form id='managePage' style="display: none;"  method='post' class="form-horizontal">
+
+ <div class="row-fluid">
+
+        <div class="span9">
+                <div class="control-group">
+                 <div class="controls">
+                 <div id="usersList"></div>
+                </div>
+               </div>
+          </div>
+    </div>
+
+ <div class="row-fluid">
+        <div class="span3">
+            <h4>Attach database user</h4>
+            <div class=""></div>
+        </div>
+        <div class="span9">
+            <div class="control-group">
+                <label class="control-label" for="DatabaseServerInstanceName">Database Environment<span class="requiredAstrix">*</span></label>
+                <div class="controls">
+                    <textarea id='newDatabaseServerInstanceName' rows=1 cols=50></textarea>
+                </div>
+
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="databaseName">Database Name<span class="requiredAstrix">*</span></label>
+
+                <div class="controls">
+                    <textarea id='newDatabaseName' rows=1 cols=50></textarea>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="databaseUsers">Available Database Users<span class="requiredAstrix">*</span></label>
+
+                <div class="controls">
+                     <select id='users'>
+                     </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="databaseTemplates">Database Privileges Template</label>
+
+                <div class="controls">
+                     <select id='templates'>
+                     </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ <div class="row-fluid">
+        <div class="span3">
+
+            <div class=""></div>
+        </div>
+        <div class="span9">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type='button' name='Submit' value='Save' onclick="attachNewUser();"
+                           class='btn btn-primary'/>
+                   <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey%>'" value='Cancel' class='btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+<form id='editPrivilegePage' style="display: none;"  method='post' class="form-horizontal">
+
+<div class="row-fluid">
+        <div class="span3">
+            <h4>Edit User Privileges</h4>
+            <div class=""></div>
+        </div>
+        <div class="span9">
+            <div class="control-group">
+                <label class="control-label" for="UserName">Username</label>
+                <div class="controls">
+                    <textarea id='UserName' rows=1 cols=50></textarea>
+                </div>
+            </div>
+           <div class="control-group">
+                <label class="control-label" for="Password">Password</label>
+                <div class="controls">
+                    <input type="password" id="userpassword" rows=1 cols=50></input>
+                </div>
+           </div>
+           <div class="control-group">
+                <label class="control-label" for="permission">Permission</label>
+                <div class="controls">
+  		   <br><input type="checkbox" name="permission" id='editselectPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp SELECT<br>
+                   <input type="checkbox" name="permission" id='editinsertPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp INSERT<br>
+                   <input type="checkbox" name="permission" id='editupdatePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp UPDATE<br>
+                   <input type="checkbox" name="permission" id='editdeletePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp DELETE<br>
+                   <input type="checkbox" name="permission" id='editcreatePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE<br>
+                   <input type="checkbox" name="permission" id='editdropPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp DROP<br>
+                  <input type="checkbox" name="permission" id='editgrantPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp GRANT<br>
+                   <input type="checkbox" name="permission" id='editreferencesPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp REFERENCES<br>
+                   <input type="checkbox" name="permission" id='editindexPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp INDEX<br>
+                   <input type="checkbox" name="permission" id='editalterPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp ALTER<br>
+                   <input type="checkbox" name="permission" id='editcreateTmpTablePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_TEMP_TABLE<br>
+                  <input type="checkbox" name="permission" id='editlockTablesPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp LOCK_TABLES<br>
+                   <input type="checkbox" name="permission" id='editcreateViewPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_VIEW<br>
+                   <input type="checkbox" name="permission" id='editshowViewPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp SHOW_VIEW<br>
+                  <input type="checkbox" name="permission" id='editcreateRoutinePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp CREATE_ROUTINE<br>
+                   <input type="checkbox" name="permission" id='editalterRoutinePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp ALTER_ROUTINE<br>
+                   <input type="checkbox" name="permission" id='editexecutePriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp EXECUTE<br>
+                   <input type="checkbox" name="permission" id='editeventPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp EVENT<br>
+                   <input type="checkbox" name="permission" id='edittriggerPriv'>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp TRIGGER<br>
+
+
+                </div>
+
+            </div>
+
+ </div>
+
+<div class="row-fluid">
+        <div class="span3">
+
+            <div class=""></div>
+        </div>
+        <div class="span9">
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type='button' name='Submit' value='Save' onclick="editUserPermission();"
+                           class='btn btn-primary'/>
+                   <input type="button" onclick="location.href='configureenvironment.jag?applicationName=<%=applicationName%>&applicationKey=<%=applicationKey
+    %>'" value='Cancel' class='btn'/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    </form>
+
+
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="push"></div>
+    </div>
+    <div class="clearfix"></div>
+
+    <%
+}); %>
+
+
+

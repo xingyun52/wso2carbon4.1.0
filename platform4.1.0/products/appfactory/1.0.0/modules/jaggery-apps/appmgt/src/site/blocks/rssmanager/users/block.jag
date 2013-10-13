@@ -1,0 +1,10 @@
+
+<%
+include('/jagg/constants.jag');
+jagg.block("rssmanager/users", {
+    initialize:function (data) {
+
+    }
+  });
+%>
+

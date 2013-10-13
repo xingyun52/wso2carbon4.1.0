@@ -1,0 +1,9 @@
+<%
+include('/jagg/constants.jag');
+jagg.block("rssmanager/add", {
+    initialize:function (data) {
+
+    }
+});
+%>
+

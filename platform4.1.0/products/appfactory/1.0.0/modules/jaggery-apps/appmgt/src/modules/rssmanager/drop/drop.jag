@@ -1,0 +1,49 @@
+<%
+include("/jagg/jagg.jag");
+include("/jagg/constants.jag");
+include("/jagg/config_reader.jag");
+
+// used for logging
+var log = new Log();
+var modManager = jagg.module("manager");
+var wso2_rss_instanceName = 'WSO2_RSS';
+
+var dropDatabase = function (applicationKey,databaseName,databaseServerInstanceName){
+    var ws = require('ws');
+
+    var dropDatabaseService = new ws.WSRequest();
+    var options = new Array();
+    options.useSOAP = 1.2;
+    options.action = "urn:dropDatabase";
+    options.mep = "in-only";
+    options["HTTPHeaders"] = [
+       { name : "Cookie", value :modManager.getAdminCookie() }
+     ];
+    var payload ='<ser:dropDatabase  xmlns:ser="http://service.core.rssmanager.carbon.wso2.org"><ser:rssInstanceName>'+
+                  wso2_rss_instanceName+'</ser:rssInstanceName><ser:databaseName>'
+                  +databaseName+'</ser:databaseName></ser:dropDatabase>';
+    var result;
+    var stage = getStageFromRssInstanceName(databaseServerInstanceName);
+      var storageServerURL = getProperty(DEPLOYMENT_STAGES+'.'+stage+'.'+STORAGE_SERVER_URL);
+    try {
+        dropDatabaseService.open(options, storageServerURL+'RSSAdmin', false,getProperty(ADMIN_USERNAME)+'@'+applicationKey , getProperty(ADMIN_PASSWORD) );
+        dropDatabaseService.send(payload);
+       } catch (e) {
+        log.error(e.toString());
+        }
+  
+};
+var getStageFromRssInstanceName=function(rssInstanceName){
+    log.info(rssInstanceName);
+    var deploymentStages = getProperties(DEPLOYMENT_STAGES);
+        for(var i=0;i<deploymentStages.length;i++){
+               var rssName= getProperty(DEPLOYMENT_STAGES+'.'+deploymentStages[i]+'.'+RSS_NAME);
+                if(rssInstanceName==rssName){
+                    return deploymentStages[i];
+         }
+     }
+
+};
+
+
+
